@@ -1,0 +1,249 @@
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
+@import './styles/design-system.css';
+@import './styles/auth.css';
+
+:root {
+  --color-background: #f4f6f9;
+  --color-surface: #ffffff;
+  --color-surface-subtle: #f0f2f7;
+  --color-border: #d7dde5;
+  --color-border-strong: #c6ced9;
+  --color-text: #1c2333;
+  --color-text-secondary: #647189;
+  --color-heading: #121826;
+  --color-primary: #1f4e79;
+  --color-primary-hover: #1a4164;
+  --color-primary-active: #14334d;
+  --color-primary-soft: #e6edf5;
+  --color-accent: #2ea8a1;
+  --color-success: #1b998b;
+  --color-warning: #f4a259;
+  --color-error: #d1495b;
+  --color-info: #3b82f6;
+  --color-cream-50: #ffffff;
+  --color-gray-100: #edf1f7;
+  --color-gray-200: #dfe4ec;
+  --color-gray-300: #cad1dd;
+  --color-gray-400: #b0bbcc;
+  --color-gray-500: #8f9bb0;
+  --color-brown-600: #3d4b5c;
+  --color-brown-600-rgb: 61, 75, 92;
+  --color-slate-500-rgb: 100, 113, 137;
+  --color-orange-400: #f4a259;
+  --color-orange-400-rgb: 244, 162, 89;
+  --color-orange-500: #e8873a;
+  --color-teal-400: #3ac2b7;
+  --color-teal-500: #2ea8a1;
+  --color-teal-600: #258a84;
+  --color-teal-700: #1d6d69;
+  --color-success-soft: rgba(27, 153, 139, 0.16);
+  --color-warning-soft: rgba(244, 162, 89, 0.22);
+  --color-error-soft: rgba(209, 73, 91, 0.18);
+  --color-info-soft: rgba(59, 130, 246, 0.18);
+  --color-accent-soft: rgba(46, 168, 161, 0.18);
+  --color-neutral-soft: rgba(100, 113, 137, 0.16);
+  --focus-outline: rgba(31, 78, 121, 0.34);
+
+  --shadow-xs: 0 1px 2px rgba(18, 24, 38, 0.04);
+  --shadow-sm: 0 8px 16px rgba(18, 24, 38, 0.08);
+  --shadow-md: 0 14px 32px rgba(18, 24, 38, 0.12);
+  --shadow-lg: 0 24px 42px rgba(18, 24, 38, 0.14);
+
+  --radius-xs: 8px;
+  --radius-sm: 12px;
+  --radius-md: 16px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+
+  --font-family-base: "IBM Plex Sans Arabic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-base: 15px;
+  --font-size-lg: 17px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-size-4xl: 36px;
+  --line-height-tight: 1.25;
+  --line-height-normal: 1.6;
+
+  color-scheme: light;
+}
+
+body.dark {
+  --color-background: #10151f;
+  --color-surface: #161d2a;
+  --color-surface-subtle: #1d2534;
+  --color-border: #293143;
+  --color-border-strong: #384258;
+  --color-text: #e3e8f4;
+  --color-text-secondary: #9aa5b9;
+  --color-heading: #f2f4f9;
+  --color-primary: #5aa5f7;
+  --color-primary-hover: #4791e1;
+  --color-primary-active: #3775b6;
+  --color-primary-soft: rgba(90, 165, 247, 0.14);
+  --color-accent: #4fd3c4;
+  --color-success: #46c2b3;
+  --color-warning: #fbc46d;
+  --color-error: #ff7b8a;
+  --color-info: #6fa3ff;
+  --color-cream-50: #f9fafb;
+  --color-gray-100: #1d2534;
+  --color-gray-200: #232d3f;
+  --color-gray-300: #2c374c;
+  --color-gray-400: #3c4861;
+  --color-gray-500: #54617a;
+  --color-brown-600: #9ba7bd;
+  --color-brown-600-rgb: 155, 167, 189;
+  --color-slate-500-rgb: 154, 165, 185;
+  --color-orange-400: #f5a971;
+  --color-orange-400-rgb: 245, 169, 113;
+  --color-orange-500: #f28d4c;
+  --color-teal-400: #5ad7ce;
+  --color-teal-500: #4fd3c4;
+  --color-teal-600: #37b7ac;
+  --color-teal-700: #2d968e;
+  --color-success-soft: rgba(70, 194, 179, 0.18);
+  --color-warning-soft: rgba(251, 196, 109, 0.2);
+  --color-error-soft: rgba(255, 123, 138, 0.24);
+  --color-info-soft: rgba(111, 163, 255, 0.22);
+  --color-accent-soft: rgba(79, 211, 196, 0.2);
+  --color-neutral-soft: rgba(154, 165, 185, 0.16);
+  --focus-outline: rgba(90, 165, 247, 0.35);
+
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  min-height: 100%;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  line-height: var(--line-height-normal);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  direction: rtl;
+  text-align: right;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+#root {
+  min-height: 100%;
+}
+
+p,
+span,
+li,
+label {
+  color: inherit;
+}
+
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+a:hover,
+a:focus-visible {
+  text-decoration: underline;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: none;
+}
+
+button:disabled,
+input:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+input,
+textarea {
+  border-radius: var(--radius-xs);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+::selection {
+  background-color: var(--color-primary);
+  color: #ffffff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--focus-outline);
+  outline-offset: 2px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.sr-only-focusable:focus {
+  position: static;
+  width: auto;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  clip: auto;
+  white-space: normal;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: var(--color-border-strong);
+}
