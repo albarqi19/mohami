@@ -333,16 +333,6 @@ const TiptapEditor = forwardRef<TiptapEditorRef, TiptapEditorProps>(({
 
           <div style={{ width: '1px', height: '32px', backgroundColor: 'var(--color-border)', margin: '0 4px' }} />
 
-          {/* Table */}
-          <MenuButton
-            onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
-            title="إدراج جدول"
-          >
-            <TableIcon size={16} />
-          </MenuButton>
-
-          <div style={{ width: '1px', height: '32px', backgroundColor: 'var(--color-border)', margin: '0 4px' }} />
-
           {/* Undo/Redo */}
           <MenuButton
             onClick={() => editor.chain().focus().undo().run()}
