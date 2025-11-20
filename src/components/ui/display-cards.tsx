@@ -1,7 +1,10 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Sparkles } from "lucide-react";
+
+function cn(...classes: (string | undefined | false)[]) {
+  return classes.filter(Boolean).join(' ');
+}
 
 interface DisplayCardProps {
   className?: string;
@@ -9,7 +12,6 @@ interface DisplayCardProps {
   title?: string;
   description?: string;
   date?: string;
-  iconClassName?: string;
   titleClassName?: string;
 }
 
@@ -19,7 +21,6 @@ function DisplayCard({
   title = "Featured",
   description = "Discover amazing content",
   date = "Just now",
-  iconClassName = "text-blue-500",
   titleClassName = "text-blue-500",
 }: DisplayCardProps) {
   return (
