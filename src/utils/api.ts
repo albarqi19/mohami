@@ -1,5 +1,5 @@
 // API Configuration and HTTP Client
-const API_BASE_URL = 'https://0e024e86d654.ngrok-free.app/api/v1';
+const API_BASE_URL = 'https://amusing-premium-jennet.ngrok-free.app/api/v1';
 
 // HTTP Client with token management
 class ApiClient {
