@@ -30,23 +30,76 @@ export interface Case {
   client_id: string;
   client_phone?: string;
   client_email?: string;
+  plaintiff_name?: string;
+  plaintiff_id?: string;
   opponent_name?: string;
+  defendant_name?: string;
+  defendant_id?: string;
   court?: string;
+  department?: string;
   case_type: CaseType;
+  case_type_arabic?: string;
+  case_category?: string;
   status: CaseStatus;
   priority: Priority;
   assignedLawyers?: string[]; // للتوافق مع النسخة القديمة
   lawyers?: User[]; // البيانات الجديدة من الباك إند
   description?: string;
+  case_subject?: string;
+  plaintiff_requests?: string;
+  case_evidence?: string;
+  case_date_hijri?: string;
   created_at: Date;
   updated_at: Date;
   filing_date?: Date;
   due_date?: Date;
   next_hearing?: Date;
+  next_hearing_time?: string;
+  next_hearing_type?: string;
+  hearing_method?: string;
   contract_value?: number;
   documents?: Document[];
   tasks?: Task[];
   activities?: Activity[];
+  parties?: CaseParty[];
+  sessions?: CaseSession[];
+  // Najiz Integration
+  najiz_id?: string;
+  najiz_url?: string;
+  najiz_data?: any;
+  najiz_synced_at?: Date;
+  source?: string;
+}
+
+// Case Party - طرف القضية
+export interface CaseParty {
+  id: string;
+  case_id: string;
+  name: string;
+  role: string;
+  side: 'plaintiff' | 'defendant';
+  national_id?: string;
+  commercial_reg?: string;
+  nationality?: string;
+  phone?: string;
+  email?: string;
+}
+
+// Case Session - جلسة القضية
+export interface CaseSession {
+  id: string;
+  case_id: string;
+  session_type?: string;
+  session_date?: string;
+  session_date_gregorian?: Date;
+  session_time?: string;
+  status: string;
+  court?: string;
+  department?: string;
+  method?: string;
+  degree?: string;
+  notes?: string;
+  result?: string;
 }
 
 export const CaseType = {

@@ -140,7 +140,7 @@ export class DocumentService {
 
   static async downloadDocument(id: string): Promise<Blob> {
     // This endpoint should return the file directly
-    const response = await fetch(`http://127.0.0.1:8000/api/v1/documents/${id}/download`, {
+    const response = await fetch(`https://0e024e86d654.ngrok-free.app/api/v1/documents/${id}/download`, {
       headers: {
         'Authorization': `Bearer ${localStorage.getItem('authToken')}`,
       },
@@ -258,7 +258,7 @@ export class DocumentService {
   // Smart Document Analysis methods
   static async analyzeSmartDocument(formData: FormData): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch('http://localhost:8000/api/v1/smart-documents/analyze', {
+      const response = await fetch('https://0e024e86d654.ngrok-free.app/api/v1/smart-documents/analyze', {
         method: 'POST',
         headers: {
           'Accept': 'application/json',
@@ -280,7 +280,7 @@ export class DocumentService {
 
   static async saveSmartDocument(data: SmartDocumentSave): Promise<ApiResponse<Document>> {
     try {
-      const response = await fetch('http://localhost:8000/api/v1/smart-documents/save', {
+      const response = await fetch('https://0e024e86d654.ngrok-free.app/api/v1/smart-documents/save', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -297,7 +297,7 @@ export class DocumentService {
 
   static async deleteTempFile(tempPath: string): Promise<ApiResponse<any>> {
     try {
-      const response = await fetch('http://localhost:8000/api/v1/smart-documents/temp', {
+      const response = await fetch('https://0e024e86d654.ngrok-free.app/api/v1/smart-documents/temp', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json'

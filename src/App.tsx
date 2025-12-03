@@ -5,6 +5,7 @@ import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Cases from './pages/Cases';
 import CaseDetailPage from './pages/CaseDetailPage';
+import UpcomingSessions from './pages/UpcomingSessions';
 import ClientCases from './pages/ClientCases';
 import ClientCaseDetail from './pages/ClientCaseDetail';
 import Tasks from './pages/Tasks';
@@ -43,6 +44,11 @@ function App() {
             <Route path="cases/:caseId" element={
               <ProtectedRoute allowedRoles={['admin', 'lawyer', 'legal_assistant']}>
                 <CaseDetailPage />
+              </ProtectedRoute>
+            } />
+            <Route path="sessions" element={
+              <ProtectedRoute allowedRoles={['admin', 'lawyer', 'legal_assistant']}>
+                <UpcomingSessions />
               </ProtectedRoute>
             } />
             

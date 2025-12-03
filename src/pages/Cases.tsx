@@ -26,13 +26,25 @@ type ToneMeta = {
 	border: string;
 };
 
-const STATUS_META: Record<CaseStatus, ToneMeta> = {
+const STATUS_META: Record<string, ToneMeta> = {
 	active: { label: 'نشطة', tone: 'var(--color-success)', soft: 'var(--color-success-soft)', border: 'rgba(27, 153, 139, 0.34)' },
-	pending: { label: 'معلقة', tone: 'var(--color-warning)', soft: 'var(--color-warning-soft)', border: 'rgba(244, 162, 89, 0.34)' },
-	closed: { label: 'مغلقة', tone: 'var(--color-text-secondary)', soft: 'var(--color-neutral-soft)', border: 'rgba(100, 113, 137, 0.3)' },
+	pending: { label: 'قيد النظر', tone: 'var(--color-warning)', soft: 'var(--color-warning-soft)', border: 'rgba(244, 162, 89, 0.34)' },
+	closed: { label: 'منتهية', tone: 'var(--color-text-secondary)', soft: 'var(--color-neutral-soft)', border: 'rgba(100, 113, 137, 0.3)' },
 	appealed: { label: 'مستأنفة', tone: 'var(--color-primary)', soft: 'var(--color-primary-soft)', border: 'rgba(31, 78, 121, 0.28)' },
 	settled: { label: 'مصالحة', tone: 'var(--color-accent)', soft: 'var(--color-accent-soft)', border: 'rgba(46, 168, 161, 0.32)' },
 	dismissed: { label: 'مرفوضة', tone: 'var(--color-error)', soft: 'var(--color-error-soft)', border: 'rgba(209, 73, 91, 0.32)' }
+};
+
+// ألوان حالات ناجز الأصلية
+const NAJIZ_STATUS_COLORS: Record<string, ToneMeta> = {
+	'منتهية': { label: 'منتهية', tone: '#94a3b8', soft: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.4)' },
+	'مغلقة': { label: 'مغلقة', tone: '#94a3b8', soft: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.4)' },
+	'قيد النظر': { label: 'قيد النظر', tone: '#fbbf24', soft: 'rgba(251, 191, 36, 0.15)', border: 'rgba(251, 191, 36, 0.4)' },
+	'جديدة': { label: 'جديدة', tone: '#34d399', soft: 'rgba(52, 211, 153, 0.15)', border: 'rgba(52, 211, 153, 0.4)' },
+	'نشطة': { label: 'نشطة', tone: '#2dd4bf', soft: 'rgba(45, 212, 191, 0.15)', border: 'rgba(45, 212, 191, 0.4)' },
+	'معلقة': { label: 'معلقة', tone: '#fb923c', soft: 'rgba(251, 146, 60, 0.15)', border: 'rgba(251, 146, 60, 0.4)' },
+	'مستأنفة': { label: 'مستأنفة', tone: '#818cf8', soft: 'rgba(129, 140, 248, 0.15)', border: 'rgba(129, 140, 248, 0.4)' },
+	'محكومة': { label: 'محكومة', tone: '#a78bfa', soft: 'rgba(167, 139, 250, 0.15)', border: 'rgba(167, 139, 250, 0.4)' },
 };
 
 const PRIORITY_META: Record<Priority, ToneMeta> = {
@@ -54,6 +66,109 @@ const CASE_TYPE_META: Record<CaseType, ToneMeta> = {
 	other: { label: 'أخرى', tone: 'var(--color-text-secondary)', soft: 'var(--color-neutral-soft)', border: 'rgba(100, 113, 137, 0.26)' }
 };
 
+// ألوان مخصصة لأنواع القضايا العربية من ناجز - متوافقة مع Dark Mode
+const ARABIC_CASE_TYPE_COLORS: Record<string, ToneMeta> = {
+	// 🟢 القضايا التجارية والمالية - أخضر تركواز فاتح
+	'النقل': { label: 'النقل', tone: '#2dd4bf', soft: 'rgba(45, 212, 191, 0.15)', border: 'rgba(45, 212, 191, 0.4)' },
+	'المقاولات': { label: 'المقاولات', tone: '#2dd4bf', soft: 'rgba(45, 212, 191, 0.15)', border: 'rgba(45, 212, 191, 0.4)' },
+	'مقاولات إنشاء مباني': { label: 'مقاولات إنشاء مباني', tone: '#2dd4bf', soft: 'rgba(45, 212, 191, 0.15)', border: 'rgba(45, 212, 191, 0.4)' },
+	'الشركات النظامية': { label: 'الشركات النظامية', tone: '#2dd4bf', soft: 'rgba(45, 212, 191, 0.15)', border: 'rgba(45, 212, 191, 0.4)' },
+	'شركات المضاربة': { label: 'شركات المضاربة', tone: '#2dd4bf', soft: 'rgba(45, 212, 191, 0.15)', border: 'rgba(45, 212, 191, 0.4)' },
+	'بيع وتوريد': { label: 'بيع وتوريد', tone: '#2dd4bf', soft: 'rgba(45, 212, 191, 0.15)', border: 'rgba(45, 212, 191, 0.4)' },
+	'عقد البيع': { label: 'عقد البيع', tone: '#2dd4bf', soft: 'rgba(45, 212, 191, 0.15)', border: 'rgba(45, 212, 191, 0.4)' },
+	
+	// 🔵 قضايا الإيجار والعقارات - أزرق سماوي
+	'إجارة': { label: 'إجارة', tone: '#38bdf8', soft: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.4)' },
+	'عقد إيجار عقار': { label: 'عقد إيجار عقار', tone: '#38bdf8', soft: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.4)' },
+	'عقد إيجار منقول': { label: 'عقد إيجار منقول', tone: '#38bdf8', soft: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.4)' },
+	'ملكية عقار': { label: 'ملكية عقار', tone: '#38bdf8', soft: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.4)' },
+	'إخلاء عقار': { label: 'إخلاء عقار', tone: '#38bdf8', soft: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.4)' },
+	'استرداد حيازة عقار': { label: 'استرداد حيازة عقار', tone: '#38bdf8', soft: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.4)' },
+	'منع التعرض للحيازة': { label: 'منع التعرض للحيازة', tone: '#38bdf8', soft: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.4)' },
+	'قسمة عقارات مشتركة': { label: 'قسمة عقارات مشتركة', tone: '#38bdf8', soft: 'rgba(56, 189, 248, 0.15)', border: 'rgba(56, 189, 248, 0.4)' },
+	
+	// 🟠 قضايا الأسرة والأحوال الشخصية - برتقالي دافئ
+	'نفقة ماضية': { label: 'نفقة ماضية', tone: '#fb923c', soft: 'rgba(251, 146, 60, 0.15)', border: 'rgba(251, 146, 60, 0.4)' },
+	'نفقة مستمرة': { label: 'نفقة مستمرة', tone: '#fb923c', soft: 'rgba(251, 146, 60, 0.15)', border: 'rgba(251, 146, 60, 0.4)' },
+	'زيادة نفقة أو إنقاصها أو إلغائها': { label: 'زيادة نفقة أو إنقاصها', tone: '#fb923c', soft: 'rgba(251, 146, 60, 0.15)', border: 'rgba(251, 146, 60, 0.4)' },
+	'حضانة': { label: 'حضانة', tone: '#fb923c', soft: 'rgba(251, 146, 60, 0.15)', border: 'rgba(251, 146, 60, 0.4)' },
+	'زيارة أولاد أو غيرهم': { label: 'زيارة أولاد', tone: '#fb923c', soft: 'rgba(251, 146, 60, 0.15)', border: 'rgba(251, 146, 60, 0.4)' },
+	'فسخ عقد زواج': { label: 'فسخ عقد زواج', tone: '#fb923c', soft: 'rgba(251, 146, 60, 0.15)', border: 'rgba(251, 146, 60, 0.4)' },
+	'خلع': { label: 'خلع', tone: '#fb923c', soft: 'rgba(251, 146, 60, 0.15)', border: 'rgba(251, 146, 60, 0.4)' },
+	'مهر': { label: 'مهر', tone: '#fb923c', soft: 'rgba(251, 146, 60, 0.15)', border: 'rgba(251, 146, 60, 0.4)' },
+	
+	// 🟣 قضايا الولاية والحجر - بنفسجي فاتح
+	'حجر أو رفعه': { label: 'حجر أو رفعه', tone: '#a78bfa', soft: 'rgba(167, 139, 250, 0.15)', border: 'rgba(167, 139, 250, 0.4)' },
+	'إقامة ولاية على قاصر عقلاً': { label: 'ولاية على قاصر عقلاً', tone: '#a78bfa', soft: 'rgba(167, 139, 250, 0.15)', border: 'rgba(167, 139, 250, 0.4)' },
+	'إقامة ولاية على قاصر سناً': { label: 'ولاية على قاصر سناً', tone: '#a78bfa', soft: 'rgba(167, 139, 250, 0.15)', border: 'rgba(167, 139, 250, 0.4)' },
+	'إذن التصرف بأملاك القاصر أو المفقود أو الغائب': { label: 'إذن تصرف بأملاك قاصر', tone: '#a78bfa', soft: 'rgba(167, 139, 250, 0.15)', border: 'rgba(167, 139, 250, 0.4)' },
+	
+	// 🟤 قضايا التركات والوصايا - ذهبي/عسلي
+	'قسمة تركة عقارية': { label: 'قسمة تركة عقارية', tone: '#fbbf24', soft: 'rgba(251, 191, 36, 0.15)', border: 'rgba(251, 191, 36, 0.4)' },
+	'قسمة تركة مالية': { label: 'قسمة تركة مالية', tone: '#fbbf24', soft: 'rgba(251, 191, 36, 0.15)', border: 'rgba(251, 191, 36, 0.4)' },
+	'محاسبة في تركة': { label: 'محاسبة في تركة', tone: '#fbbf24', soft: 'rgba(251, 191, 36, 0.15)', border: 'rgba(251, 191, 36, 0.4)' },
+	'استحقاق في وقف أو وصية': { label: 'استحقاق في وقف', tone: '#fbbf24', soft: 'rgba(251, 191, 36, 0.15)', border: 'rgba(251, 191, 36, 0.4)' },
+	'محاسبة ناظر وقف أو وصية': { label: 'محاسبة ناظر وقف', tone: '#fbbf24', soft: 'rgba(251, 191, 36, 0.15)', border: 'rgba(251, 191, 36, 0.4)' },
+	'هبة أو رجوع عنها': { label: 'هبة أو رجوع', tone: '#fbbf24', soft: 'rgba(251, 191, 36, 0.15)', border: 'rgba(251, 191, 36, 0.4)' },
+	
+	// 🌲 قضايا العمل - أخضر زمردي
+	'مطالبات العامل': { label: 'مطالبات العامل', tone: '#34d399', soft: 'rgba(52, 211, 153, 0.15)', border: 'rgba(52, 211, 153, 0.4)' },
+	'إنهاء العلاقة العمالية من صاحب العمل': { label: 'إنهاء علاقة عمالية', tone: '#34d399', soft: 'rgba(52, 211, 153, 0.15)', border: 'rgba(52, 211, 153, 0.4)' },
+	'أجر': { label: 'أجر', tone: '#34d399', soft: 'rgba(52, 211, 153, 0.15)', border: 'rgba(52, 211, 153, 0.4)' },
+	'مكافأة': { label: 'مكافأة', tone: '#34d399', soft: 'rgba(52, 211, 153, 0.15)', border: 'rgba(52, 211, 153, 0.4)' },
+	'أجرة أعمال': { label: 'أجرة أعمال', tone: '#34d399', soft: 'rgba(52, 211, 153, 0.15)', border: 'rgba(52, 211, 153, 0.4)' },
+	
+	// 🔴 قضايا جنائية ومرور - أحمر وردي فاتح (مريح للعين)
+	'حق عام ناشئ عن خطأ طبي': { label: 'حق عام - خطأ طبي', tone: '#f472b6', soft: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.4)' },
+	'حق خاص ناشئ عن حادث مروري': { label: 'حق خاص - حادث مروري', tone: '#f472b6', soft: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.4)' },
+	'حق عام ناشئ عن حادث مروري': { label: 'حق عام - حادث مروري', tone: '#f472b6', soft: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.4)' },
+	'حق خاص ناشئ عن خطأ طبي': { label: 'حق خاص - خطأ طبي', tone: '#f472b6', soft: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.4)' },
+	'مخالفة نظام المرور': { label: 'مخالفة مرور', tone: '#f472b6', soft: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.4)' },
+	'مخالفة نظام مكافحة المخدرات والمؤثرات العقلية': { label: 'مخالفة مخدرات', tone: '#f472b6', soft: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.4)' },
+	'مخالفة نظام مكافحة غسل الأموال': { label: 'مخالفة غسل أموال', tone: '#f472b6', soft: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.4)' },
+	'مخالفة نظام مكافحة جرائم المعلوماتية': { label: 'جرائم معلوماتية', tone: '#f472b6', soft: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.4)' },
+	'قذف': { label: 'قذف', tone: '#f472b6', soft: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.4)' },
+	'مسكر': { label: 'مسكر', tone: '#f472b6', soft: 'rgba(244, 114, 182, 0.15)', border: 'rgba(244, 114, 182, 0.4)' },
+	
+	// 🩵 قضايا العقود والوكالة - أزرق نيلي
+	'عقد الوكالة': { label: 'عقد الوكالة', tone: '#818cf8', soft: 'rgba(129, 140, 248, 0.15)', border: 'rgba(129, 140, 248, 0.4)' },
+	'أتعاب محامين أو وكلاء': { label: 'أتعاب محامين', tone: '#818cf8', soft: 'rgba(129, 140, 248, 0.15)', border: 'rgba(129, 140, 248, 0.4)' },
+	'أتعاب محاماة أو وكلاء': { label: 'أتعاب محاماة', tone: '#818cf8', soft: 'rgba(129, 140, 248, 0.15)', border: 'rgba(129, 140, 248, 0.4)' },
+	'أتعاب المحاماة أو الوكلاء': { label: 'أتعاب المحاماة', tone: '#818cf8', soft: 'rgba(129, 140, 248, 0.15)', border: 'rgba(129, 140, 248, 0.4)' },
+	'عقد القرض': { label: 'عقد القرض', tone: '#818cf8', soft: 'rgba(129, 140, 248, 0.15)', border: 'rgba(129, 140, 248, 0.4)' },
+	'عقد الإيداع': { label: 'عقد الإيداع', tone: '#818cf8', soft: 'rgba(129, 140, 248, 0.15)', border: 'rgba(129, 140, 248, 0.4)' },
+	'فسخ عقد أو بطلانه': { label: 'فسخ عقد', tone: '#818cf8', soft: 'rgba(129, 140, 248, 0.15)', border: 'rgba(129, 140, 248, 0.4)' },
+	
+	// 🩷 قضايا التعويضات - وردي سالموني
+	'التعويض عن مصاريف التقاضي': { label: 'تعويض مصاريف تقاضي', tone: '#fb7185', soft: 'rgba(251, 113, 133, 0.15)', border: 'rgba(251, 113, 133, 0.4)' },
+	'التعويض عن أضرار التقاضي': { label: 'تعويض أضرار تقاضي', tone: '#fb7185', soft: 'rgba(251, 113, 133, 0.15)', border: 'rgba(251, 113, 133, 0.4)' },
+	'التعويض عن السجن': { label: 'تعويض عن السجن', tone: '#fb7185', soft: 'rgba(251, 113, 133, 0.15)', border: 'rgba(251, 113, 133, 0.4)' },
+	'المسؤولية الناشئة عن الفعل الضار': { label: 'مسؤولية فعل ضار', tone: '#fb7185', soft: 'rgba(251, 113, 133, 0.15)', border: 'rgba(251, 113, 133, 0.4)' },
+	
+	// ⬜ قضايا مدنية عامة - رمادي فاتح
+	'دعوى حقوقية': { label: 'دعوى حقوقية', tone: '#94a3b8', soft: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.4)' },
+	'مطالبة بمستندات': { label: 'مطالبة بمستندات', tone: '#94a3b8', soft: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.4)' },
+	'رد العين': { label: 'رد العين', tone: '#94a3b8', soft: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.4)' },
+	'رد ما استوفي خطأ': { label: 'رد ما استوفي خطأ', tone: '#94a3b8', soft: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.4)' },
+	'معارضة على صك إنهائي': { label: 'معارضة على صك', tone: '#94a3b8', soft: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.4)' },
+	'المطالبة بالحق الخاص': { label: 'مطالبة بحق خاص', tone: '#94a3b8', soft: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.4)' },
+	'المعاينة لإثبات الحالة': { label: 'معاينة لإثبات الحالة', tone: '#94a3b8', soft: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.4)' },
+	'عدم توفر شرط شكلي للسند أو تزويره أو  إنكار التوقيع': { label: 'إنكار توقيع/تزوير', tone: '#94a3b8', soft: 'rgba(148, 163, 184, 0.15)', border: 'rgba(148, 163, 184, 0.4)' },
+};
+
+// دالة للحصول على لون نوع القضية العربي
+const getArabicCaseTypeColor = (arabicType: string | null | undefined): ToneMeta => {
+	if (!arabicType) {
+		return CASE_TYPE_META.other;
+	}
+	return ARABIC_CASE_TYPE_COLORS[arabicType] ?? {
+		label: arabicType,
+		tone: '#6b7280',
+		soft: 'rgba(107, 114, 128, 0.12)',
+		border: 'rgba(107, 114, 128, 0.3)'
+	};
+};
+
 const buildChipStyles = (meta: ToneMeta): CSSProperties => ({
 	'--chip-color': meta.tone,
 	'--chip-bg': meta.soft,
@@ -65,6 +180,24 @@ const getStatusMeta = (status: CaseStatus): ToneMeta => STATUS_META[status] ?? {
 	tone: 'var(--color-text-secondary)',
 	soft: 'var(--color-neutral-soft)',
 	border: 'rgba(100, 113, 137, 0.26)'
+};
+
+// دالة للحصول على حالة ناجز الأصلية
+const getNajizStatusMeta = (najizStatus: string | null | undefined, fallbackStatus: CaseStatus): ToneMeta => {
+	if (najizStatus && NAJIZ_STATUS_COLORS[najizStatus]) {
+		return NAJIZ_STATUS_COLORS[najizStatus];
+	}
+	// إذا كانت الحالة من ناجز موجودة لكن غير معروفة، نعرضها كما هي
+	if (najizStatus) {
+		return {
+			label: najizStatus,
+			tone: '#6b7280',
+			soft: 'rgba(107, 114, 128, 0.15)',
+			border: 'rgba(107, 114, 128, 0.4)'
+		};
+	}
+	// fallback للحالة المحولة
+	return getStatusMeta(fallbackStatus);
 };
 
 const getPriorityMeta = (priority: Priority): ToneMeta => PRIORITY_META[priority] ?? {
@@ -386,7 +519,7 @@ const Cases: React.FC = () => {
 						>
 							<option value="all">جميع الحالات</option>
 							<option value="active">نشطة</option>
-							<option value="pending">معلقة</option>
+							<option value="pending">قيد النظر</option>
 							<option value="closed">مغلقة</option>
 							<option value="appealed">مستأنفة</option>
 							<option value="settled">مصالحة</option>
@@ -475,10 +608,21 @@ const Cases: React.FC = () => {
 
 					{!loading && !error && cases.length > 0 && (
 						<div className="cases-list cases-list--grid">
-							{cases.map((caseItem) => {
-								const statusMeta = getStatusMeta(caseItem.status);
+							{[...cases].sort((a, b) => {
+								// ترتيب حسب تاريخ القضية (الأحدث أولاً)
+								const dateA = (a as any).filing_date ? new Date((a as any).filing_date).getTime() : 0;
+								const dateB = (b as any).filing_date ? new Date((b as any).filing_date).getTime() : 0;
+								return dateB - dateA;
+							}).map((caseItem) => {
+								// استخدم حالة ناجز الأصلية إذا كانت موجودة
+								const najizStatus = (caseItem as any).najiz_status;
+								const statusMeta = getNajizStatusMeta(najizStatus, caseItem.status);
 								const priorityMeta = getPriorityMeta(caseItem.priority);
-								const caseTypeMeta = getCaseTypeMeta(caseItem.case_type);
+								// استخدم نوع القضية العربي إذا كان موجوداً
+								const arabicType = (caseItem as any).case_type_arabic;
+								const caseTypeMeta = arabicType 
+									? getArabicCaseTypeColor(arabicType)
+									: getCaseTypeMeta(caseItem.case_type);
 								const statusStyles = buildChipStyles(statusMeta);
 								const priorityStyles = buildChipStyles(priorityMeta);
 								const caseTypeStyles = buildChipStyles(caseTypeMeta);
@@ -486,6 +630,8 @@ const Cases: React.FC = () => {
 								const lastUpdate = formatShortDate(caseItem.updated_at) ?? formatDate(caseItem.updated_at);
 								const contractValue = formatCurrency(caseItem.contract_value);
 								const description = caseItem.description || 'لا يوجد وصف متوفر لهذه القضية حتى الآن.';
+								// تاريخ القضية (الهجري أو الميلادي)
+								const caseDate = (caseItem as any).case_date_hijri || formatShortDate((caseItem as any).filing_date);
 
 								return (
 									<motion.article
@@ -497,9 +643,6 @@ const Cases: React.FC = () => {
 										<header className="case-card__header">
 											<div className="case-card__title-group">
 												<h3 className="case-card__title">{caseItem.title}</h3>
-												<span className="chip" style={priorityStyles}>
-													{priorityMeta.label}
-												</span>
 											</div>
 											<div className="case-card__title-group">
 												<span className="chip" style={statusStyles}>
@@ -529,9 +672,17 @@ const Cases: React.FC = () => {
 												<FileText size={18} />
 												<span>رقم الملف: {caseItem.file_number || 'غير متوفر'}</span>
 											</div>
+											{caseDate && (
+												<div className="case-card__meta-item">
+													<Calendar size={18} />
+													<span>تاريخ القضية: {caseDate}</span>
+												</div>
+											)}
 											<div className="case-card__meta-item">
 												<FileText size={18} />
-												<span className="chip" style={caseTypeStyles}>{caseTypeMeta.label}</span>
+												<span className="chip" style={caseTypeStyles}>
+													{caseTypeMeta.label}
+												</span>
 											</div>
 											<div className="case-card__meta-item">
 												<User size={18} />
