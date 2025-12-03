@@ -29,6 +29,7 @@ class ApiClient {
     
     const headers: Record<string, string> = {
       'Accept': 'application/json',
+      'ngrok-skip-browser-warning': '69420', // Skip ngrok browser warning
       ...(options.headers as Record<string, string> || {}),
     };
 
@@ -99,6 +100,7 @@ class ApiClient {
     
     const headers: Record<string, string> = {
       'Accept': 'application/json',
+      'ngrok-skip-browser-warning': '69420', // Skip ngrok browser warning
     };
 
     if (this.token) {
