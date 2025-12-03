@@ -1,0 +1,67 @@
+{
+  "manifest_version": 3,
+  "name": "إدارة المحاماة - ناجز",
+  "version": "1.0.0",
+  "description": "إضافة لسحب البيانات من منصة ناجز وإرسالها إلى نظام إدارة المحاماة",
+  "author": "Law Firm Management System",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "tabs",
+    "notifications",
+    "contextMenus"
+  ],
+  "host_permissions": [
+    "https://www.najiz.sa/*",
+    "https://najiz.sa/*",
+    "http://localhost:8000/*",
+    "http://127.0.0.1:8000/*"
+  ],
+  "action": {
+    "default_popup": "popup/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    },
+    "default_title": "إدارة المحاماة - ناجز"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://www.najiz.sa/applications/lawsuit*",
+        "https://www.najiz.sa/applications/wekalat*",
+        "https://najiz.sa/applications/lawsuit*",
+        "https://najiz.sa/applications/wekalat*"
+      ],
+      "js": [
+        "content/content.js"
+      ],
+      "css": [
+        "content/content.css"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "background/background.js"
+  },
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "icons/*",
+        "content/*"
+      ],
+      "matches": [
+        "https://www.najiz.sa/*",
+        "https://najiz.sa/*"
+      ]
+    }
+  ]
+}

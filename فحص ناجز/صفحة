@@ -1,0 +1,709 @@
+<html lang="ar" dir="rtl" style="--layout-root-initial-font-size: 16; --layout-header-height: 84px; --app-primary-bg-color: #00AD68; --app-primary-5-color: #f2f9f6; --app-primary-10-color: #e5f4ee; --app-primary-20-color: #cce8dd; --app-primary-50-color: #80c6aa;"><head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=3">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta property="og:title" content="منصة ناجز">
+    <meta property="og:image" content="https://najizcdn.moj.gov.sa/Images/og-logo.jpg">
+    <title>منصة ناجز</title>
+    <meta name="msapplication-TileColor" content="#E2C260">
+    <meta name="theme-color" content="#008F5B">
+
+    <link rel="stylesheet" href="https://najizcdn.moj.gov.sa/individual/V2/styles/critical.min.css?v=ae67ae19-2986-4b5a-8362-39964fa91bc9">
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://najizcdn.moj.gov.sa/individual/V2/styles/main.min.css?v=66de9099-c7d8-4f97-86d2-229bddec0ec9">
+    <link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://najizcdn.moj.gov.sa/shared/V2/components/tooltip/styles/tooltip.min.css?v=b4b8de11-d359-4efc-8483-052c570afd94">
+
+    <script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-HFSDKD5JNK&amp;cx=c&amp;gtm=4e5bi1"></script><script type="text/javascript" async="" src="https://www.googletagmanager.com/gtag/js?id=G-C2JK3NK554&amp;cx=c&amp;gtm=4e5bi1"></script><script src="https://js.cobrowse.io/CobrowseIO.js" async=""></script><script async="" src="https://www.googletagmanager.com/gtm.js?id=GTM-TQVVBWJ6"></script><script async="" src="https://www.googletagmanager.com/gtm.js?id="></script><script defer="True" src="https://najizcdn.moj.gov.sa/shared/V2/components/account/scripts/account.min.js?v=804f1bc0-2912-4380-b92e-020acbcd851e"></script>
+    <script defer="True" src="https://najizcdn.moj.gov.sa/shared/V2/components/tooltip/scripts/tooltip.min.js?v=1c092704-43bd-4112-a9c6-5ad2e2ad3f20"></script>
+    <script defer="True" src="https://najizcdn.moj.gov.sa/shared/V2/scripts/permissionsMonitor/permissionsMonitor.min.js?v=bf9e128d-0552-4357-80ee-cb33492e8d0b"></script>
+    <script defer="True" src="https://najizcdn.moj.gov.sa/analytics/scripts.js?v=2d386713-1cbc-49bf-a675-954e1cbe8bff"></script>
+
+    
+<link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://najizcdn.moj.gov.sa/shared/V2/components/ChatWidget/styles/widget-chat.min.css?v=ac1f766c-483a-4e8e-96ba-095f44595426">
+<link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://najizcdn.moj.gov.sa/shared/V2/components/ChatWidget/styles/live-chat.min.css?v=107e42fb-67db-4bfc-a14d-f28b99679a1f">
+<link rel="stylesheet" as="style" onload="this.rel='stylesheet'" href="https://najizcdn.moj.gov.sa/shared/V2/components/ChatWidget/qaimWebComponent/styles/app.min.css?v=7dc7ced8-acbb-434e-a028-1c657280a123">
+<script src="https://apps.mypurecloud.com/pureconnect-widgets" pureconnect-widgets-data="eyJpZCI6Ik5ld19DaGF0X1dpZGdldCIsImljU2VydmVycyI6WyJHZW5zcGMxIiwiR2Vuc3BjMiJdLCJyZXZlcnNlUHJveHlVcmwiOiJodHRwczovL2dlbnN3ZWIubW9qLmdvdi5zYS9jbGllbnQvYXBpIiwidXNlQ2FhUyI6ZmFsc2UsImNhYXNVcmwiOm51bGwsInVzZUh0dHBzIjp0cnVlfQ==" defer=""></script>
+<script defer="True" src="https://najizcdn.moj.gov.sa/shared/V2/components/ChatWidget/scripts/customFormsMoj.min.js?v=90a23f96-f85b-4298-bf09-a3fdd27758f1"></script>
+<script defer="True" src="https://najizcdn.moj.gov.sa/shared/V2/components/ChatWidget/qaimWebComponent/scripts/app.min.js?v=625d9fda-4dc6-4eb1-aa23-cbb435d1d24b"></script>
+<script src="https://mojbot.moj.gov.sa/get_chatbot_widget/90c6b700-6b27-47bb-a71e-2148e6d85b9c" referrerpolicy="no-referrer-when-downgrade" defer=""></script>
+    
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900"><link href="/applications/dashboard/css/chunk-vendors.34a8d865.css" rel="stylesheet"><link href="/applications/dashboard/css/app.cea7524f.css" rel="stylesheet">
+
+    
+    <script type="text/javascript" src="/ruxitagentjs_ICA27NVfgjqrtux_10245220704125537.js" data-dtconfig="rid=RID_496783114|rpid=-1286422661|domain=najiz.sa|reportUrl=/rb_bf15146xxt|uam=1|app=c608e8d5889704c4|owasp=1|featureHash=ICA27NVfgjqrtux|srsr=20000|xb=^bs/applications^bs/dashboard^bs/?.*[a-zA-Z]?|nsfnv=1|rdnt=1|uxrgce=1|cuc=yezlhxym|dsa=1|mel=100000|dpvc=1|lastModification=1763634607427|tp=500,50,0|srbbv=2|agentUri=/ruxitagentjs_ICA27NVfgjqrtux_10245220704125537.js"></script><script defer="defer" src="/applications/dashboard/js/chunk-vendors.72553157.js"></script><script defer="defer" src="/applications/dashboard/js/app.c5d678ad.js"></script>
+
+    <script>
+        const cdnMeta = Object.freeze({
+            baseUrl: "https://najizcdn.moj.gov.sa/"
+        })
+    </script>
+    
+
+    <meta name="google-site-verification" content="Jg1LEO4V8yXOQ2QRkpinGYy524f02dg5fPPDsjIzPTE">
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-C2JK3NK554"></script>
+    <script>
+       window.dataLayer = window.dataLayer || [];
+       function gtag() { dataLayer.push(arguments); }
+       gtag('js', new Date());
+       gtag('config', 'G-C2JK3NK554');
+    </script>
+    <script>
+ (function (w, d, s, l, i) {
+         w[l] = w[l] || []; w[l].push({
+             'gtm.start':
+                 new Date().getTime(), event: 'gtm.js'
+         }); var f = d.getElementsByTagName(s)[0],
+             j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                 'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+     })(window, document, 'script', 'dataLayer', '');</script>
+    <!-- End Google Tag Manager -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async="" src="https://www.googletagmanager.com/gtag/js?id=G-HFSDKD5JNK"></script>
+    <script>
+       window.dataLayer = window.dataLayer || [];
+       function gtag() { dataLayer.push(arguments); }
+       gtag('js', new Date());
+       gtag('config', 'G-HFSDKD5JNK');
+    </script>
+    <!-- Google Tag Manager -->
+    <script>
+    (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-TQVVBWJ6');</script>
+    <!-- End Google Tag Manager -->
+
+<script src="https://d2uinmo2bcbdsn.cloudfront.net/pureconnect-widgets/145/cxbus.min.js" onload="javascript:CXBus.configure({debug:false,pluginsPath:'https://d2uinmo2bcbdsn.cloudfront.net/pureconnect-widgets/145/plugins/'});CXBus.loadPlugin('widgets-core');"></script><script type="text/javascript" src="https://d2uinmo2bcbdsn.cloudfront.net/pureconnect-widgets/145/plugins/widgets-core.min.js" charset="UTF-8"></script><style type="text/css">/**
+* @name common.less
+* @desc less file for common styles
+*/
+/*
+    Section: Global Styles
+*/
+.cx-widget * {
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
+.cx-widget {
+  font-family: Roboto;
+  font-size: 1em;
+  /*
+		Theme changing animation
+	*/
+  transition: background 0.5s ease, background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+  -webkit-transition: background 0.5s ease, background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+  -moz-transition: background 0.5s ease, background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+  -o-transition: background 0.5s ease, background-color 0.5s ease, color 0.5s ease, border-color 0.5s ease;
+  /*
+		Custom keyframes
+	*/
+}
+.cx-widget article,
+.cx-widget aside,
+.cx-widget details,
+.cx-widget figcaption,
+.cx-widget figure,
+.cx-widget footer,
+.cx-widget header,
+.cx-widget hgroup,
+.cx-widget main,
+.cx-widget nav,
+.cx-widget section,
+.cx-widget summary {
+  display: block;
+}
+.cx-widget audio,
+.cx-widget canvas,
+.cx-widget progress,
+.cx-widget video {
+  display: inline-block;
+  vertical-align: baseline;
+}
+.cx-widget audio:not([controls]) {
+  display: none;
+  height: 0;
+}
+.cx-widget [hidden],
+.cx-widget template {
+  display: none;
+}
+.cx-widget a {
+  background: transparent;
+  text-decoration: underline;
+  background: 0 0;
+}
+.cx-widget abbr[title] {
+  border-bottom: 1px dotted;
+}
+.cx-widget b,
+.cx-widget strong {
+  font-weight: bold;
+}
+.cx-widget dfn {
+  font-style: italic;
+}
+.cx-widget h1 {
+  margin: .67em 0;
+  font-size: 2em;
+}
+.cx-widget mark {
+  background: #ff0;
+}
+.cx-widget small {
+  font-size: 80%;
+}
+.cx-widget sub,
+.cx-widget sup {
+  position: relative;
+  font-size: 75%;
+  line-height: 0;
+  vertical-align: baseline;
+}
+.cx-widget sup {
+  top: -0.5em;
+}
+.cx-widget sub {
+  bottom: -0.25em;
+}
+.cx-widget img {
+  border: 0;
+}
+.cx-widget svg:not(:root) {
+  overflow: hidden;
+  -webkit-transform: scale(1);
+  transform: scale(1);
+}
+.cx-widget figure {
+  margin: 1em 40px;
+}
+.cx-widget hr {
+  height: 0;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+}
+.cx-widget pre {
+  overflow: auto;
+}
+.cx-widget code,
+.cx-widget kbd,
+.cx-widget pre,
+.cx-widget samp {
+  font-family: monospace, monospace;
+  font-size: 1em;
+}
+.cx-widget button,
+.cx-widget input,
+.cx-widget optgroup,
+.cx-widget select,
+.cx-widget textarea {
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+.cx-widget button {
+  overflow: visible;
+}
+.cx-widget button,
+.cx-widget select {
+  text-transform: none;
+}
+.cx-widget button,
+.cx-widget input[type="button"],
+.cx-widget input[type="reset"],
+.cx-widget input[type="submit"] {
+  -webkit-appearance: button;
+  cursor: pointer;
+}
+.cx-widget button[disabled],
+.cx-widget input[disabled] {
+  cursor: default;
+}
+.cx-widget button::-moz-focus-inner,
+.cx-widget input::-moz-focus-inner {
+  padding: 0;
+  border: 0;
+}
+.cx-widget input {
+  line-height: normal;
+}
+.cx-widget input[type="checkbox"],
+.cx-widget input[type="radio"] {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  padding: 0;
+}
+.cx-widget input[type="number"]::-webkit-inner-spin-button,
+.cx-widget input[type="number"]::-webkit-outer-spin-button {
+  height: auto;
+}
+.cx-widget input[type="search"] {
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  -webkit-appearance: textfield;
+}
+.cx-widget input[type="search"]::-webkit-search-cancel-button,
+.cx-widget input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+.cx-widget fieldset {
+  padding: .35em .625em .75em;
+  margin: 0 2px;
+  border: 1px solid;
+}
+.cx-widget legend {
+  padding: 0;
+  border: 0;
+}
+.cx-widget textarea {
+  overflow: auto;
+}
+.cx-widget optgroup {
+  font-weight: bold;
+}
+.cx-widget table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+.cx-widget td,
+.cx-widget th {
+  padding: 0;
+}
+.cx-widget th {
+  text-align: left;
+}
+.cx-widget label {
+  display: inline;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1rem;
+  margin-bottom: 0!important;
+  color: inherit!important;
+}
+.cx-widget button {
+  margin: 0;
+  font: inherit;
+  overflow: visible;
+  text-rendering: auto;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-indent: 0px;
+  -webkit-writing-mode: horizontal-tb;
+}
+.cx-widget .cx-icon-debug .cx-icon-debug-set > div {
+  display: inline-block;
+  width: 58px;
+  padding: 10px;
+  margin: 5px;
+  font-size: 0.625em;
+  text-align: center;
+}
+.cx-widget .cx-icon-debug .cx-icon-debug-set > div span {
+  white-space: nowrap;
+}
+.cx-widget .cx-form-control {
+  display: block;
+  width: 100%;
+  height: 32px;
+  padding: 4px 12px;
+  background-image: none;
+  border: 1px solid;
+  border-radius: 2px;
+  border-width: 1px;
+  border-style: solid;
+  font-size: 0.75em;
+  line-height: 1.86666667em;
+}
+.cx-widget .cx-btn {
+  display: inline-block;
+  padding: 5px 24px;
+  margin-bottom: 0;
+  font-size: 0.75em;
+  font-weight: 700;
+  line-height: 1.66666667em;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  cursor: pointer;
+  -o-user-select: none;
+  user-select: none;
+  background-image: none;
+  border: 1px solid;
+  border-radius: 2px;
+  text-shadow: none;
+}
+.cx-widget .cx-btn:focus {
+  border-width: 2px;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+.cx-widget .cx-full-screen-view {
+  position: absolute;
+  z-index: 999999;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  padding: 0px;
+  margin: 0px;
+}
+.cx-widget fieldset {
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+.cx-widget legend {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin-bottom: 20px;
+  font-size: 1.125em;
+  line-height: inherit;
+  border: 0;
+  border-bottom: 1px solid;
+}
+.cx-widget label {
+  display: inline;
+  margin-bottom: 5px;
+  font-size: 0.75em;
+  font-weight: bold;
+  line-height: 1rem;
+}
+.cx-widget input[type="search"] {
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.cx-widget input[type="radio"] {
+  margin-top: 4px;
+  margin-right: 5px;
+  cursor: pointer;
+  width: auto;
+  display: inline;
+  height: auto;
+}
+.cx-widget input[type="radio"].cx-radiobtn {
+  display: none;
+}
+.cx-widget input[type="radio"].cx-radiobtn + span {
+  position: relative;
+  top: 1px;
+  display: inline;
+  margin-right: 7px;
+  font-size: 0.9375em;
+  line-height: 0.75em;
+  /*color: #b1becc;*/
+  cursor: pointer;
+  outline: none;
+}
+.cx-widget input[type="radio"].cx-radiobtn + span:hover {
+  /*color: #2e69db;*/
+}
+.cx-widget input[type="radio"].cx-radiobtn:checked + span {
+  /*color: #2e69db;*/
+}
+.cx-widget input[type="checkbox"] {
+  margin-top: 4px;
+  margin-right: 5px;
+  cursor: pointer;
+  width: auto!important;
+  float: left;
+}
+.cx-widget input[type="checkbox"].cx-form-control {
+  margin-top: 1px;
+  height: auto;
+}
+.cx-widget input[type="checkbox"].cx-checkbox {
+  display: none;
+}
+.cx-widget input[type="checkbox"].cx-checkbox + span {
+  position: relative;
+  top: 1px;
+  display: inline;
+  margin-right: 7px;
+  font-size: 0.875em;
+  line-height: 1rem;
+  /*color: #b1becc;*/
+  cursor: pointer;
+  outline: none;
+}
+.cx-widget input[type="checkbox"].cx-checkbox + span:hover {
+  /*color: #2e69db;*/
+}
+.cx-widget input[type="checkbox"].cx-checkbox:checked + span {
+  /*color: #2e69db;*/
+}
+.cx-widget input[type="file"] {
+  display: block;
+}
+.cx-widget input[type="range"] {
+  display: block;
+  width: 100%;
+}
+.cx-widget select[multiple],
+.cx-widget select[size] {
+  height: auto;
+}
+.cx-widget input[type="file"]:focus,
+.cx-widget input[type="radio"]:focus,
+.cx-widget input[type="checkbox"]:focus {
+  outline: thin dotted;
+  outline: 5px auto -webkit-focus-ring-color;
+  outline-offset: -2px;
+}
+.cx-widget output {
+  display: block;
+  padding-top: 5px;
+  font-size: 0.75em;
+  line-height: 1.86666667em;
+  /*color: #444a52;*/
+}
+.cx-widget .cx-form-control {
+  display: block;
+  width: 100%;
+  padding: 4px 12px;
+  font-size: 0.75em;
+  line-height: 1.86666667em;
+  /*color: #444a52;*/
+  background-image: none;
+  border-radius: 2px;
+}
+.cx-widget .cx-form-control:focus {
+  /*border-color: #2e69db;*/
+  outline: 0;
+  /*box-shadow: 0 0 1px rgba(94, 153, 255, .24);*/
+  border-width: 2px;
+}
+.cx-widget .cx-form-control[disabled],
+.cx-widget .cx-form-control[readonly],
+.cx-widget fieldset[disabled] .cx-form-control {
+  cursor: not-allowed;
+  /*background-color: #eee;*/
+  opacity: 1;
+}
+.cx-widget textarea.cx-form-control {
+  height: auto;
+  resize: none;
+}
+.cx-widget textarea.cx-form-control:focus {
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+.cx-widget input[type="date"] {
+  line-height: 2em;
+}
+.cx-widget .cx-form-group {
+  margin-bottom: 15px;
+}
+.cx-widget .cx-radio,
+.cx-widget .cx-checkbox {
+  display: block;
+  min-height: 20px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+}
+.cx-widget .cx-radio label,
+.cx-widget .cx-checkbox label {
+  display: inline;
+  font-weight: normal;
+  cursor: pointer;
+}
+.cx-widget .cx-radio input[type="radio"],
+.cx-widget .cx-radio-inline input[type="radio"],
+.cx-widget .cx-checkbox input[type="checkbox"],
+.cx-widget .cx-checkbox-inline input[type="checkbox"] {
+  float: left;
+}
+.cx-widget .cx-radio + .radio,
+.cx-widget .cx-checkbox + .checkbox {
+  margin-top: -5px;
+}
+.cx-widget .cx-radio-inline,
+.cx-widget .cx-checkbox-inline {
+  display: inline-block;
+  padding-left: 20px;
+  margin-bottom: 0;
+  font-weight: normal;
+  line-height: 1.25em;
+  vertical-align: middle;
+  cursor: pointer;
+}
+.cx-widget .cx-radio-inline + .cx-radio-inline,
+.cx-widget .cx-checkbox-inline + .cx-checkbox-inline {
+  margin-top: 0;
+  margin-left: 1px;
+}
+.cx-widget input[type="radio"][disabled],
+.cx-widget input[type="checkbox"][disabled],
+.cx-widget .cx-radio[disabled],
+.cx-widget .cx-radio-inline[disabled],
+.cx-widget .cx-checkbox[disabled],
+.cx-widget .cx-checkbox-inline[disabled],
+.cx-widget fieldset[disabled] input[type="radio"],
+.cx-widget fieldset[disabled] input[type="checkbox"],
+.cx-widget fieldset[disabled] .cx-radio,
+.cx-widget fieldset[disabled] .cx-radio-inline,
+.cx-widget fieldset[disabled] .cx-checkbox,
+.cx-widget fieldset[disabled] .cx-checkbox-inline {
+  cursor: not-allowed;
+}
+.cx-widget .cx-input-sm {
+  height: 32px;
+  padding: 5px 10px;
+  font-size: 0.6875em;
+  line-height: 1.5;
+  border-radius: 3px;
+}
+.cx-widget select.cx-input-sm {
+  height: 32px;
+  line-height: 2em;
+}
+.cx-widget textarea.cx-input-sm,
+.cx-widget select[multiple].cx-input-sm {
+  height: auto;
+}
+.cx-widget .cx-input-lg {
+  height: 32px;
+  padding: 10px 16px;
+  font-size: 0.875em;
+  line-height: 1.33em;
+  border-radius: 6px;
+}
+.cx-widget select.cx-input-lg {
+  height: 32px;
+  line-height: 2em;
+}
+.cx-widget textarea.cx-input-lg,
+.cx-widget select[multiple].cx-input-lg {
+  height: auto;
+}
+.cx-widget .ui-draggable-handle {
+  -ms-touch-action: none;
+  touch-action: none;
+}
+@keyframes opacityZeroToFull {
+  from {
+    opacity: 0;
+    visibility: hidden;
+  }
+  to {
+    opacity: 1;
+    visibility: visible;
+  }
+}
+@keyframes opacityIncreaseToFull {
+  from {
+    opacity: .5;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.cx-widget:hover {
+  z-index: 1000000!important;
+}
+.cx-widget .cx-mobile input.cx-form-control,
+.cx-widget .cx-mobile text-area.cx-form-control {
+  font-size: 1em;
+}
+/*
+	Section: Button Groups
+*/
+.cx-button-group {
+  overflow: auto;
+}
+.cx-buttons-single {
+  text-align: center;
+}
+.cx-buttons-single .cx-btn-primary {
+  float: none;
+}
+.cx-buttons-single .cx-btn-default {
+  float: none;
+}
+.cx-buttons-binary .cx-btn-primary {
+  float: right;
+}
+.cx-buttons-binary .cx-btn-default {
+  float: left;
+}
+.cx-buttons-primary .cx-btn-primary {
+  float: right;
+}
+.cx-buttons-primary .cx-text {
+  float: left;
+  margin-left: 16px;
+}
+.cx-buttons-default .cx-btn-default {
+  float: left;
+}
+.cx-buttons-default .cx-text {
+  float: right;
+  margin-right: 16px;
+}
+/*
+	Section: Auto-Complete
+*/
+.cx-ac-wrapper {
+  position: relative;
+  width: 100%;
+}
+.cx-ac-wrapper input {
+  padding-right: 30px;
+}
+.cx-ac-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  padding: 4px 0;
+  cursor: pointer;
+  display: none;
+  border: 1px solid;
+}
+.cx-ac-suggestion {
+  padding: 8px 12px;
+}
+/* Countdown */
+.cx-countdown {
+  font-size: 1.5em;
+  font-weight: 300;
+}
+.cx-countdown .cx-icon {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  margin-right: 7px;
+}
+.cx-mobile .cx-countdown .cx-icon {
+  width: 18px;
+  height: 18px;
+}
+/* screen reader only - visually hidden*/
+.cx-screen-reader-only {
+  position: absolute;
+  left: -10000px;
+  top: auto;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+}
+.cx-common-screen-reader {
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  text-indent: -9999px;
+  border: 0;
+}
+/* custom focus for an input container (not for the actual input element) */
+.cx-widget.cx-desktop .cx-input-focus {
+  border-width: 1px!important;
+  box-shadow: 0 2px 2px #23adff;
+  transition: all 200

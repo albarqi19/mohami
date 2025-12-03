@@ -1,0 +1,22 @@
+tunnel: fe168bd8-0d5e-4485-9b6e-94bed860ef35
+credentials-file: C:\Users\ALBAR\.cloudflared\fe168bd8-0d5e-4485-9b6e-94bed860ef35.json
+
+ingress:
+  # Frontend - law-firm-system
+  - hostname: brqq.site
+    service: http://localhost:5173
+  
+  # Frontend alternative (www)
+  - hostname: www.brqq.site
+    service: http://localhost:5173
+  
+  # Backend API
+  - hostname: api.brqq.site
+    service: http://localhost:8000
+  
+  # phpMyAdmin للوصول لقاعدة البيانات
+  - hostname: db.brqq.site
+    service: http://localhost:8080
+  
+  # Catch-all rule (required)
+  - service: http_status:404
