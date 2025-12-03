@@ -68,7 +68,11 @@ export interface Case {
   najiz_url?: string;
   najiz_data?: any;
   najiz_synced_at?: Date;
+  najiz_status?: string;
   source?: string;
+  // Case demands and proofs
+  case_demands?: string;
+  case_proofs?: string;
 }
 
 // Case Party - طرف القضية
