@@ -46,7 +46,7 @@ class ApiClient {
       ...options,
       headers,
       mode: 'cors',
-      credentials: 'include',
+      // credentials: 'include', // Removed for token-based auth
     };
 
     try {
