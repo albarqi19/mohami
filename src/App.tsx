@@ -20,6 +20,7 @@ import Settings from './pages/Settings';
 import WhatsappSettings from './pages/WhatsappSettings';
 import Login from './pages/Login';
 import LandingPage from './pages/LandingPage';
+import Wekalat from './pages/Wekalat';
 
 function App() {
   return (
@@ -49,6 +50,11 @@ function App() {
             <Route path="sessions" element={
               <ProtectedRoute allowedRoles={['admin', 'lawyer', 'legal_assistant']}>
                 <UpcomingSessions />
+              </ProtectedRoute>
+            } />
+            <Route path="wekalat" element={
+              <ProtectedRoute allowedRoles={['admin', 'lawyer', 'legal_assistant']}>
+                <Wekalat />
               </ProtectedRoute>
             } />
             

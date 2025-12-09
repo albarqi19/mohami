@@ -1,5 +1,5 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import {
   Scale,
@@ -74,6 +74,16 @@ const fadeUp = {
 
 const LandingPage: React.FC = () => {
   const { user } = useAuth();
+  const [currentWord, setCurrentWord] = React.useState(0);
+
+  const words = ['قضاياك', 'مهامك', 'فريقك', 'جلساتك', 'مواعيدك', 'عملائك', 'مستنداتك'];
+
+  React.useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentWord((prev) => (prev + 1) % words.length);
+    }, 2500);
+    return () => clearInterval(interval);
+  }, [words.length]);
 
   const primaryCTA = user
     ? { label: 'الذهاب للوحة التحكم', href: '/dashboard', icon: LayoutDashboard }
@@ -123,7 +133,15 @@ const LandingPage: React.FC = () => {
                 <Sparkles size={16} /> تجربة قانونية بلا توتر
               </span>
               <h1 className="landing-hero__title">
-                إدارة قضاياك، مهامك، وفريقك من لوحة واحدة متطورة
+                إدارة{' '}
+                <br className="landing-hero__title-break-mobile" />
+                <span className="landing-hero__title-rotating">
+                  <span className="landing-hero__title-word">
+                    {words[currentWord]}
+                  </span>
+                </span>
+                <br />
+                من لوحة واحدة متطورة
               </h1>
               <p className="landing-hero__subtitle">
                 حل سحابي شامل يُمكِّن مكاتب المحاماة من رقمنة كل التفاصيل: من استقبال العميل وحتى إغلاق القضية مع تقارير دقيقة في كل خطوة.
@@ -134,10 +152,6 @@ const LandingPage: React.FC = () => {
                   <primaryCTA.icon size={20} />
                   {primaryCTA.label}
                 </Link>
-                <button type="button" className="landing-hero__secondary">
-                  <MessageSquare size={20} />
-                  تحدث مع خبير
-                </button>
               </div>
             </motion.div>
           </div>

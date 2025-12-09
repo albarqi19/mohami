@@ -473,3 +473,77 @@ export interface CreateAppointmentForm {
   reminders?: string[];
   assigned_to?: string;
 }
+
+// ==================== Wekala Types ====================
+
+// حالة الوكالة
+export const WekalaStatus = {
+  APPROVED: 'معتمدة',
+  EXPIRED: 'منتهية',
+  CANCELLED: 'مفسوخة',
+  PENDING: 'قيد الاعتماد',
+  SUSPENDED: 'موقوفة',
+} as const;
+
+export type WekalaStatus = typeof WekalaStatus[keyof typeof WekalaStatus];
+
+// نوع الطرف في الوكالة
+export type WekalaPartyType = 'agent' | 'client';
+
+// طرف الوكالة (موكل أو وكيل)
+export interface WekalaParty {
+  id: number;
+  wekala_id: number;
+  name: string;
+  id_number?: string;
+  adjective?: string;
+  party_type: WekalaPartyType;
+  representation_text?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// صلاحية الوكالة
+export interface WekalaPermission {
+  id: number;
+  wekala_id: number;
+  category: string;
+  clauses?: string[];
+  grouped_text?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// الوكالة الرئيسية
+export interface Wekala {
+  id: number;
+  number: string;
+  wekala_id?: string;
+  type?: string;
+  status: string;
+  agency_text?: string;
+  issue_date?: string;
+  issue_date_hijri?: string;
+  expiry_date?: string;
+  expiry_date_hijri?: string;
+  issue_location?: string;
+  is_valid?: boolean;
+  is_electronic?: boolean;
+  source?: string;
+  raw_data?: any;
+  najiz_synced_at?: string;
+  created_at: string;
+  updated_at: string;
+  // العلاقات
+  agents?: WekalaParty[];
+  clients?: WekalaParty[];
+  permissions?: WekalaPermission[];
+}
+
+// فلترة الوكالات
+export interface WekalaFilters {
+  status?: string;
+  search?: string;
+  page?: number;
+  limit?: number;
+}

@@ -1,34 +1,52 @@
+@import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 @import './styles/design-system.css';
 @import './styles/auth.css';
 
 :root {
-  --color-background: #f4f6f9;
+  /* === الخلفيات === */
+  --color-background: #FDFBF7;
   --color-surface: #ffffff;
-  --color-surface-subtle: #f0f2f7;
-  --color-border: #d7dde5;
-  --color-border-strong: #c6ced9;
-  --color-text: #1c2333;
-  --color-text-secondary: #647189;
-  --color-heading: #121826;
-  --color-primary: #1f4e79;
-  --color-primary-hover: #1a4164;
-  --color-primary-active: #14334d;
-  --color-primary-soft: #e6edf5;
-  --color-accent: #2ea8a1;
+  --color-surface-subtle: #f7f5f0;
+  
+  /* === الحدود === */
+  --color-border: #E0E0E0;
+  --color-border-strong: #c9c9c9;
+  
+  /* === النصوص === */
+  --color-text: #212121;
+  --color-text-secondary: #5a5a5a;
+  --color-heading: #0A192F;
+  
+  /* === اللون الأساسي (الأزرق الليلي) === */
+  --color-primary: #0A192F;
+  --color-primary-hover: #142840;
+  --color-primary-active: #1a3652;
+  --color-primary-soft: rgba(10, 25, 47, 0.08);
+  
+  /* === لون الإجراء (الذهبي المطفي) === */
+  --color-accent: #C5A572;
+  --color-accent-hover: #d4b685;
+  --color-accent-soft: rgba(197, 165, 114, 0.15);
+  
+  /* === ألوان الحالات === */
   --color-success: #1b998b;
   --color-warning: #f4a259;
   --color-error: #d1495b;
   --color-info: #3b82f6;
-  --color-cream-50: #ffffff;
-  --color-gray-100: #edf1f7;
-  --color-gray-200: #dfe4ec;
-  --color-gray-300: #cad1dd;
-  --color-gray-400: #b0bbcc;
-  --color-gray-500: #8f9bb0;
-  --color-brown-600: #3d4b5c;
-  --color-brown-600-rgb: 61, 75, 92;
-  --color-slate-500-rgb: 100, 113, 137;
+  
+  /* === درجات الرمادي الدافئ === */
+  --color-cream-50: #FDFBF7;
+  --color-gray-100: #f5f3ed;
+  --color-gray-200: #E0E0E0;
+  --color-gray-300: #c9c9c9;
+  --color-gray-400: #a8a8a8;
+  --color-gray-500: #8a8a8a;
+  --color-brown-600: #5a5a5a;
+  --color-brown-600-rgb: 90, 90, 90;
+  --color-slate-500-rgb: 90, 90, 90;
+  
+  /* === ألوان إضافية === */
   --color-orange-400: #f4a259;
   --color-orange-400-rgb: 244, 162, 89;
   --color-orange-500: #e8873a;
@@ -36,25 +54,29 @@
   --color-teal-500: #2ea8a1;
   --color-teal-600: #258a84;
   --color-teal-700: #1d6d69;
-  --color-success-soft: rgba(27, 153, 139, 0.16);
-  --color-warning-soft: rgba(244, 162, 89, 0.22);
-  --color-error-soft: rgba(209, 73, 91, 0.18);
-  --color-info-soft: rgba(59, 130, 246, 0.18);
-  --color-accent-soft: rgba(46, 168, 161, 0.18);
-  --color-neutral-soft: rgba(100, 113, 137, 0.16);
-  --focus-outline: rgba(31, 78, 121, 0.34);
+  
+  /* === ألوان ناعمة للحالات === */
+  --color-success-soft: rgba(27, 153, 139, 0.12);
+  --color-warning-soft: rgba(244, 162, 89, 0.15);
+  --color-error-soft: rgba(209, 73, 91, 0.12);
+  --color-info-soft: rgba(59, 130, 246, 0.12);
+  --color-neutral-soft: rgba(90, 90, 90, 0.1);
+  --focus-outline: rgba(10, 25, 47, 0.25);
 
-  --shadow-xs: 0 1px 2px rgba(18, 24, 38, 0.04);
-  --shadow-sm: 0 8px 16px rgba(18, 24, 38, 0.08);
-  --shadow-md: 0 14px 32px rgba(18, 24, 38, 0.12);
-  --shadow-lg: 0 24px 42px rgba(18, 24, 38, 0.14);
+  /* === الظلال === */
+  --shadow-xs: 0 1px 2px rgba(10, 25, 47, 0.04);
+  --shadow-sm: 0 8px 16px rgba(10, 25, 47, 0.06);
+  --shadow-md: 0 14px 32px rgba(10, 25, 47, 0.08);
+  --shadow-lg: 0 24px 42px rgba(10, 25, 47, 0.1);
 
+  /* === الزوايا === */
   --radius-xs: 8px;
   --radius-sm: 12px;
   --radius-md: 16px;
   --radius-lg: 20px;
   --radius-xl: 28px;
 
+  /* === الخطوط === */
   --font-family-base: "IBM Plex Sans Arabic", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-size-xs: 12px;
   --font-size-sm: 13px;
@@ -226,6 +248,7 @@ img {
   0% {
     transform: rotate(0deg);
   }
+
   100% {
     transform: rotate(360deg);
   }
