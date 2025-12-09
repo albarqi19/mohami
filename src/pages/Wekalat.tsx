@@ -966,17 +966,23 @@ const Wekalat: React.FC = () => {
     total: 0,
   });
 
-  // Stats from data
-  const stats = useMemo(() => {
-    const all = wekalat;
-    return {
-      total: pagination.total || all.length,
-      approved: all.filter(w => w.status === 'معتمدة').length,
-      expired: all.filter(w => w.status === 'منتهية').length,
-      cancelled: all.filter(w => w.status === 'مفسوخة').length,
-      pending: all.filter(w => w.status === 'قيد الاعتماد').length,
-    };
-  }, [wekalat, pagination.total]);
+  // Stats from server
+  const [stats, setStats] = useState({
+    total: 0,
+    approved: 0,
+    expired: 0,
+    cancelled: 0,
+    pending: 0,
+  });
+
+  const fetchStats = async () => {
+    try {
+      const serverStats = await WekalatService.getWekalatStats();
+      setStats(serverStats);
+    } catch (err) {
+      console.error('Error fetching stats:', err);
+    }
+  };
 
   const fetchWekalat = async (page: number = 1) => {
     try {
