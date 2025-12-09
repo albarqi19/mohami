@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { CSSProperties } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -1015,6 +1015,7 @@ const Wekalat: React.FC = () => {
 
   useEffect(() => {
     fetchWekalat();
+    fetchStats();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
