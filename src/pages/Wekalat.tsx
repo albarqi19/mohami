@@ -22,7 +22,6 @@ import {
   Timer,
   ScrollText,
   Building,
-  Download,
   Eye,
 } from 'lucide-react';
 import { WekalatService } from '../services/wekalatService';
@@ -42,33 +41,33 @@ interface ToneMeta {
 const STATUS_META: Record<string, ToneMeta> = {
   'معتمدة': {
     label: 'معتمدة',
-    tone: '#10b981',
-    soft: 'rgba(16, 185, 129, 0.15)',
-    border: 'rgba(16, 185, 129, 0.4)'
+    tone: 'var(--color-success)',
+    soft: 'var(--color-success-soft)',
+    border: 'rgba(27, 153, 139, 0.4)'
   },
   'منتهية': {
     label: 'منتهية',
-    tone: '#f59e0b',
-    soft: 'rgba(245, 158, 11, 0.15)',
-    border: 'rgba(245, 158, 11, 0.4)'
+    tone: 'var(--color-warning)',
+    soft: 'var(--color-warning-soft)',
+    border: 'rgba(244, 162, 89, 0.4)'
   },
   'مفسوخة': {
     label: 'مفسوخة',
-    tone: '#ef4444',
-    soft: 'rgba(239, 68, 68, 0.15)',
-    border: 'rgba(239, 68, 68, 0.4)'
+    tone: 'var(--color-error)',
+    soft: 'var(--color-error-soft)',
+    border: 'rgba(209, 73, 91, 0.4)'
   },
   'قيد الاعتماد': {
     label: 'قيد الاعتماد',
-    tone: '#6366f1',
-    soft: 'rgba(99, 102, 241, 0.15)',
-    border: 'rgba(99, 102, 241, 0.4)'
+    tone: 'var(--color-info)',
+    soft: 'var(--color-info-soft)',
+    border: 'rgba(59, 130, 246, 0.4)'
   },
   'موقوفة': {
     label: 'موقوفة',
-    tone: '#8b5cf6',
-    soft: 'rgba(139, 92, 246, 0.15)',
-    border: 'rgba(139, 92, 246, 0.4)'
+    tone: 'var(--color-accent)',
+    soft: 'var(--color-accent-soft)',
+    border: 'rgba(197, 165, 114, 0.4)'
   },
 };
 
@@ -77,22 +76,19 @@ const STATUS_META: Record<string, ToneMeta> = {
 const getStatusMeta = (status: string): ToneMeta => {
   return STATUS_META[status] || {
     label: status || 'غير محدد',
-    tone: '#6b7280',
-    soft: 'rgba(107, 114, 128, 0.15)',
-    border: 'rgba(107, 114, 128, 0.4)'
+    tone: 'var(--color-text-secondary)',
+    soft: 'var(--color-neutral-soft)',
+    border: 'var(--color-border)'
   };
 };
 
 const buildChipStyles = (meta: ToneMeta): CSSProperties => ({
-  '--chip-color': meta.tone,
-  '--chip-bg': meta.soft,
-  '--chip-border': meta.border,
   color: meta.tone,
   backgroundColor: meta.soft,
   border: `1px solid ${meta.border}`,
-  padding: '4px 12px',
-  borderRadius: '20px',
-  fontSize: '0.85rem',
+  padding: '6px 14px',
+  borderRadius: 'var(--radius-pill)',
+  fontSize: 'var(--font-size-sm)',
   fontWeight: 500,
   display: 'inline-flex',
   alignItems: 'center',
@@ -135,16 +131,17 @@ const getStatusIcon = (status: string) => {
 
 const WekalaCardSkeleton: React.FC = () => (
   <div className="wekala-card wekala-card--skeleton" style={{
-    background: 'var(--color-bg-secondary)',
-    borderRadius: '16px',
-    padding: '24px',
+    background: 'var(--color-surface)',
+    borderRadius: 'var(--radius-md)',
+    padding: 'var(--space-6)',
+    border: '1px solid var(--color-border)',
     animation: 'pulse 1.5s infinite',
   }}>
-    <div style={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>
-      <div style={{ height: '24px', width: '60%', background: 'var(--color-bg-tertiary)', borderRadius: '8px' }} />
-      <div style={{ height: '20px', width: '40%', background: 'var(--color-bg-tertiary)', borderRadius: '8px' }} />
-      <div style={{ height: '16px', width: '80%', background: 'var(--color-bg-tertiary)', borderRadius: '8px' }} />
-      <div style={{ height: '16px', width: '50%', background: 'var(--color-bg-tertiary)', borderRadius: '8px' }} />
+    <div style={{ display: 'flex', gap: 'var(--space-4)', flexDirection: 'column' }}>
+      <div style={{ height: '24px', width: '60%', background: 'var(--color-surface-subtle)', borderRadius: 'var(--radius-xs)' }} />
+      <div style={{ height: '20px', width: '40%', background: 'var(--color-surface-subtle)', borderRadius: 'var(--radius-xs)' }} />
+      <div style={{ height: '16px', width: '80%', background: 'var(--color-surface-subtle)', borderRadius: 'var(--radius-xs)' }} />
+      <div style={{ height: '16px', width: '50%', background: 'var(--color-surface-subtle)', borderRadius: 'var(--radius-xs)' }} />
     </div>
   </div>
 );
@@ -162,26 +159,27 @@ interface StatsCardProps {
 
 const StatsCard: React.FC<StatsCardProps> = ({ icon, label, value, color, onClick, isActive }) => (
   <motion.div
-    whileHover={{ scale: 1.02, translateY: -4 }}
+    whileHover={{ scale: 1.02, translateY: -2 }}
     whileTap={{ scale: 0.98 }}
     onClick={onClick}
     style={{
-      background: isActive ? `linear-gradient(135deg, ${color}20 0%, ${color}10 100%)` : 'var(--color-bg-secondary)',
-      border: `2px solid ${isActive ? color : 'transparent'}`,
-      borderRadius: '16px',
-      padding: '20px',
+      background: isActive ? `${color}15` : 'var(--color-surface)',
+      border: `1px solid ${isActive ? color : 'var(--color-border)'}`,
+      borderRadius: 'var(--radius-md)',
+      padding: 'var(--space-5)',
       cursor: onClick ? 'pointer' : 'default',
-      transition: 'all 0.3s ease',
+      transition: 'all var(--transition-base)',
       display: 'flex',
       alignItems: 'center',
-      gap: '16px',
+      gap: 'var(--space-4)',
+      boxShadow: isActive ? 'var(--shadow-sm)' : 'var(--shadow-xs)',
     }}
   >
     <div style={{
-      width: '56px',
-      height: '56px',
-      borderRadius: '14px',
-      background: `linear-gradient(135deg, ${color}30 0%, ${color}15 100%)`,
+      width: '48px',
+      height: '48px',
+      borderRadius: 'var(--radius-sm)',
+      background: `${color}18`,
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -190,10 +188,10 @@ const StatsCard: React.FC<StatsCardProps> = ({ icon, label, value, color, onClic
       {icon}
     </div>
     <div>
-      <div style={{ fontSize: '2rem', fontWeight: 700, color: 'var(--color-text-primary)' }}>
+      <div style={{ fontSize: 'var(--font-size-3xl)', fontWeight: 700, color: 'var(--color-heading)' }}>
         {value.toLocaleString('ar-SA')}
       </div>
-      <div style={{ fontSize: '0.9rem', color: 'var(--color-text-secondary)' }}>
+      <div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
         {label}
       </div>
     </div>
@@ -218,17 +216,18 @@ const WekalaCard: React.FC<WekalaCardProps> = ({ wekala, onView }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      whileHover={{ translateY: -6, boxShadow: '0 12px 40px rgba(0,0,0,0.15)' }}
+      whileHover={{ translateY: -4, boxShadow: 'var(--shadow-md)' }}
       onClick={() => onView(wekala)}
       style={{
-        background: 'var(--color-bg-secondary)',
-        borderRadius: '20px',
-        padding: '24px',
+        background: 'var(--color-surface)',
+        borderRadius: 'var(--radius-md)',
+        padding: 'var(--space-5)',
         cursor: 'pointer',
-        transition: 'all 0.3s ease',
+        transition: 'all var(--transition-base)',
         border: '1px solid var(--color-border)',
         position: 'relative',
         overflow: 'hidden',
+        boxShadow: 'var(--shadow-xs)',
       }}
     >
       {/* الشريط الجانبي الملون */}
@@ -239,7 +238,7 @@ const WekalaCard: React.FC<WekalaCardProps> = ({ wekala, onView }) => {
         width: '4px',
         height: '100%',
         background: statusMeta.tone,
-        borderRadius: '0 20px 20px 0',
+        borderRadius: '0 var(--radius-md) var(--radius-md) 0',
       }} />
 
       {/* Header */}
@@ -247,24 +246,25 @@ const WekalaCard: React.FC<WekalaCardProps> = ({ wekala, onView }) => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: '16px',
+        marginBottom: 'var(--space-4)',
+        paddingRight: 'var(--space-3)',
       }}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
           <h3 style={{
-            fontSize: '1.1rem',
+            fontSize: 'var(--font-size-lg)',
             fontWeight: 600,
-            color: 'var(--color-text-primary)',
+            color: 'var(--color-heading)',
             margin: 0,
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: 'var(--space-2)',
           }}>
-            <FileCheck size={20} style={{ color: statusMeta.tone }} />
+            <FileCheck size={18} style={{ color: statusMeta.tone }} />
             وكالة رقم: {wekala.number}
           </h3>
           {wekala.type && (
             <span style={{
-              fontSize: '0.85rem',
+              fontSize: 'var(--font-size-sm)',
               color: 'var(--color-text-secondary)',
               display: 'flex',
               alignItems: 'center',
@@ -284,15 +284,15 @@ const WekalaCard: React.FC<WekalaCardProps> = ({ wekala, onView }) => {
       {/* Clients (الموكلين) */}
       {clients.length > 0 && (
         <div style={{
-          marginBottom: '12px',
-          padding: '12px',
-          background: 'rgba(59, 130, 246, 0.08)',
-          borderRadius: '12px',
+          marginBottom: 'var(--space-3)',
+          padding: 'var(--space-3)',
+          background: 'var(--color-info-soft)',
+          borderRadius: 'var(--radius-sm)',
         }}>
           <div style={{
-            fontSize: '0.8rem',
-            color: '#3b82f6',
-            marginBottom: '8px',
+            fontSize: 'var(--font-size-xs)',
+            color: 'var(--color-info)',
+            marginBottom: 'var(--space-2)',
             fontWeight: 600,
             display: 'flex',
             alignItems: 'center',
@@ -301,25 +301,26 @@ const WekalaCard: React.FC<WekalaCardProps> = ({ wekala, onView }) => {
             <User size={14} />
             الموكلين ({clients.length})
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-            {clients.slice(0, 3).map((client, idx) => (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
+            {clients.slice(0, 2).map((client, idx) => (
               <span key={idx} style={{
-                fontSize: '0.85rem',
-                color: 'var(--color-text-primary)',
-                background: 'var(--color-bg-primary)',
+                fontSize: 'var(--font-size-sm)',
+                color: 'var(--color-text)',
+                background: 'var(--color-surface)',
                 padding: '4px 10px',
-                borderRadius: '8px',
+                borderRadius: 'var(--radius-xs)',
+                border: '1px solid var(--color-border)',
               }}>
                 {client.name}
               </span>
             ))}
-            {clients.length > 3 && (
+            {clients.length > 2 && (
               <span style={{
-                fontSize: '0.85rem',
+                fontSize: 'var(--font-size-sm)',
                 color: 'var(--color-text-secondary)',
                 padding: '4px 10px',
               }}>
-                +{clients.length - 3} آخرين
+                +{clients.length - 2} آخرين
               </span>
             )}
           </div>
@@ -329,15 +330,15 @@ const WekalaCard: React.FC<WekalaCardProps> = ({ wekala, onView }) => {
       {/* Agents (الوكلاء/المحامين) */}
       {agents.length > 0 && (
         <div style={{
-          marginBottom: '12px',
-          padding: '12px',
-          background: 'rgba(16, 185, 129, 0.08)',
-          borderRadius: '12px',
+          marginBottom: 'var(--space-3)',
+          padding: 'var(--space-3)',
+          background: 'var(--color-success-soft)',
+          borderRadius: 'var(--radius-sm)',
         }}>
           <div style={{
-            fontSize: '0.8rem',
-            color: '#10b981',
-            marginBottom: '8px',
+            fontSize: 'var(--font-size-xs)',
+            color: 'var(--color-success)',
+            marginBottom: 'var(--space-2)',
             fontWeight: 600,
             display: 'flex',
             alignItems: 'center',
@@ -346,14 +347,15 @@ const WekalaCard: React.FC<WekalaCardProps> = ({ wekala, onView }) => {
             <Shield size={14} />
             الوكلاء ({agents.length})
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)' }}>
             {agents.slice(0, 2).map((agent, idx) => (
               <span key={idx} style={{
-                fontSize: '0.85rem',
-                color: 'var(--color-text-primary)',
-                background: 'var(--color-bg-primary)',
+                fontSize: 'var(--font-size-sm)',
+                color: 'var(--color-text)',
+                background: 'var(--color-surface)',
                 padding: '4px 10px',
-                borderRadius: '8px',
+                borderRadius: 'var(--radius-xs)',
+                border: '1px solid var(--color-border)',
               }}>
                 {agent.name}
                 {agent.adjective && (
@@ -365,7 +367,7 @@ const WekalaCard: React.FC<WekalaCardProps> = ({ wekala, onView }) => {
             ))}
             {agents.length > 2 && (
               <span style={{
-                fontSize: '0.85rem',
+                fontSize: 'var(--font-size-sm)',
                 color: 'var(--color-text-secondary)',
                 padding: '4px 10px',
               }}>
@@ -381,15 +383,15 @@ const WekalaCard: React.FC<WekalaCardProps> = ({ wekala, onView }) => {
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        paddingTop: '12px',
+        paddingTop: 'var(--space-3)',
         borderTop: '1px solid var(--color-border)',
-        marginTop: '12px',
+        marginTop: 'var(--space-3)',
       }}>
         <div style={{
           display: 'flex',
           alignItems: 'center',
           gap: '6px',
-          fontSize: '0.8rem',
+          fontSize: 'var(--font-size-xs)',
           color: 'var(--color-text-secondary)',
         }}>
           <Calendar size={14} />
@@ -400,43 +402,14 @@ const WekalaCard: React.FC<WekalaCardProps> = ({ wekala, onView }) => {
             display: 'flex',
             alignItems: 'center',
             gap: '6px',
-            fontSize: '0.8rem',
-            color: wekala.status === 'منتهية' ? '#f59e0b' : 'var(--color-text-secondary)',
+            fontSize: 'var(--font-size-xs)',
+            color: wekala.status === 'منتهية' ? 'var(--color-warning)' : 'var(--color-text-secondary)',
           }}>
             <Clock size={14} />
             الانتهاء: {wekala.expiry_date_hijri || formatDate(wekala.expiry_date)}
           </div>
         ) : null}
       </footer>
-
-      {/* View Button */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
-        onClick={(e) => {
-          e.stopPropagation();
-          onView(wekala);
-        }}
-        style={{
-          position: 'absolute',
-          bottom: '16px',
-          left: '16px',
-          background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-          color: '#fff',
-          border: 'none',
-          borderRadius: '10px',
-          padding: '8px 14px',
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '6px',
-          fontSize: '0.85rem',
-          fontWeight: 500,
-        }}
-      >
-        <Eye size={16} />
-        عرض
-      </motion.button>
     </motion.article>
   );
 };
@@ -480,68 +453,69 @@ const WekalaDetailsModal: React.FC<WekalaDetailsModalProps> = ({ wekala, isOpen,
             left: 0,
             right: 0,
             bottom: 0,
-            background: 'rgba(0, 0, 0, 0.6)',
+            background: 'rgba(10, 25, 47, 0.7)',
             backdropFilter: 'blur(8px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             zIndex: 1000,
-            padding: '20px',
+            padding: 'var(--space-5)',
           }}
         >
           <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
             onClick={(e) => e.stopPropagation()}
             style={{
-              background: 'var(--color-bg-primary)',
-              borderRadius: '24px',
+              background: 'var(--color-surface)',
+              borderRadius: 'var(--radius-lg)',
               width: '100%',
               maxWidth: '900px',
               maxHeight: '85vh',
               overflow: 'hidden',
               display: 'flex',
               flexDirection: 'column',
-              boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+              boxShadow: 'var(--shadow-lg)',
+              border: '1px solid var(--color-border)',
             }}
           >
             {/* Modal Header */}
             <header style={{
-              padding: '24px',
+              padding: 'var(--space-6)',
               borderBottom: '1px solid var(--color-border)',
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              background: `linear-gradient(135deg, ${statusMeta.soft} 0%, transparent 100%)`,
+              background: 'var(--color-surface-subtle)',
             }}>
               <div>
                 <h2 style={{
-                  fontSize: '1.5rem',
+                  fontSize: 'var(--font-size-2xl)',
                   fontWeight: 700,
-                  color: 'var(--color-text-primary)',
+                  color: 'var(--color-heading)',
                   margin: 0,
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
+                  gap: 'var(--space-3)',
                 }}>
                   <FileCheck size={28} style={{ color: statusMeta.tone }} />
                   وكالة رقم: {wekala.number}
                 </h2>
                 {wekala.type && (
                   <p style={{
-                    margin: '8px 0 0',
+                    margin: 'var(--space-2) 0 0',
                     color: 'var(--color-text-secondary)',
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
+                    gap: 'var(--space-2)',
                   }}>
                     <Briefcase size={16} />
                     {wekala.type}
                   </p>
                 )}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)' }}>
                 <span style={buildChipStyles(statusMeta)}>
                   {getStatusIcon(wekala.status)}
                   {statusMeta.label}
@@ -551,10 +525,10 @@ const WekalaDetailsModal: React.FC<WekalaDetailsModalProps> = ({ wekala, isOpen,
                   whileTap={{ scale: 0.9 }}
                   onClick={onClose}
                   style={{
-                    background: 'var(--color-bg-secondary)',
-                    border: 'none',
-                    borderRadius: '12px',
-                    padding: '10px',
+                    background: 'var(--color-surface)',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--radius-sm)',
+                    padding: 'var(--space-2)',
                     cursor: 'pointer',
                     color: 'var(--color-text-secondary)',
                   }}
@@ -567,27 +541,30 @@ const WekalaDetailsModal: React.FC<WekalaDetailsModalProps> = ({ wekala, isOpen,
             {/* Tabs */}
             <div style={{
               display: 'flex',
-              gap: '4px',
-              padding: '16px 24px',
+              gap: 'var(--space-1)',
+              padding: 'var(--space-4) var(--space-6)',
               borderBottom: '1px solid var(--color-border)',
-              background: 'var(--color-bg-secondary)',
+              background: 'var(--color-surface-subtle)',
+              overflowX: 'auto',
             }}>
               {tabs.map((tab) => (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id as any)}
                   style={{
-                    padding: '10px 20px',
-                    borderRadius: '10px',
+                    padding: 'var(--space-2) var(--space-4)',
+                    borderRadius: 'var(--radius-xs)',
                     border: 'none',
-                    background: activeTab === tab.id ? 'var(--color-bg-primary)' : 'transparent',
+                    background: activeTab === tab.id ? 'var(--color-surface)' : 'transparent',
                     color: activeTab === tab.id ? 'var(--color-primary)' : 'var(--color-text-secondary)',
                     cursor: 'pointer',
                     fontWeight: activeTab === tab.id ? 600 : 400,
                     display: 'flex',
                     alignItems: 'center',
-                    gap: '8px',
-                    transition: 'all 0.2s ease',
+                    gap: 'var(--space-2)',
+                    transition: 'all var(--transition-fast)',
+                    whiteSpace: 'nowrap',
+                    boxShadow: activeTab === tab.id ? 'var(--shadow-xs)' : 'none',
                   }}
                 >
                   {tab.icon}
@@ -598,75 +575,79 @@ const WekalaDetailsModal: React.FC<WekalaDetailsModalProps> = ({ wekala, isOpen,
 
             {/* Modal Content */}
             <div style={{
-              padding: '24px',
+              padding: 'var(--space-6)',
               overflowY: 'auto',
               flex: 1,
             }}>
               {/* Info Tab */}
               {activeTab === 'info' && (
-                <div style={{ display: 'grid', gap: '20px' }}>
+                <div style={{ display: 'grid', gap: 'var(--space-5)' }}>
                   {/* Quick Info Cards */}
                   <div style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-                    gap: '16px',
+                    gap: 'var(--space-4)',
                   }}>
                     <div style={{
-                      padding: '16px',
-                      background: 'var(--color-bg-secondary)',
-                      borderRadius: '12px',
+                      padding: 'var(--space-4)',
+                      background: 'var(--color-surface-subtle)',
+                      borderRadius: 'var(--radius-sm)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '12px',
+                      gap: 'var(--space-3)',
+                      border: '1px solid var(--color-border)',
                     }}>
-                      <Calendar size={20} style={{ color: '#6366f1' }} />
+                      <Calendar size={20} style={{ color: 'var(--color-info)' }} />
                       <div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>تاريخ الإصدار</div>
-                        <div style={{ fontWeight: 600 }}>{wekala.issue_date_hijri || formatDate(wekala.issue_date) || 'غير محدد'}</div>
+                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>تاريخ الإصدار</div>
+                        <div style={{ fontWeight: 600, color: 'var(--color-text)' }}>{wekala.issue_date_hijri || formatDate(wekala.issue_date) || 'غير محدد'}</div>
                       </div>
                     </div>
                     <div style={{
-                      padding: '16px',
-                      background: 'var(--color-bg-secondary)',
-                      borderRadius: '12px',
+                      padding: 'var(--space-4)',
+                      background: 'var(--color-surface-subtle)',
+                      borderRadius: 'var(--radius-sm)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '12px',
+                      gap: 'var(--space-3)',
+                      border: '1px solid var(--color-border)',
                     }}>
-                      <Clock size={20} style={{ color: '#f59e0b' }} />
+                      <Clock size={20} style={{ color: 'var(--color-warning)' }} />
                       <div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>تاريخ الانتهاء</div>
-                        <div style={{ fontWeight: 600 }}>{wekala.expiry_date_hijri || formatDate(wekala.expiry_date) || 'غير محدد'}</div>
+                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>تاريخ الانتهاء</div>
+                        <div style={{ fontWeight: 600, color: 'var(--color-text)' }}>{wekala.expiry_date_hijri || formatDate(wekala.expiry_date) || 'غير محدد'}</div>
                       </div>
                     </div>
                     {wekala.issue_location && (
                       <div style={{
-                        padding: '16px',
-                        background: 'var(--color-bg-secondary)',
-                        borderRadius: '12px',
+                        padding: 'var(--space-4)',
+                        background: 'var(--color-surface-subtle)',
+                        borderRadius: 'var(--radius-sm)',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '12px',
+                        gap: 'var(--space-3)',
+                        border: '1px solid var(--color-border)',
                       }}>
-                        <Building size={20} style={{ color: '#10b981' }} />
+                        <Building size={20} style={{ color: 'var(--color-success)' }} />
                         <div>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>مكان الإصدار</div>
-                          <div style={{ fontWeight: 600 }}>{wekala.issue_location}</div>
+                          <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>مكان الإصدار</div>
+                          <div style={{ fontWeight: 600, color: 'var(--color-text)' }}>{wekala.issue_location}</div>
                         </div>
                       </div>
                     )}
                     <div style={{
-                      padding: '16px',
-                      background: 'var(--color-bg-secondary)',
-                      borderRadius: '12px',
+                      padding: 'var(--space-4)',
+                      background: 'var(--color-surface-subtle)',
+                      borderRadius: 'var(--radius-sm)',
                       display: 'flex',
                       alignItems: 'center',
-                      gap: '12px',
+                      gap: 'var(--space-3)',
+                      border: '1px solid var(--color-border)',
                     }}>
-                      <Users size={20} style={{ color: '#8b5cf6' }} />
+                      <Users size={20} style={{ color: 'var(--color-accent)' }} />
                       <div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--color-text-secondary)' }}>عدد الأطراف</div>
-                        <div style={{ fontWeight: 600 }}>{clients.length + agents.length} طرف</div>
+                        <div style={{ fontSize: 'var(--font-size-xs)', color: 'var(--color-text-secondary)' }}>عدد الأطراف</div>
+                        <div style={{ fontWeight: 600, color: 'var(--color-text)' }}>{clients.length + agents.length} طرف</div>
                       </div>
                     </div>
                   </div>
@@ -674,19 +655,21 @@ const WekalaDetailsModal: React.FC<WekalaDetailsModalProps> = ({ wekala, isOpen,
                   {/* Agency Text */}
                   {wekala.agency_text && (
                     <div style={{
-                      padding: '20px',
-                      background: 'var(--color-bg-secondary)',
-                      borderRadius: '16px',
+                      padding: 'var(--space-5)',
+                      background: 'var(--color-surface-subtle)',
+                      borderRadius: 'var(--radius-md)',
+                      border: '1px solid var(--color-border)',
                     }}>
                       <h4 style={{
-                        margin: '0 0 12px',
-                        fontSize: '1rem',
+                        margin: '0 0 var(--space-3)',
+                        fontSize: 'var(--font-size-lg)',
                         fontWeight: 600,
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '8px',
+                        gap: 'var(--space-2)',
+                        color: 'var(--color-heading)',
                       }}>
-                        <ScrollText size={18} style={{ color: '#6366f1' }} />
+                        <ScrollText size={18} style={{ color: 'var(--color-info)' }} />
                         نص الوكالة
                       </h4>
                       <p style={{
@@ -696,7 +679,7 @@ const WekalaDetailsModal: React.FC<WekalaDetailsModalProps> = ({ wekala, isOpen,
                         whiteSpace: 'pre-wrap',
                         maxHeight: '200px',
                         overflowY: 'auto',
-                        fontSize: '0.9rem',
+                        fontSize: 'var(--font-size-sm)',
                       }}>
                         {wekala.agency_text}
                       </p>
@@ -707,11 +690,11 @@ const WekalaDetailsModal: React.FC<WekalaDetailsModalProps> = ({ wekala, isOpen,
 
               {/* Clients Tab */}
               {activeTab === 'clients' && (
-                <div style={{ display: 'grid', gap: '12px' }}>
+                <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
                   {clients.length === 0 ? (
                     <div style={{
                       textAlign: 'center',
-                      padding: '40px',
+                      padding: 'var(--space-9)',
                       color: 'var(--color-text-secondary)',
                     }}>
                       لا يوجد موكلين
@@ -726,11 +709,11 @@ const WekalaDetailsModal: React.FC<WekalaDetailsModalProps> = ({ wekala, isOpen,
 
               {/* Agents Tab */}
               {activeTab === 'agents' && (
-                <div style={{ display: 'grid', gap: '12px' }}>
+                <div style={{ display: 'grid', gap: 'var(--space-3)' }}>
                   {agents.length === 0 ? (
                     <div style={{
                       textAlign: 'center',
-                      padding: '40px',
+                      padding: 'var(--space-9)',
                       color: 'var(--color-text-secondary)',
                     }}>
                       لا يوجد وكلاء
@@ -745,11 +728,11 @@ const WekalaDetailsModal: React.FC<WekalaDetailsModalProps> = ({ wekala, isOpen,
 
               {/* Permissions Tab */}
               {activeTab === 'permissions' && (
-                <div style={{ display: 'grid', gap: '16px' }}>
+                <div style={{ display: 'grid', gap: 'var(--space-4)' }}>
                   {permissions.length === 0 ? (
                     <div style={{
                       textAlign: 'center',
-                      padding: '40px',
+                      padding: 'var(--space-9)',
                       color: 'var(--color-text-secondary)',
                     }}>
                       لا توجد صلاحيات
@@ -778,17 +761,20 @@ interface PartyCardProps {
 
 const PartyCard: React.FC<PartyCardProps> = ({ party, type }) => {
   const isAgent = type === 'agent';
-  const color = isAgent ? '#10b981' : '#3b82f6';
+  const color = isAgent ? 'var(--color-success)' : 'var(--color-info)';
 
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       style={{
-        padding: '16px 20px',
-        background: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
+        padding: 'var(--space-4) var(--space-5)',
+        background: 'var(--color-surface-subtle)',
+        borderRadius: 'var(--radius-sm)',
         borderRight: `4px solid ${color}`,
+        border: '1px solid var(--color-border)',
+        borderRightWidth: '4px',
+        borderRightColor: color,
       }}
     >
       <div style={{
@@ -799,11 +785,12 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, type }) => {
         <div>
           <h4 style={{
             margin: 0,
-            fontSize: '1rem',
+            fontSize: 'var(--font-size-lg)',
             fontWeight: 600,
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: 'var(--space-2)',
+            color: 'var(--color-heading)',
           }}>
             {isAgent ? <Shield size={18} style={{ color }} /> : <User size={18} style={{ color }} />}
             {party.name}
@@ -811,12 +798,12 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, type }) => {
           {party.adjective && (
             <span style={{
               display: 'inline-block',
-              marginTop: '8px',
+              marginTop: 'var(--space-2)',
               padding: '4px 10px',
-              background: `${color}15`,
+              background: isAgent ? 'var(--color-success-soft)' : 'var(--color-info-soft)',
               color: color,
-              borderRadius: '6px',
-              fontSize: '0.8rem',
+              borderRadius: 'var(--radius-xs)',
+              fontSize: 'var(--font-size-xs)',
             }}>
               {party.adjective}
             </span>
@@ -824,11 +811,12 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, type }) => {
         </div>
         {party.id_number && (
           <span style={{
-            fontSize: '0.85rem',
+            fontSize: 'var(--font-size-sm)',
             color: 'var(--color-text-secondary)',
-            background: 'var(--color-bg-primary)',
+            background: 'var(--color-surface)',
             padding: '6px 12px',
-            borderRadius: '8px',
+            borderRadius: 'var(--radius-xs)',
+            border: '1px solid var(--color-border)',
           }}>
             {party.id_number}
           </span>
@@ -836,13 +824,14 @@ const PartyCard: React.FC<PartyCardProps> = ({ party, type }) => {
       </div>
       {party.representation_text && (
         <p style={{
-          margin: '12px 0 0',
-          padding: '12px',
-          background: 'var(--color-bg-primary)',
-          borderRadius: '8px',
-          fontSize: '0.85rem',
+          margin: 'var(--space-3) 0 0',
+          padding: 'var(--space-3)',
+          background: 'var(--color-surface)',
+          borderRadius: 'var(--radius-xs)',
+          fontSize: 'var(--font-size-sm)',
           lineHeight: 1.7,
           color: 'var(--color-text-secondary)',
+          border: '1px solid var(--color-border)',
         }}>
           {party.representation_text}
         </p>
@@ -865,10 +854,13 @@ const PermissionCard: React.FC<PermissionCardProps> = ({ permission }) => {
     <motion.div
       layout
       style={{
-        padding: '16px 20px',
-        background: 'var(--color-bg-secondary)',
-        borderRadius: '12px',
-        borderRight: '4px solid #8b5cf6',
+        padding: 'var(--space-4) var(--space-5)',
+        background: 'var(--color-surface-subtle)',
+        borderRadius: 'var(--radius-sm)',
+        borderRight: '4px solid var(--color-accent)',
+        border: '1px solid var(--color-border)',
+        borderRightWidth: '4px',
+        borderRightColor: 'var(--color-accent)',
       }}
     >
       <div
@@ -882,17 +874,18 @@ const PermissionCard: React.FC<PermissionCardProps> = ({ permission }) => {
       >
         <h4 style={{
           margin: 0,
-          fontSize: '1rem',
+          fontSize: 'var(--font-size-lg)',
           fontWeight: 600,
           display: 'flex',
           alignItems: 'center',
-          gap: '8px',
+          gap: 'var(--space-2)',
+          color: 'var(--color-heading)',
         }}>
-          <ScrollText size={18} style={{ color: '#8b5cf6' }} />
+          <ScrollText size={18} style={{ color: 'var(--color-accent)' }} />
           {permission.category || 'صلاحية عامة'}
           {clauses.length > 0 && (
             <span style={{
-              fontSize: '0.8rem',
+              fontSize: 'var(--font-size-xs)',
               color: 'var(--color-text-secondary)',
               fontWeight: 400,
             }}>
@@ -917,21 +910,21 @@ const PermissionCard: React.FC<PermissionCardProps> = ({ permission }) => {
             style={{ overflow: 'hidden' }}
           >
             <ul style={{
-              margin: '12px 0 0',
-              padding: '0 20px',
+              margin: 'var(--space-3) 0 0',
+              padding: '0 var(--space-5)',
               listStyle: 'none',
             }}>
               {clauses.map((clause, idx) => (
                 <li key={idx} style={{
-                  padding: '8px 0',
+                  padding: 'var(--space-2) 0',
                   borderBottom: idx < clauses.length - 1 ? '1px dashed var(--color-border)' : 'none',
-                  fontSize: '0.9rem',
+                  fontSize: 'var(--font-size-sm)',
                   color: 'var(--color-text-secondary)',
                   display: 'flex',
                   alignItems: 'flex-start',
-                  gap: '8px',
+                  gap: 'var(--space-2)',
                 }}>
-                  <CheckCircle size={14} style={{ color: '#10b981', marginTop: '4px', flexShrink: 0 }} />
+                  <CheckCircle size={14} style={{ color: 'var(--color-success)', marginTop: '4px', flexShrink: 0 }} />
                   {clause}
                 </li>
               ))}
@@ -942,8 +935,8 @@ const PermissionCard: React.FC<PermissionCardProps> = ({ permission }) => {
       
       {permission.grouped_text && !isExpanded && (
         <p style={{
-          margin: '12px 0 0',
-          fontSize: '0.85rem',
+          margin: 'var(--space-3) 0 0',
+          fontSize: 'var(--font-size-sm)',
           color: 'var(--color-text-secondary)',
           lineHeight: 1.6,
           maxHeight: '60px',
@@ -964,7 +957,7 @@ const Wekalat: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [statusFilter, setStatusFilter] = useState<string>('معتمدة');
   const [selectedWekala, setSelectedWekala] = useState<Wekala | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pagination, setPagination] = useState({
@@ -1042,13 +1035,14 @@ const Wekalat: React.FC = () => {
   const canGoNext = pagination.currentPage < pagination.totalPages;
 
   return (
-    <div className="page-wrapper" style={{ padding: '24px' }}>
+    <div className="page-wrapper wekalat-page">
       {/* Page Header */}
       <motion.header
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
+        className="page-title"
         style={{
-          marginBottom: '32px',
+          marginBottom: 'var(--space-5)',
         }}
       >
         <div style={{
@@ -1056,47 +1050,49 @@ const Wekalat: React.FC = () => {
           justifyContent: 'space-between',
           alignItems: 'flex-start',
           flexWrap: 'wrap',
-          gap: '16px',
+          gap: 'var(--space-4)',
         }}>
           <div>
-            <h1 style={{
-              fontSize: '2rem',
+            <h1 className="page-title__text" style={{
+              fontSize: 'var(--font-size-2xl)',
               fontWeight: 700,
-              color: 'var(--color-text-primary)',
+              color: 'var(--color-heading)',
               margin: 0,
               display: 'flex',
               alignItems: 'center',
-              gap: '12px',
+              gap: 'var(--space-2)',
             }}>
-              <FileCheck size={32} style={{ color: '#6366f1' }} />
+              <FileCheck size={28} style={{ color: 'var(--color-primary)' }} />
               الوكالات 
             </h1>
-            <p style={{
-              margin: '8px 0 0',
+            <p className="hide-on-mobile" style={{
+              margin: 'var(--space-2) 0 0',
               color: 'var(--color-text-secondary)',
-              fontSize: '1rem',
+              fontSize: 'var(--font-size-sm)',
             }}>
               إدارة ومتابعة الوكالات المستوردة من منصة ناجز
             </p>
           </div>
           <motion.button
+            className="refresh-btn hide-on-mobile"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => fetchWekalat(pagination.currentPage)}
             disabled={loading}
             style={{
-              background: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+              background: 'var(--color-primary)',
               color: '#fff',
               border: 'none',
-              borderRadius: '12px',
-              padding: '12px 24px',
+              borderRadius: 'var(--radius-sm)',
+              padding: 'var(--space-3) var(--space-5)',
               cursor: loading ? 'not-allowed' : 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
-              fontSize: '1rem',
+              gap: 'var(--space-2)',
+              fontSize: 'var(--font-size-base)',
               fontWeight: 500,
               opacity: loading ? 0.7 : 1,
+              transition: 'all var(--transition-fast)',
             }}
           >
             <RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
@@ -1110,42 +1106,43 @@ const Wekalat: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
+        className="stats-section"
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-          gap: '16px',
-          marginBottom: '32px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))',
+          gap: 'var(--space-3)',
+          marginBottom: 'var(--space-5)',
         }}
       >
         <StatsCard
-          icon={<FileCheck size={28} />}
+          icon={<FileCheck size={24} />}
           label="إجمالي الوكالات"
           value={stats.total}
-          color="#6366f1"
+          color="var(--color-primary)"
           onClick={() => setStatusFilter('all')}
           isActive={statusFilter === 'all'}
         />
         <StatsCard
-          icon={<CheckCircle size={28} />}
+          icon={<CheckCircle size={24} />}
           label="معتمدة"
           value={stats.approved}
-          color="#10b981"
+          color="var(--color-success)"
           onClick={() => setStatusFilter('معتمدة')}
           isActive={statusFilter === 'معتمدة'}
         />
         <StatsCard
-          icon={<Timer size={28} />}
+          icon={<Timer size={24} />}
           label="منتهية"
           value={stats.expired}
-          color="#f59e0b"
+          color="var(--color-warning)"
           onClick={() => setStatusFilter('منتهية')}
           isActive={statusFilter === 'منتهية'}
         />
         <StatsCard
-          icon={<XCircle size={28} />}
+          icon={<XCircle size={24} />}
           label="مفسوخة"
           value={stats.cancelled}
-          color="#ef4444"
+          color="var(--color-error)"
           onClick={() => setStatusFilter('مفسوخة')}
           isActive={statusFilter === 'مفسوخة'}
         />
@@ -1156,41 +1153,42 @@ const Wekalat: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
+        className="search-section"
         style={{
           display: 'flex',
-          gap: '16px',
-          marginBottom: '24px',
+          gap: 'var(--space-3)',
+          marginBottom: 'var(--space-5)',
           flexWrap: 'wrap',
           alignItems: 'center',
         }}
       >
         <div style={{
           flex: 1,
-          minWidth: '250px',
+          minWidth: '200px',
           position: 'relative',
         }}>
-          <Search size={20} style={{
+          <Search size={16} style={{
             position: 'absolute',
-            right: '14px',
+            right: 'var(--space-3)',
             top: '50%',
             transform: 'translateY(-50%)',
             color: 'var(--color-text-secondary)',
           }} />
           <input
             type="text"
-            placeholder="ابحث برقم الوكالة أو اسم الموكل..."
+            placeholder="ابحث برقم الوكالة..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             style={{
               width: '100%',
-              padding: '14px 48px 14px 14px',
-              borderRadius: '12px',
-              border: '2px solid var(--color-border)',
-              background: 'var(--color-bg-secondary)',
-              color: 'var(--color-text-primary)',
-              fontSize: '1rem',
+              padding: 'var(--space-2) var(--space-8) var(--space-2) var(--space-3)',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--color-border)',
+              background: 'var(--color-surface)',
+              color: 'var(--color-text)',
+              fontSize: 'var(--font-size-sm)',
               outline: 'none',
-              transition: 'border-color 0.2s',
+              transition: 'border-color var(--transition-fast)',
             }}
           />
         </div>
@@ -1199,14 +1197,14 @@ const Wekalat: React.FC = () => {
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           style={{
-            padding: '14px 20px',
-            borderRadius: '12px',
-            border: '2px solid var(--color-border)',
-            background: 'var(--color-bg-secondary)',
-            color: 'var(--color-text-primary)',
-            fontSize: '1rem',
+            padding: 'var(--space-2) var(--space-4)',
+            borderRadius: 'var(--radius-sm)',
+            border: '1px solid var(--color-border)',
+            background: 'var(--color-surface)',
+            color: 'var(--color-text)',
+            fontSize: 'var(--font-size-sm)',
             cursor: 'pointer',
-            minWidth: '160px',
+            minWidth: '120px',
           }}
         >
           <option value="all">جميع الحالات</option>
@@ -1217,24 +1215,25 @@ const Wekalat: React.FC = () => {
           <option value="موقوفة">موقوفة</option>
         </select>
 
-        {hasActiveFilters && (
+        {hasActiveFilters && statusFilter !== 'معتمدة' && (
           <motion.button
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             onClick={() => {
               setSearchTerm('');
-              setStatusFilter('all');
+              setStatusFilter('معتمدة');
             }}
+            className="hide-on-mobile"
             style={{
-              padding: '14px 20px',
-              borderRadius: '12px',
-              border: '2px solid var(--color-border)',
+              padding: 'var(--space-2) var(--space-4)',
+              borderRadius: 'var(--radius-sm)',
+              border: '1px solid var(--color-border)',
               background: 'transparent',
               color: 'var(--color-text-secondary)',
               cursor: 'pointer',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: 'var(--space-2)',
             }}
           >
             <Filter size={18} />
@@ -1245,7 +1244,7 @@ const Wekalat: React.FC = () => {
         <div style={{
           marginRight: 'auto',
           color: 'var(--color-text-secondary)',
-          fontSize: '0.9rem',
+          fontSize: 'var(--font-size-sm)',
         }}>
           عدد النتائج: {pagination.total}
         </div>
@@ -1260,8 +1259,8 @@ const Wekalat: React.FC = () => {
         {loading && (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-            gap: '20px',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gap: 'var(--space-5)',
           }}>
             {Array.from({ length: 6 }).map((_, idx) => (
               <WekalaCardSkeleton key={idx} />
@@ -1272,25 +1271,26 @@ const Wekalat: React.FC = () => {
         {!loading && error && (
           <div style={{
             textAlign: 'center',
-            padding: '60px 20px',
-            background: 'var(--color-bg-secondary)',
-            borderRadius: '20px',
+            padding: 'var(--space-10) var(--space-5)',
+            background: 'var(--color-surface)',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--color-border)',
           }}>
-            <AlertCircle size={48} style={{ color: '#ef4444', marginBottom: '16px' }} />
-            <h3 style={{ margin: '0 0 8px', color: 'var(--color-text-primary)' }}>
+            <AlertCircle size={48} style={{ color: 'var(--color-error)', marginBottom: 'var(--space-4)' }} />
+            <h3 style={{ margin: '0 0 var(--space-2)', color: 'var(--color-heading)' }}>
               حدث خطأ أثناء جلب البيانات
             </h3>
-            <p style={{ margin: '0 0 20px', color: 'var(--color-text-secondary)' }}>{error}</p>
+            <p style={{ margin: '0 0 var(--space-5)', color: 'var(--color-text-secondary)' }}>{error}</p>
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => fetchWekalat(pagination.currentPage)}
               style={{
-                background: '#6366f1',
+                background: 'var(--color-primary)',
                 color: '#fff',
                 border: 'none',
-                borderRadius: '10px',
-                padding: '12px 24px',
+                borderRadius: 'var(--radius-sm)',
+                padding: 'var(--space-3) var(--space-6)',
                 cursor: 'pointer',
               }}
             >
@@ -1302,12 +1302,13 @@ const Wekalat: React.FC = () => {
         {!loading && !error && wekalat.length === 0 && (
           <div style={{
             textAlign: 'center',
-            padding: '60px 20px',
-            background: 'var(--color-bg-secondary)',
-            borderRadius: '20px',
+            padding: 'var(--space-10) var(--space-5)',
+            background: 'var(--color-surface)',
+            borderRadius: 'var(--radius-lg)',
+            border: '1px solid var(--color-border)',
           }}>
-            <FileCheck size={48} style={{ color: 'var(--color-text-secondary)', marginBottom: '16px' }} />
-            <h3 style={{ margin: '0 0 8px', color: 'var(--color-text-primary)' }}>
+            <FileCheck size={48} style={{ color: 'var(--color-text-secondary)', marginBottom: 'var(--space-4)' }} />
+            <h3 style={{ margin: '0 0 var(--space-2)', color: 'var(--color-heading)' }}>
               لا توجد وكالات
             </h3>
             <p style={{ margin: 0, color: 'var(--color-text-secondary)' }}>
@@ -1323,8 +1324,8 @@ const Wekalat: React.FC = () => {
             layout
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fill, minmax(350px, 1fr))',
-              gap: '20px',
+              gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+              gap: 'var(--space-5)',
             }}
           >
             <AnimatePresence>
@@ -1349,11 +1350,15 @@ const Wekalat: React.FC = () => {
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
-            gap: '16px',
-            marginTop: '32px',
-            padding: '20px',
-            background: 'var(--color-bg-secondary)',
-            borderRadius: '16px',
+            gap: 'var(--space-3)',
+            marginTop: 'var(--space-7)',
+            padding: 'var(--space-4)',
+            background: 'var(--color-surface)',
+            borderRadius: 'var(--radius-md)',
+            border: '1px solid var(--color-border)',
+            flexWrap: 'wrap',
+            overflowX: 'auto',
+            maxWidth: '100%',
           }}
         >
           <motion.button
@@ -1362,26 +1367,31 @@ const Wekalat: React.FC = () => {
             onClick={() => handlePageChange(pagination.currentPage - 1)}
             disabled={!canGoPrev}
             style={{
-              padding: '10px 20px',
-              borderRadius: '10px',
-              border: 'none',
-              background: canGoPrev ? 'var(--color-bg-primary)' : 'transparent',
-              color: canGoPrev ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+              padding: 'var(--space-2) var(--space-3)',
+              borderRadius: 'var(--radius-xs)',
+              border: '1px solid var(--color-border)',
+              background: canGoPrev ? 'var(--color-surface-subtle)' : 'transparent',
+              color: canGoPrev ? 'var(--color-text)' : 'var(--color-text-secondary)',
               cursor: canGoPrev ? 'pointer' : 'not-allowed',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: 'var(--space-1)',
               opacity: canGoPrev ? 1 : 0.5,
+              fontSize: 'var(--font-size-sm)',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
             }}
           >
-            <ChevronRight size={18} />
+            <ChevronRight size={16} />
             السابق
           </motion.button>
 
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '8px',
+            gap: 'var(--space-1)',
+            flexWrap: 'wrap',
+            justifyContent: 'center',
           }}>
             {Array.from({ length: Math.min(5, pagination.totalPages) }).map((_, idx) => {
               let pageNum: number;
@@ -1402,16 +1412,18 @@ const Wekalat: React.FC = () => {
                   whileTap={{ scale: 0.9 }}
                   onClick={() => handlePageChange(pageNum)}
                   style={{
-                    width: '40px',
-                    height: '40px',
-                    borderRadius: '10px',
-                    border: 'none',
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: 'var(--radius-xs)',
+                    border: pagination.currentPage === pageNum ? 'none' : '1px solid var(--color-border)',
                     background: pagination.currentPage === pageNum
-                      ? 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)'
+                      ? 'var(--color-primary)'
                       : 'transparent',
-                    color: pagination.currentPage === pageNum ? '#fff' : 'var(--color-text-primary)',
+                    color: pagination.currentPage === pageNum ? '#fff' : 'var(--color-text)',
                     cursor: 'pointer',
                     fontWeight: pagination.currentPage === pageNum ? 600 : 400,
+                    fontSize: 'var(--font-size-sm)',
+                    flexShrink: 0,
                   }}
                 >
                   {pageNum}
@@ -1426,20 +1438,23 @@ const Wekalat: React.FC = () => {
             onClick={() => handlePageChange(pagination.currentPage + 1)}
             disabled={!canGoNext}
             style={{
-              padding: '10px 20px',
-              borderRadius: '10px',
-              border: 'none',
-              background: canGoNext ? 'var(--color-bg-primary)' : 'transparent',
-              color: canGoNext ? 'var(--color-text-primary)' : 'var(--color-text-secondary)',
+              padding: 'var(--space-2) var(--space-3)',
+              borderRadius: 'var(--radius-xs)',
+              border: '1px solid var(--color-border)',
+              background: canGoNext ? 'var(--color-surface-subtle)' : 'transparent',
+              color: canGoNext ? 'var(--color-text)' : 'var(--color-text-secondary)',
               cursor: canGoNext ? 'pointer' : 'not-allowed',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              gap: 'var(--space-1)',
               opacity: canGoNext ? 1 : 0.5,
+              fontSize: 'var(--font-size-sm)',
+              whiteSpace: 'nowrap',
+              flexShrink: 0,
             }}
           >
             التالي
-            <ChevronLeft size={18} />
+            <ChevronLeft size={16} />
           </motion.button>
         </motion.div>
       )}
@@ -1468,6 +1483,44 @@ const Wekalat: React.FC = () => {
         @keyframes spin {
           from { transform: rotate(0deg); }
           to { transform: rotate(360deg); }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+          .wekalat-page {
+            padding: var(--space-3) !important;
+          }
+          
+          .hide-on-mobile {
+            display: none !important;
+          }
+          
+          .stats-section {
+            grid-template-columns: repeat(2, 1fr) !important;
+            gap: var(--space-2) !important;
+            margin-bottom: var(--space-4) !important;
+          }
+          
+          .search-section {
+            gap: var(--space-2) !important;
+            margin-bottom: var(--space-4) !important;
+          }
+          
+          .search-section > div:first-child {
+            min-width: 100% !important;
+            flex: 1 1 100% !important;
+          }
+          
+          .search-section select {
+            flex: 1 !important;
+            min-width: auto !important;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          .stats-section {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
         }
       `}</style>
     </div>

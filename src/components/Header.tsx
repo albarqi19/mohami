@@ -107,6 +107,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
         subtitle: 'تهيئة الحساب والتفضيلات',
         accent: 'var(--color-teal-600)',
       },
+      {
+        test: /^\/wekalat/,
+        title: 'الوكالات',
+        subtitle: 'إدارة ومتابعة الوكالات',
+        accent: 'var(--color-primary)',
+      },
     ];
 
     const current = metaMap.find((meta) => meta.test.test(location.pathname));
@@ -257,16 +263,6 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
             </AnimatePresence>
           </div>
         </div>
-      </div>
-
-      <div className="header__search header__search--mobile md:hidden" role="search">
-        <Search size={18} className="header__search-icon" aria-hidden />
-        <input
-          type="search"
-          placeholder="البحث..."
-          className="header__search-input"
-          aria-label="بحث في القضايا"
-        />
       </div>
     </header>
   );

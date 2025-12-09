@@ -4,6 +4,14 @@ import Sidebar from './Sidebar';
 import Header from './Header';
 
 const Layout: React.FC = () => {
+  const handleMenuClick = () => {
+    // Toggle sidebar on mobile - can be implemented later
+    const sidebar = document.querySelector('.sidebar');
+    if (sidebar) {
+      sidebar.classList.toggle('sidebar--open');
+    }
+  };
+
   return (
     <div className="app-shell">
       <a href="#main-content" className="skip-link">
@@ -13,7 +21,7 @@ const Layout: React.FC = () => {
       <Sidebar />
 
       <div className="app-shell__main">
-        <Header />
+        <Header onMenuClick={handleMenuClick} />
 
         <main id="main-content" className="app-shell__content" role="main" aria-live="polite">
           <Outlet />
