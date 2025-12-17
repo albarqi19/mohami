@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import {
     Search,
     MoreHorizontal,
@@ -23,13 +24,21 @@ import {
     HardDrive,
     X,
     Share2,
-    Copy
+    Copy,
+    Cloud,
+    CloudOff,
+    Link2,
+    Loader2,
+    CheckCircle,
+    AlertCircle
 } from 'lucide-react';
 import type { Document as DocumentType, Case } from '../types';
 import DocumentUploadModal from '../components/DocumentUploadModal';
 import LegalMemoModal from '../components/LegalMemoModal';
 import { DocumentService } from '../services/documentService';
 import { CaseService } from '../services/caseService';
+import { CloudStorageService } from '../services/cloudStorageService';
+import type { CloudStorageStatus, CloudStorageFile } from '../services/cloudStorageService';
 import '../styles/documents-page.css';
 
 const CACHE_KEY = 'documents_data';
@@ -84,6 +93,15 @@ const Documents: React.FC = () => {
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [showCreateMemo, setShowCreateMemo] = useState(false);
 
+    // OneDrive States
+    const [oneDriveStatus, setOneDriveStatus] = useState<CloudStorageStatus | null>(null);
+    const [oneDriveFiles, setOneDriveFiles] = useState<CloudStorageFile[]>([]);
+    const [oneDriveLoading, setOneDriveLoading] = useState(false);
+    const [oneDriveConnecting, setOneDriveConnecting] = useState(false);
+    const [showOneDriveFiles, setShowOneDriveFiles] = useState(false);
+    const [currentOneDriveFolder, setCurrentOneDriveFolder] = useState<string>('root');
+    const [searchParams, setSearchParams] = useSearchParams();
+
     useEffect(() => {
         // Only fetch if no cached data exists
         const cached = localStorage.getItem(CACHE_KEY);
@@ -98,6 +116,81 @@ const Documents: React.FC = () => {
         }
         loadData();
     }, []);
+
+    // Check OneDrive connection status on mount
+    useEffect(() => {
+        checkOneDriveStatus();
+    }, []);
+
+    // Handle OneDrive OAuth callback
+    useEffect(() => {
+        const isCallback = searchParams.get('onedrive_callback');
+        if (isCallback) {
+            const success = searchParams.get('success') === 'true';
+            const error = searchParams.get('error');
+
+            if (success) {
+                checkOneDriveStatus();
+            } else if (error) {
+                console.error('OneDrive connection failed:', error);
+            }
+
+            // Clean up URL params
+            setSearchParams({});
+        }
+    }, [searchParams, setSearchParams]);
+
+    const checkOneDriveStatus = async () => {
+        try {
+            const status = await CloudStorageService.getOneDriveStatus();
+            setOneDriveStatus(status);
+        } catch (error) {
+            console.error('Failed to check OneDrive status:', error);
+        }
+    };
+
+    const handleConnectOneDrive = async () => {
+        setOneDriveConnecting(true);
+        try {
+            await CloudStorageService.connectOneDrive();
+        } catch (error) {
+            console.error('Failed to start OneDrive connection:', error);
+            setOneDriveConnecting(false);
+        }
+    };
+
+    const handleDisconnectOneDrive = async () => {
+        if (!confirm('هل أنت متأكد من إلغاء ربط OneDrive؟')) return;
+
+        try {
+            await CloudStorageService.disconnectOneDrive();
+            setOneDriveStatus(null);
+            setOneDriveFiles([]);
+            setShowOneDriveFiles(false);
+        } catch (error) {
+            console.error('Failed to disconnect OneDrive:', error);
+        }
+    };
+
+    const loadOneDriveFiles = async (folderId?: string) => {
+        setOneDriveLoading(true);
+        try {
+            const response = await CloudStorageService.getOneDriveFiles(folderId);
+            setOneDriveFiles(response.files);
+            setCurrentOneDriveFolder(response.folder_id);
+        } catch (error) {
+            console.error('Failed to load OneDrive files:', error);
+        } finally {
+            setOneDriveLoading(false);
+        }
+    };
+
+    const handleShowOneDriveFiles = () => {
+        setShowOneDriveFiles(true);
+        setActiveCategory('');
+        setSelectedCaseId(null);
+        loadOneDriveFiles();
+    };
 
     const loadData = async () => {
         setLoading(true);
@@ -333,20 +426,79 @@ const Documents: React.FC = () => {
                         </div>
                     </div>
 
+                    {/* Cloud Storage Section */}
                     <div className="sidebar-section">
-                        <div className="sidebar-section-title">مجلدات القضايا</div>
-                        {cases.slice(0, 10).map(c => (
+                        <div className="sidebar-section-title">التخزين السحابي</div>
+
+                        {/* OneDrive Connection */}
+                        {oneDriveStatus?.connected ? (
+                            <>
+                                <div
+                                    className={`sidebar-item ${showOneDriveFiles ? 'active' : ''}`}
+                                    onClick={handleShowOneDriveFiles}
+                                >
+                                    <Cloud size={16} className="text-blue-500" />
+                                    <span style={{ flex: 1 }}>OneDrive</span>
+                                    <CheckCircle size={12} className="text-green-500" />
+                                </div>
+                                <div
+                                    className="sidebar-item text-xs"
+                                    style={{ paddingRight: '32px', color: 'var(--color-text-muted)', fontSize: '11px' }}
+                                >
+                                    {oneDriveStatus.email}
+                                </div>
+                                <div
+                                    className="sidebar-item"
+                                    onClick={handleDisconnectOneDrive}
+                                    style={{ color: 'var(--color-error)' }}
+                                >
+                                    <CloudOff size={16} />
+                                    <span>إلغاء الربط</span>
+                                </div>
+                            </>
+                        ) : (
                             <div
-                                key={c.id}
-                                className={`sidebar-item ${selectedCaseId === c.id ? 'active' : ''}`}
-                                onClick={() => { setSelectedCaseId(c.id); setActiveCategory(''); }}
+                                className="sidebar-item"
+                                onClick={handleConnectOneDrive}
+                                style={{ cursor: oneDriveConnecting ? 'wait' : 'pointer' }}
                             >
-                                <Folder size={16} className="text-yellow-500" />
-                                <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                                    {c.title}
-                                </span>
+                                {oneDriveConnecting ? (
+                                    <Loader2 size={16} className="animate-spin" />
+                                ) : (
+                                    <Link2 size={16} className="text-blue-500" />
+                                )}
+                                <span>ربط OneDrive</span>
                             </div>
-                        ))}
+                        )}
+
+                        {/* Google Drive - Coming Soon */}
+                        <div
+                            className="sidebar-item"
+                            style={{ opacity: 0.5, cursor: 'not-allowed' }}
+                            title="قريباً"
+                        >
+                            <Cloud size={16} className="text-yellow-500" />
+                            <span>ربط Google Drive</span>
+                            <span style={{ fontSize: '10px', marginRight: 'auto', color: 'var(--color-text-muted)' }}>قريباً</span>
+                        </div>
+                    </div>
+
+                    <div className="sidebar-section" style={{ flex: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                        <div className="sidebar-section-title">مجلدات القضايا</div>
+                        <div style={{ flex: 1, overflowY: 'auto', maxHeight: '300px' }}>
+                            {cases.map(c => (
+                                <div
+                                    key={c.id}
+                                    className={`sidebar-item ${selectedCaseId === c.id ? 'active' : ''}`}
+                                    onClick={() => { setSelectedCaseId(c.id); setActiveCategory(''); setShowOneDriveFiles(false); }}
+                                >
+                                    <Folder size={16} className="text-yellow-500" />
+                                    <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                                        {c.title}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 </div>
 
@@ -388,7 +540,7 @@ const Documents: React.FC = () => {
                         </div>
 
                         {/* Grid View */}
-                        {viewMode === 'grid' && (
+                        {viewMode === 'grid' && !showOneDriveFiles && (
                             <div className="docs-grid">
                                 {filteredDocuments.map(doc => (
                                     <motion.div
@@ -414,7 +566,7 @@ const Documents: React.FC = () => {
                         )}
 
                         {/* List View */}
-                        {viewMode === 'list' && (
+                        {viewMode === 'list' && !showOneDriveFiles && (
                             <div className="docs-list">
                                 <div className="doc-list-header">
                                     <div className="header-cell">#</div>
@@ -458,7 +610,123 @@ const Documents: React.FC = () => {
                             </div>
                         )}
 
-                        {!loading && filteredDocuments.length === 0 && (
+                        {/* OneDrive Files Display */}
+                        {showOneDriveFiles && (
+                            <div className="onedrive-files-section">
+                                {/* OneDrive Header */}
+                                <div style={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: '12px',
+                                    marginBottom: '16px',
+                                    padding: '12px',
+                                    background: 'var(--color-bg-secondary)',
+                                    borderRadius: '8px'
+                                }}>
+                                    <Cloud size={20} className="text-blue-500" />
+                                    <span style={{ fontWeight: 600 }}>ملفات OneDrive</span>
+                                    {currentOneDriveFolder !== 'root' && (
+                                        <button
+                                            onClick={() => loadOneDriveFiles('root')}
+                                            style={{
+                                                marginRight: 'auto',
+                                                padding: '6px 12px',
+                                                background: 'var(--color-bg-tertiary)',
+                                                border: 'none',
+                                                borderRadius: '6px',
+                                                cursor: 'pointer',
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                gap: '6px'
+                                            }}
+                                        >
+                                            <span>← العودة للرئيسية</span>
+                                        </button>
+                                    )}
+                                </div>
+
+                                {/* Loading State */}
+                                {oneDriveLoading && (
+                                    <div style={{
+                                        display: 'flex',
+                                        flexDirection: 'column',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        padding: '48px'
+                                    }}>
+                                        <Loader2 size={32} className="animate-spin text-blue-500" />
+                                        <span style={{ marginTop: '12px', color: 'var(--color-text-secondary)' }}>
+                                            جاري تحميل الملفات...
+                                        </span>
+                                    </div>
+                                )}
+
+                                {/* OneDrive Files Grid */}
+                                {!oneDriveLoading && oneDriveFiles.length > 0 && (
+                                    <div className="docs-grid">
+                                        {oneDriveFiles.map(file => (
+                                            <motion.div
+                                                key={file.id}
+                                                layout
+                                                initial={{ opacity: 0 }}
+                                                animate={{ opacity: 1 }}
+                                                className="doc-card"
+                                                style={{ cursor: file.is_folder ? 'pointer' : 'default' }}
+                                                onClick={() => {
+                                                    if (file.is_folder) {
+                                                        loadOneDriveFiles(file.id);
+                                                    } else if (file.web_url) {
+                                                        window.open(file.web_url, '_blank');
+                                                    }
+                                                }}
+                                            >
+                                                <div className="doc-preview">
+                                                    {file.is_folder ? (
+                                                        <Folder size={32} className="text-blue-400" />
+                                                    ) : (
+                                                        getFileIcon(file.mime_type || '')
+                                                    )}
+                                                </div>
+                                                <div className="doc-info">
+                                                    <div className="doc-name" title={file.name}>
+                                                        {file.name}
+                                                    </div>
+                                                    <div className="doc-meta">
+                                                        {file.is_folder ? 'مجلد' : formatSize(file.size)}
+                                                        {file.modified_at && ` • ${new Date(file.modified_at).toLocaleDateString('ar-SA')}`}
+                                                    </div>
+                                                </div>
+                                                {!file.is_folder && file.web_url && (
+                                                    <div style={{
+                                                        position: 'absolute',
+                                                        top: '8px',
+                                                        left: '8px',
+                                                        background: 'var(--color-bg-secondary)',
+                                                        borderRadius: '4px',
+                                                        padding: '4px'
+                                                    }}>
+                                                        <Cloud size={12} className="text-blue-500" />
+                                                    </div>
+                                                )}
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Empty OneDrive State */}
+                                {!oneDriveLoading && oneDriveFiles.length === 0 && (
+                                    <div className="empty-state">
+                                        <div className="empty-icon">
+                                            <Cloud size={32} className="text-blue-300" />
+                                        </div>
+                                        <h3>لا توجد ملفات</h3>
+                                        <p>هذا المجلد فارغ في OneDrive</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {!loading && !showOneDriveFiles && filteredDocuments.length === 0 && (
                             <div className="empty-state">
                                 <div className="empty-icon">
                                     <Folder size={32} />
