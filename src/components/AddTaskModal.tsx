@@ -1,14 +1,26 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Plus, AlertCircle } from 'lucide-react';
-import { UserService, type User } from '../services/UserService';
+import {
+  X,
+  Plus,
+  AlertCircle,
+  Type,
+  AlignLeft,
+  Flag,
+  Calendar,
+  Clock,
+  User,
+  Briefcase
+} from 'lucide-react';
+import { UserService, type User as ServiceUser } from '../services/UserService';
 import { TaskService } from '../services/taskService';
 import type { CreateTaskForm } from '../types';
+import '../styles/task-modal.css';
 
 interface AddTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
-  caseId: string;
+  caseId?: string;
   caseTitle?: string;
   clientName?: string;
   onTaskAdded: () => void;
@@ -22,25 +34,41 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
   clientName,
   onTaskAdded
 }) => {
-  const [formData, setFormData] = useState({
+  // Initialize with default values
+  const initialFormState = {
     title: '',
     description: '',
-    type: 'other',
+    type: 'general',
     priority: 'medium',
     due_date: '',
     estimated_hours: '',
     assigned_to: ''
-  });
+  };
 
+  const [formData, setFormData] = useState(initialFormState);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [lawyers, setLawyers] = useState<User[]>([]);
+  const [lawyers, setLawyers] = useState<ServiceUser[]>([]);
   const [loadingLawyers, setLoadingLawyers] = useState(false);
 
-  // جلب قائمة المحامين عند فتح النافذة
+  // Fetch lawyers when modal opens
   useEffect(() => {
     if (isOpen) {
       fetchLawyers();
+      // Set default due date to tomorrow
+      const tomorrow = new Date();
+      tomorrow.setDate(tomorrow.getDate() + 1);
+      tomorrow.setHours(9, 0, 0, 0);
+      const tomorrowStr = tomorrow.toISOString().slice(0, 16);
+
+      setFormData(prev => ({
+        ...prev,
+        due_date: tomorrowStr
+      }));
+    } else {
+      // Reset form on close
+      setFormData(initialFormState);
+      setError(null);
     }
   }, [isOpen]);
 
@@ -70,28 +98,24 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
     setError(null);
 
     try {
-      // التحقق من البيانات المطلوبة
+      // Validation
       if (!formData.title.trim()) {
         setError('عنوان المهمة مطلوب');
         return;
       }
-      
-      if (!formData.assigned_to) {
-        setError('يجب اختيار المحامي المسؤول');
-        return;
-      }
-      
+
       if (!formData.due_date) {
         setError('يجب تحديد الموعد النهائي');
         return;
       }
 
+      // Prepare payload
       const taskData: CreateTaskForm = {
         title: formData.title.trim(),
         description: formData.description?.trim() || '',
-        type: formData.type || 'other',
-        caseId: caseId || '1', // استخدم قضية افتراضية إذا لم تكن محددة
-        assignedTo: formData.assigned_to,
+        type: formData.type || 'general',
+        caseId: caseId || '1', // Fallback or handle appropriately
+        assignedTo: formData.assigned_to || undefined,
         priority: formData.priority as any,
         dueDate: new Date(formData.due_date),
         estimatedHours: formData.estimated_hours ? parseFloat(formData.estimated_hours) : undefined,
@@ -100,17 +124,6 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
       await TaskService.createTask(taskData);
       onTaskAdded();
       onClose();
-      
-      // Reset form
-      setFormData({
-        title: '',
-        description: '',
-        type: 'other',
-        priority: 'medium',
-        due_date: '',
-        estimated_hours: '',
-        assigned_to: ''
-      });
     } catch (err: any) {
       setError(err.message || 'فشل في إنشاء المهمة');
     } finally {
@@ -121,348 +134,224 @@ const AddTaskModal: React.FC<AddTaskModalProps> = ({
   return (
     <AnimatePresence>
       {isOpen && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px'
-          }}
-          onClick={onClose}
-        >
+        <div className="task-modal-overlay" onClick={onClose}>
           <motion.div
-            initial={{ scale: 0.95, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
+            initial={{ scale: 0.95, opacity: 0, y: 20 }}
+            animate={{ scale: 1, opacity: 1, y: 0 }}
+            exit={{ scale: 0.95, opacity: 0, y: 20 }}
+            transition={{ duration: 0.2 }}
+            className="task-modal"
             onClick={e => e.stopPropagation()}
-            style={{
-              backgroundColor: 'var(--color-surface)',
-              borderRadius: '12px',
-              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
-              width: '100%',
-              maxWidth: '600px',
-              maxHeight: '90vh',
-              overflow: 'auto'
-            }}
           >
             {/* Header */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              padding: '24px 24px 0 24px',
-              marginBottom: '24px',
-              borderBottom: '1px solid var(--color-border)'
-            }}>
+            <div className="task-modal-header">
               <div>
-                <h2 style={{
-                  fontSize: 'var(--font-size-xl)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  color: 'var(--color-text)',
-                  margin: '0 0 8px 0'
-                }}>
+                <h2 className="task-modal-title">
+                  <div style={{ background: 'var(--law-navy)', color: 'white', padding: '6px', borderRadius: '6px' }}>
+                    <Plus size={18} />
+                  </div>
                   إضافة مهمة جديدة
                 </h2>
                 {(caseTitle || clientName) && (
-                  <p style={{
-                    fontSize: 'var(--font-size-sm)',
-                    color: 'var(--color-text-secondary)',
-                    margin: 0
-                  }}>
-                    للقضية: {caseTitle} {clientName && `- ${clientName}`}
+                  <p className="task-modal-subtitle">
+                    {caseTitle ? `القضية: ${caseTitle}` : ''} {clientName ? `• العميل: ${clientName}` : ''}
                   </p>
                 )}
               </div>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={onClose}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '32px',
-                  height: '32px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  backgroundColor: 'transparent',
-                  color: 'var(--color-text-secondary)',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.2s'
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.backgroundColor = 'var(--color-background)';
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.backgroundColor = 'transparent';
-                }}
-              >
-                <X style={{ height: '18px', width: '18px' }} />
-              </motion.button>
+              <button className="task-modal-close" onClick={onClose}>
+                <X size={20} />
+              </button>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} style={{ padding: '0 24px 24px 24px' }}>
+            {/* Content */}
+            <form onSubmit={handleSubmit} className="task-modal-content">
               {error && (
                 <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
                   style={{
                     display: 'flex',
                     alignItems: 'center',
                     gap: '8px',
-                    padding: '12px 16px',
-                    backgroundColor: 'var(--color-error-background)',
-                    border: '1px solid var(--color-error-border)',
+                    padding: '10px 14px',
+                    backgroundColor: '#FEF2F2',
+                    border: '1px solid #FECACA',
                     borderRadius: '8px',
-                    color: 'var(--color-error)',
-                    marginBottom: '24px'
+                    color: '#DC2626',
+                    fontSize: '13px'
                   }}
                 >
-                  <AlertCircle style={{ height: '18px', width: '18px' }} />
-                  <span style={{ fontSize: 'var(--font-size-sm)' }}>{error}</span>
+                  <AlertCircle size={16} />
+                  {error}
                 </motion.div>
               )}
 
-              {/* Title */}
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{
-                  display: 'block',
-                  fontSize: 'var(--font-size-sm)',
-                  fontWeight: 'var(--font-weight-medium)',
-                  color: 'var(--color-text)',
-                  marginBottom: '6px'
-                }}>
-                  عنوان المهمة *
-                </label>
+              {/* Title Input */}
+              <div className="form-group">
                 <input
                   type="text"
                   name="title"
+                  className="form-input"
+                  style={{ fontSize: '16px', fontWeight: 500, padding: '12px 14px' }}
+                  placeholder="ما الذي يجب إنجازه؟ (عنوان المهمة)"
                   value={formData.title}
                   onChange={handleInputChange}
+                  autoFocus
                   required
-                  style={{
-                    width: '100%',
-                    padding: '12px 16px',
-                    fontSize: 'var(--font-size-sm)',
-                    color: 'var(--color-text)',
-                    backgroundColor: 'var(--color-background)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: '8px',
-                    outline: 'none',
-                    transition: 'border-color 0.2s, box-shadow 0.2s'
-                  }}
-                  placeholder="أدخل عنوان المهمة"
-                  onFocus={(e) => {
-                    e.target.style.borderColor = 'var(--color-primary)';
-                    e.target.style.boxShadow = '0 0 0 3px var(--color-primary)20';
-                  }}
-                  onBlur={(e) => {
-                    e.target.style.borderColor = 'var(--color-border)';
-                    e.target.style.boxShadow = 'none';
-                  }}
                 />
               </div>
 
               {/* Description */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  وصف المهمة
-                </label>
+              <div className="form-group">
+                <div className="form-label">
+                  <AlignLeft size={14} />
+                  الوصف
+                </div>
                 <textarea
                   name="description"
+                  className="form-textarea"
+                  rows={3}
+                  placeholder="أضف تفاصيل، ملاحظات، أو روابط..."
                   value={formData.description}
                   onChange={handleInputChange}
-                  rows={3}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  placeholder="أدخل وصف تفصيلي للمهمة"
                 />
               </div>
 
-              {/* Task Type */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  نوع المهمة
-                </label>
-                <select
-                  name="type"
-                  value={formData.type}
-                  onChange={handleInputChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                >
-                  <option value="general">عامة</option>
-                  <option value="document_review">مراجعة وثائق</option>
-                  <option value="legal_research">بحث قانوني</option>
-                  <option value="client_meeting">اجتماع مع العميل</option>
-                  <option value="court_hearing">حضور جلسة محكمة</option>
-                  <option value="document_preparation">إعداد مستندات</option>
-                  <option value="case_analysis">تحليل القضية</option>
-                  <option value="follow_up">متابعة</option>
-                  <option value="consultation">استشارة قانونية</option>
-                  <option value="negotiation">مفاوضات</option>
-                </select>
-              </div>
+              <div className="form-row">
+                {/* Type */}
+                <div className="form-group">
+                  <label className="form-label">
+                    <Type size={14} />
+                    نوع المهمة
+                  </label>
+                  <select
+                    name="type"
+                    className="form-select"
+                    value={formData.type}
+                    onChange={handleInputChange}
+                  >
+                    <option value="general">عامة</option>
+                    <option value="review">مراجعة</option>
+                    <option value="research">بحث قانوني</option>
+                    <option value="consultation">استشارة</option>
+                    <option value="court">جلسة محكمة</option>
+                    <option value="document">إعداد وثائق</option>
+                    <option value="meeting">اجتماع</option>
+                  </select>
+                </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Priority */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                <div className="form-group">
+                  <label className="form-label">
+                    <Flag size={14} />
                     الأولوية
                   </label>
                   <select
                     name="priority"
+                    className="form-select"
                     value={formData.priority}
                     onChange={handleInputChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   >
                     <option value="low">منخفضة</option>
                     <option value="medium">متوسطة</option>
                     <option value="high">عالية</option>
-                    <option value="urgent">عاجلة</option>
                   </select>
                 </div>
+              </div>
 
+              <div className="form-row">
                 {/* Due Date */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    تاريخ الاستحقاق *
+                <div className="form-group">
+                  <label className="form-label">
+                    <Calendar size={14} />
+                    تاريخ الاستحقاق
                   </label>
                   <input
                     type="datetime-local"
                     name="due_date"
+                    className="form-input"
                     value={formData.due_date}
                     onChange={handleInputChange}
                     required
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   />
                 </div>
 
                 {/* Estimated Hours */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    الساعات المقدرة
+                <div className="form-group">
+                  <label className="form-label">
+                    <Clock size={14} />
+                    المدة المقدرة (ساعات)
                   </label>
                   <input
                     type="number"
                     name="estimated_hours"
-                    value={formData.estimated_hours}
-                    onChange={handleInputChange}
+                    className="form-input"
+                    placeholder="0.0"
                     step="0.5"
                     min="0"
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="عدد الساعات"
+                    value={formData.estimated_hours}
+                    onChange={handleInputChange}
                   />
                 </div>
+              </div>
 
-                {/* Assigned To */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    المكلف بالمهمة *
-                  </label>
-                  {loadingLawyers ? (
-                    <div className="w-full p-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500">
-                      جاري تحميل المحامين...
+              {/* Assignee */}
+              <div className="form-group">
+                <label className="form-label">
+                  <User size={14} />
+                  تعيين إلى
+                </label>
+                <div style={{ position: 'relative' }}>
+                  <select
+                    name="assigned_to"
+                    className="form-select"
+                    value={formData.assigned_to}
+                    onChange={handleInputChange}
+                    disabled={loadingLawyers}
+                  >
+                    <option value="">(بدون تعيين)</option>
+                    {lawyers.map(lawyer => (
+                      <option key={lawyer.id} value={lawyer.id}>
+                        {lawyer.name}
+                      </option>
+                    ))}
+                  </select>
+                  {loadingLawyers && (
+                    <div style={{ position: 'absolute', left: '30px', top: '50%', transform: 'translateY(-50%)', fontSize: '10px', color: 'var(--color-text-secondary)' }}>
+                      جاري التحميل...
                     </div>
-                  ) : (
-                    <select
-                      name="assigned_to"
-                      value={formData.assigned_to}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    >
-                      <option value="">اختر محامي</option>
-                      {lawyers.map((lawyer) => (
-                        <option key={lawyer.id} value={lawyer.id}>
-                          {lawyer.name}
-                        </option>
-                      ))}
-                    </select>
                   )}
                 </div>
               </div>
 
-              {/* Actions */}
-              <div style={{
-                display: 'flex',
-                justifyContent: 'flex-end',
-                gap: '12px',
-                paddingTop: '20px',
-                borderTop: '1px solid var(--color-border)',
-                marginTop: '24px'
-              }}>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+              {/* Footer */}
+              <div className="task-modal-footer">
+                <button
                   type="button"
+                  className="btn-secondary"
                   onClick={onClose}
-                  style={{
-                    padding: '12px 24px',
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-medium)',
-                    color: 'var(--color-text)',
-                    backgroundColor: 'var(--color-background)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: '8px',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    e.currentTarget.style.backgroundColor = 'var(--color-border)';
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.backgroundColor = 'var(--color-background)';
-                  }}
                 >
                   إلغاء
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                </button>
+                <button
                   type="submit"
+                  className="btn-primary"
                   disabled={loading}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '12px 24px',
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-medium)',
-                    color: 'white',
-                    backgroundColor: loading ? 'var(--color-border)' : 'var(--color-primary)',
-                    border: 'none',
-                    borderRadius: '8px',
-                    cursor: loading ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.2s'
-                  }}
-                  onMouseEnter={(e) => {
-                    if (!loading) {
-                      e.currentTarget.style.backgroundColor = 'var(--color-primary-dark)';
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (!loading) {
-                      e.currentTarget.style.backgroundColor = 'var(--color-primary)';
-                    }
-                  }}
                 >
-                  <Plus style={{ height: '16px', width: '16px' }} />
-                  {loading ? 'جاري الإنشاء...' : 'إنشاء المهمة'}
-                </motion.button>
+                  {loading ? (
+                    'جاري الحفظ...'
+                  ) : (
+                    <>
+                      <Plus size={16} />
+                      إنشاء المهمة
+                    </>
+                  )}
+                </button>
               </div>
+
             </form>
           </motion.div>
-        </motion.div>
+        </div>
       )}
     </AnimatePresence>
   );

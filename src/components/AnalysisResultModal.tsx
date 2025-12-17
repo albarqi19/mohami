@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { X, CheckCircle, AlertCircle, Star, FileText, Gavel, Target, TrendingUp, Clock } from 'lucide-react';
 
 interface AnalysisResult {

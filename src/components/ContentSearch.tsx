@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Search, 
@@ -104,14 +104,14 @@ const ContentSearch: React.FC<ContentSearchProps> = ({
       content: 'اجتماع مع العميل لمناقشة تفاصيل القضية والاستراتيجية القانونية المتبعة',
       highlight: 'اجتماع مع العميل لمناقشة تفاصيل القضية والاستراتيجية القانونية',
       date: new Date('2025-01-05'),
-      author: 'فاطمة محامية',
+      author: 'خالد محامية',
       tags: ['اجتماع', 'عميل', 'استراتيجية'],
       relevanceScore: 75
     }
   ];
 
   const availableTags = ['عقاري', 'تجاري', 'نزاع', 'عقد', 'مراجعة', 'قانوني', 'شراكة', 'اتفاقية', 'اجتماع', 'عميل', 'استراتيجية'];
-  const availableAuthors = ['أحمد محامي', 'سارة محامية', 'محمد محامي', 'فاطمة محامية'];
+  const availableAuthors = ['أحمد محامي', 'سارة محامية', 'محمد محامي', 'خالد محامية'];
 
   const getTypeIcon = (type: string) => {
     switch (type) {

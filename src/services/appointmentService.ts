@@ -1,4 +1,4 @@
-import type { Appointment, AppointmentType, AppointmentStatus } from '../types';
+﻿import type { Appointment, AppointmentType, AppointmentStatus } from '../types';
 
 const API_BASE_URL = 'https://0e024e86d654.ngrok-free.app/api/v1';
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import Modal from './Modal';
 import { Save, X, User, MessageSquare, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -41,7 +41,7 @@ const TaskReassignModal: React.FC<TaskReassignModalProps> = ({
     { id: 'lawyer-1', name: 'أحمد محامي', workload: 'متوسط', specialization: 'قضايا مدنية' },
     { id: 'lawyer-2', name: 'سارة محامية', workload: 'منخفض', specialization: 'قضايا تجارية' },
     { id: 'lawyer-3', name: 'محمد محامي', workload: 'عالي', specialization: 'قضايا جنائية' },
-    { id: 'lawyer-4', name: 'فاطمة محامية', workload: 'متوسط', specialization: 'قضايا عمالية' },
+    { id: 'lawyer-4', name: 'خالد محامية', workload: 'متوسط', specialization: 'قضايا عمالية' },
     { id: 'lawyer-5', name: 'عبدالله محامي', workload: 'منخفض', specialization: 'قضايا عقارية' }
   ];
 

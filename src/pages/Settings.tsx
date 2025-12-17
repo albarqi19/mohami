@@ -1,17 +1,18 @@
-import React, { useState } from 'react';
-import { motion } from 'framer-motion';
-import { 
-  User, 
-  Bell, 
+﻿import React, { useState } from 'react';
+import {
+  User,
+  Bell,
   Shield,
-  Palette, 
-  Globe, 
+  Palette,
+  Globe,
   Database,
   Monitor,
   Moon,
-  Sun
+  Sun,
+  Settings as SettingsIcon
 } from 'lucide-react';
 import NotificationSettings from '../components/NotificationSettings';
+import '../styles/settings-page.css';
 
 interface SettingsTab {
   id: string;
@@ -40,174 +41,90 @@ const Settings: React.FC = () => {
     switch (activeTab) {
       case 'notifications':
         return <NotificationSettings />;
-      
+
       case 'profile':
         return (
-          <div style={{ padding: '24px' }}>
-            <div style={{ marginBottom: '24px' }}>
-              <h3 style={{ 
-                fontSize: 'var(--font-size-lg)', 
-                fontWeight: 'var(--font-weight-semibold)', 
-                marginBottom: '16px',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px'
-              }}>
-                <User style={{ height: '20px', width: '20px' }} />
-                الملف الشخصي
-              </h3>
-              
-              <div style={{ display: 'grid', gap: '16px' }}>
-                <div>
-                  <label style={{ 
-                    display: 'block', 
-                    marginBottom: '6px',
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-medium)'
-                  }}>
-                    الاسم الكامل
-                  </label>
+          <div className="settings-section">
+            <div className="settings-section__header">
+              <div className="settings-section__icon">
+                <User size={14} />
+              </div>
+              <span className="settings-section__title">الملف الشخصي</span>
+            </div>
+            <div className="settings-section__content">
+              <div className="settings-form-grid">
+                <div className="settings-field">
+                  <label className="settings-field__label">الاسم الكامل</label>
                   <input
                     type="text"
+                    className="settings-field__input"
                     defaultValue="أحمد محمد السالم"
-                    style={{
-                      width: '100%',
-                      padding: '12px 16px',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '6px',
-                      backgroundColor: 'var(--color-surface)',
-                      color: 'var(--color-text)',
-                      fontSize: 'var(--font-size-sm)'
-                    }}
                   />
                 </div>
-                
-                <div>
-                  <label style={{ 
-                    display: 'block', 
-                    marginBottom: '6px',
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-medium)'
-                  }}>
-                    البريد الإلكتروني
-                  </label>
+
+                <div className="settings-field">
+                  <label className="settings-field__label">البريد الإلكتروني</label>
                   <input
                     type="email"
+                    className="settings-field__input"
                     defaultValue="ahmed@lawfirm.com"
-                    style={{
-                      width: '100%',
-                      padding: '12px 16px',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '6px',
-                      backgroundColor: 'var(--color-surface)',
-                      color: 'var(--color-text)',
-                      fontSize: 'var(--font-size-sm)'
-                    }}
                   />
                 </div>
-                
-                <div>
-                  <label style={{ 
-                    display: 'block', 
-                    marginBottom: '6px',
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-medium)'
-                  }}>
-                    رقم الهاتف
-                  </label>
+
+                <div className="settings-field">
+                  <label className="settings-field__label">رقم الهاتف</label>
                   <input
                     type="tel"
+                    className="settings-field__input"
                     defaultValue="+966501234567"
-                    style={{
-                      width: '100%',
-                      padding: '12px 16px',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '6px',
-                      backgroundColor: 'var(--color-surface)',
-                      color: 'var(--color-text)',
-                      fontSize: 'var(--font-size-sm)'
-                    }}
                   />
                 </div>
-                
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{
-                    padding: '12px 24px',
-                    backgroundColor: 'var(--color-primary)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-medium)',
-                    cursor: 'pointer',
-                    width: 'fit-content'
-                  }}
-                >
+              </div>
+
+              <div className="settings-btn-group">
+                <button className="settings-btn settings-btn--primary">
                   حفظ التغييرات
-                </motion.button>
+                </button>
               </div>
             </div>
           </div>
         );
-      
+
       case 'appearance':
         return (
-          <div style={{ padding: '24px' }}>
-            <h3 style={{ 
-              fontSize: 'var(--font-size-lg)', 
-              fontWeight: 'var(--font-weight-semibold)', 
-              marginBottom: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <Palette style={{ height: '20px', width: '20px' }} />
-              المظهر والثيم
-            </h3>
-            
-            <div style={{ display: 'grid', gap: '24px' }}>
-              <div>
-                <h4 style={{ marginBottom: '12px', fontSize: 'var(--font-size-base)' }}>وضع الألوان</h4>
-                <div style={{ display: 'grid', gap: '12px' }}>
+          <div className="settings-section">
+            <div className="settings-section__header">
+              <div className="settings-section__icon">
+                <Palette size={14} />
+              </div>
+              <span className="settings-section__title">المظهر والثيم</span>
+            </div>
+            <div className="settings-section__content">
+              <div style={{ marginBottom: '20px' }}>
+                <label className="settings-field__label" style={{ marginBottom: '10px', display: 'block' }}>وضع الألوان</label>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {[
                     { id: 'light', label: 'فاتح', icon: Sun },
                     { id: 'dark', label: 'داكن', icon: Moon },
                     { id: 'system', label: 'حسب النظام', icon: Monitor }
                   ].map((theme) => (
-                    <label key={theme.id} style={{ 
-                      display: 'flex', 
-                      alignItems: 'center', 
-                      gap: '12px',
-                      padding: '12px 16px',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '6px',
-                      backgroundColor: 'var(--color-surface)',
-                      cursor: 'pointer',
-                      fontSize: 'var(--font-size-sm)'
-                    }}>
+                    <label key={theme.id} className="settings-radio-option">
                       <input
                         type="radio"
                         name="theme"
                         value={theme.id}
                         defaultChecked={theme.id === 'light'}
                       />
-                      <theme.icon style={{ height: '18px', width: '18px' }} />
-                      <span>{theme.label}</span>
+                      <theme.icon className="settings-radio-option__icon" />
+                      <span className="settings-radio-option__text">{theme.label}</span>
                     </label>
                   ))}
                 </div>
               </div>
-              
-              <div>
-                <h4 style={{ marginBottom: '12px', fontSize: 'var(--font-size-base)' }}>حجم الخط</h4>
-                <select style={{
-                  padding: '8px 12px',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '6px',
-                  backgroundColor: 'var(--color-surface)'
-                }}>
+
+              <div className="settings-field">
+                <label className="settings-field__label">حجم الخط</label>
+                <select className="settings-field__select" style={{ width: '150px' }}>
                   <option value="small">صغير</option>
                   <option value="medium" selected>متوسط</option>
                   <option value="large">كبير</option>
@@ -216,390 +133,170 @@ const Settings: React.FC = () => {
             </div>
           </div>
         );
-      
+
       case 'privacy':
         return (
-          <div style={{ padding: '24px' }}>
-            <h3 style={{ 
-              fontSize: 'var(--font-size-lg)', 
-              fontWeight: 'var(--font-weight-semibold)', 
-              marginBottom: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <Shield style={{ height: '20px', width: '20px' }} />
-              الخصوصية والأمان
-            </h3>
-            
-            <div style={{ display: 'grid', gap: '20px' }}>
-              <div style={{
-                padding: '16px',
-                border: '1px solid var(--color-border)',
-                borderRadius: '8px'
-              }}>
-                <h4 style={{ 
-                  marginBottom: '8px', 
-                  fontSize: 'var(--font-size-base)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  color: 'var(--color-text)'
-                }}>كلمة المرور</h4>
-                <p style={{ 
-                  color: 'var(--color-text-secondary)', 
-                  fontSize: 'var(--font-size-sm)',
-                  lineHeight: '1.5',
-                  marginBottom: '12px'
-                }}>
-                  آخر تغيير: منذ 30 يوماً
-                </p>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{
-                    padding: '8px 16px',
-                    backgroundColor: 'var(--color-secondary)',
-                    border: '1px solid var(--color-border)',
-                    borderRadius: '6px',
-                    fontSize: 'var(--font-size-sm)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  تغيير كلمة المرور
-                </motion.button>
+          <>
+            <div className="settings-section">
+              <div className="settings-section__header">
+                <div className="settings-section__icon">
+                  <Shield size={14} />
+                </div>
+                <span className="settings-section__title">كلمة المرور</span>
               </div>
-              
-              <div style={{
-                padding: '16px',
-                border: '1px solid var(--color-border)',
-                borderRadius: '8px'
-              }}>
-                <h4 style={{ 
-                  marginBottom: '8px', 
-                  fontSize: 'var(--font-size-base)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  color: 'var(--color-text)'
-                }}>المصادقة الثنائية</h4>
-                <p style={{ 
-                  color: 'var(--color-text-secondary)', 
-                  fontSize: 'var(--font-size-sm)',
-                  lineHeight: '1.5',
-                  marginBottom: '12px'
-                }}>
-                  حماية إضافية لحسابك
-                </p>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  style={{
-                    padding: '8px 16px',
-                    backgroundColor: 'var(--color-primary)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '6px',
-                    fontSize: 'var(--font-size-sm)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  تفعيل المصادقة الثنائية
-                </motion.button>
+              <div className="settings-section__content">
+                <div className="settings-option-card">
+                  <div className="settings-option-card__title">تغيير كلمة المرور</div>
+                  <div className="settings-option-card__desc">آخر تغيير: منذ 30 يوماً</div>
+                  <div className="settings-option-card__actions">
+                    <button className="settings-btn">تغيير كلمة المرور</button>
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+
+            <div className="settings-section">
+              <div className="settings-section__header">
+                <div className="settings-section__icon">
+                  <Shield size={14} />
+                </div>
+                <span className="settings-section__title">المصادقة الثنائية</span>
+              </div>
+              <div className="settings-section__content">
+                <div className="settings-option-card">
+                  <div className="settings-option-card__title">حماية إضافية لحسابك</div>
+                  <div className="settings-option-card__desc">أضف طبقة أمان إضافية باستخدام رمز التحقق</div>
+                  <div className="settings-option-card__actions">
+                    <button className="settings-btn settings-btn--primary">تفعيل المصادقة الثنائية</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         );
-      
+
       case 'language':
         return (
-          <div style={{ padding: '24px' }}>
-            <h3 style={{ 
-              fontSize: 'var(--font-size-lg)', 
-              fontWeight: 'var(--font-weight-semibold)', 
-              marginBottom: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <Globe style={{ height: '20px', width: '20px' }} />
-              اللغة والمنطقة
-            </h3>
-            
-            <div style={{ display: 'grid', gap: '20px' }}>
-              <div>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '6px',
-                  fontSize: 'var(--font-size-sm)',
-                  fontWeight: 'var(--font-weight-medium)'
-                }}>
-                  اللغة
-                </label>
-                <select style={{
-                  padding: '10px 14px',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '6px',
-                  backgroundColor: 'var(--color-surface)',
-                  color: 'var(--color-text)',
-                  fontSize: 'var(--font-size-sm)',
-                  width: '200px',
-                  cursor: 'pointer'
-                }}>
-                  <option value="ar" selected>العربية</option>
-                  <option value="en">English</option>
-                </select>
+          <div className="settings-section">
+            <div className="settings-section__header">
+              <div className="settings-section__icon">
+                <Globe size={14} />
               </div>
-              
-              <div>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '6px',
-                  fontSize: 'var(--font-size-sm)',
-                  fontWeight: 'var(--font-weight-medium)'
-                }}>
-                  المنطقة الزمنية
-                </label>
-                <select style={{
-                  padding: '10px 14px',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '6px',
-                  backgroundColor: 'var(--color-surface)',
-                  color: 'var(--color-text)',
-                  fontSize: 'var(--font-size-sm)',
-                  width: '300px',
-                  cursor: 'pointer'
-                }}>
-                  <option value="Asia/Riyadh" selected>توقيت السعودية (GMT+3)</option>
-                  <option value="Asia/Dubai">توقيت الإمارات (GMT+4)</option>
-                  <option value="Asia/Kuwait">توقيت الكويت (GMT+3)</option>
-                </select>
-              </div>
-              
-              <div>
-                <label style={{ 
-                  display: 'block', 
-                  marginBottom: '6px',
-                  fontSize: 'var(--font-size-sm)',
-                  fontWeight: 'var(--font-weight-medium)'
-                }}>
-                  تنسيق التاريخ
-                </label>
-                <select style={{
-                  padding: '10px 14px',
-                  border: '1px solid var(--color-border)',
-                  borderRadius: '6px',
-                  backgroundColor: 'var(--color-surface)',
-                  color: 'var(--color-text)',
-                  fontSize: 'var(--font-size-sm)',
-                  width: '200px',
-                  cursor: 'pointer'
-                }}>
-                  <option value="hijri">هجري</option>
-                  <option value="gregorian" selected>ميلادي</option>
-                  <option value="both">هجري وميلادي</option>
-                </select>
+              <span className="settings-section__title">اللغة والمنطقة</span>
+            </div>
+            <div className="settings-section__content">
+              <div className="settings-form-grid">
+                <div className="settings-field">
+                  <label className="settings-field__label">اللغة</label>
+                  <select className="settings-field__select">
+                    <option value="ar" selected>العربية</option>
+                    <option value="en">English</option>
+                  </select>
+                </div>
+
+                <div className="settings-field">
+                  <label className="settings-field__label">المنطقة الزمنية</label>
+                  <select className="settings-field__select">
+                    <option value="Asia/Riyadh" selected>توقيت السعودية (GMT+3)</option>
+                    <option value="Asia/Dubai">توقيت الإمارات (GMT+4)</option>
+                    <option value="Asia/Kuwait">توقيت الكويت (GMT+3)</option>
+                  </select>
+                </div>
+
+                <div className="settings-field">
+                  <label className="settings-field__label">تنسيق التاريخ</label>
+                  <select className="settings-field__select">
+                    <option value="hijri">هجري</option>
+                    <option value="gregorian" selected>ميلادي</option>
+                    <option value="both">هجري وميلادي</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
         );
-      
+
       case 'system':
         return (
-          <div style={{ padding: '24px' }}>
-            <h3 style={{ 
-              fontSize: 'var(--font-size-lg)', 
-              fontWeight: 'var(--font-weight-semibold)', 
-              marginBottom: '16px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px'
-            }}>
-              <Database style={{ height: '20px', width: '20px' }} />
-              إعدادات النظام
-            </h3>
-            
-            <div style={{ display: 'grid', gap: '20px' }}>
-              <div style={{
-                padding: '16px',
-                border: '1px solid var(--color-border)',
-                borderRadius: '8px'
-              }}>
-                <h4 style={{ 
-                  marginBottom: '8px', 
-                  fontSize: 'var(--font-size-base)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  color: 'var(--color-text)'
-                }}>النسخ الاحتياطي</h4>
-                <p style={{ 
-                  color: 'var(--color-text-secondary)', 
-                  fontSize: 'var(--font-size-sm)',
-                  lineHeight: '1.5',
-                  marginBottom: '12px'
-                }}>
-                  آخر نسخة احتياطية: اليوم 03:00 ص
-                </p>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    style={{
-                      padding: '8px 16px',
-                      backgroundColor: 'var(--color-primary)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: 'var(--font-size-sm)',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    إنشاء نسخة احتياطية
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    style={{
-                      padding: '8px 16px',
-                      backgroundColor: 'var(--color-secondary)',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '6px',
-                      fontSize: 'var(--font-size-sm)',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    جدولة النسخ الاحتياطي
-                  </motion.button>
+          <>
+            <div className="settings-section">
+              <div className="settings-section__header">
+                <div className="settings-section__icon">
+                  <Database size={14} />
                 </div>
+                <span className="settings-section__title">النسخ الاحتياطي</span>
               </div>
-              
-              <div style={{
-                padding: '16px',
-                border: '1px solid var(--color-border)',
-                borderRadius: '8px'
-              }}>
-                <h4 style={{ 
-                  marginBottom: '8px', 
-                  fontSize: 'var(--font-size-base)',
-                  fontWeight: 'var(--font-weight-semibold)',
-                  color: 'var(--color-text)'
-                }}>تصدير البيانات</h4>
-                <p style={{ 
-                  color: 'var(--color-text-secondary)', 
-                  fontSize: 'var(--font-size-sm)',
-                  lineHeight: '1.5',
-                  marginBottom: '12px'
-                }}>
-                  تصدير جميع البيانات بصيغة مختلفة
-                </p>
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    style={{
-                      padding: '8px 16px',
-                      backgroundColor: 'var(--color-success)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: 'var(--font-size-sm)',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    تصدير Excel
-                  </motion.button>
-                  <motion.button
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    style={{
-                      padding: '8px 16px',
-                      backgroundColor: 'var(--color-info)',
-                      color: 'white',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: 'var(--font-size-sm)',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    تصدير PDF
-                  </motion.button>
+              <div className="settings-section__content">
+                <div className="settings-option-card">
+                  <div className="settings-option-card__title">إدارة النسخ الاحتياطية</div>
+                  <div className="settings-option-card__desc">آخر نسخة احتياطية: اليوم 03:00 ص</div>
+                  <div className="settings-option-card__actions">
+                    <button className="settings-btn settings-btn--primary">إنشاء نسخة احتياطية</button>
+                    <button className="settings-btn">جدولة النسخ الاحتياطي</button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+
+            <div className="settings-section">
+              <div className="settings-section__header">
+                <div className="settings-section__icon">
+                  <Database size={14} />
+                </div>
+                <span className="settings-section__title">تصدير البيانات</span>
+              </div>
+              <div className="settings-section__content">
+                <div className="settings-option-card">
+                  <div className="settings-option-card__title">تصدير جميع البيانات</div>
+                  <div className="settings-option-card__desc">تصدير البيانات بصيغ مختلفة</div>
+                  <div className="settings-option-card__actions">
+                    <button className="settings-btn settings-btn--success">تصدير Excel</button>
+                    <button className="settings-btn settings-btn--info">تصدير PDF</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </>
         );
-      
+
       default:
         return <div>التبويب غير موجود</div>;
     }
   };
 
   return (
-    <div className="page-layout">
-      {/* Page Header */}
-      <div style={{ marginBottom: '32px' }}>
-        <h1 style={{
-          fontSize: 'var(--font-size-3xl)',
-          fontWeight: 'var(--font-weight-bold)',
-          color: 'var(--color-text)',
-          margin: 0,
-          marginBottom: '8px'
-        }}>
-          الإعدادات
-        </h1>
-        <p style={{
-          fontSize: 'var(--font-size-lg)',
-          color: 'var(--color-text-secondary)',
-          margin: 0
-        }}>
-          إدارة تفضيلاتك وإعدادات النظام
-        </p>
+    <div className="settings-page">
+      {/* Header */}
+      <div className="settings-header">
+        <div className="settings-header__title-area">
+          <h1>
+            <SettingsIcon size={18} />
+            الإعدادات
+          </h1>
+          <p>إدارة تفضيلاتك وإعدادات النظام</p>
+        </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '24px' }}>
-        {/* Sidebar Tabs */}
-        <div style={{
-          backgroundColor: 'var(--color-surface)',
-          border: '1px solid var(--color-border)',
-          borderRadius: '12px',
-          padding: '16px',
-          height: 'fit-content'
-        }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
-            {visibleTabs.map((tab) => {
-              const Icon = tab.icon;
-              return (
-                <motion.button
-                  key={tab.id}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setActiveTab(tab.id)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '12px',
-                    padding: '12px 16px',
-                    backgroundColor: activeTab === tab.id ? 'var(--color-primary)' : 'transparent',
-                    color: activeTab === tab.id ? 'white' : 'var(--color-text)',
-                    border: 'none',
-                    borderRadius: '8px',
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-medium)',
-                    cursor: 'pointer',
-                    textAlign: 'right',
-                    width: '100%'
-                  }}
-                >
-                  <Icon style={{ height: '18px', width: '18px' }} />
-                  {tab.label}
-                </motion.button>
-              );
-            })}
-          </div>
+      <div className="settings-layout">
+        {/* Sidebar */}
+        <div className="settings-sidebar">
+          {visibleTabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                className={`settings-sidebar__tab ${activeTab === tab.id ? 'settings-sidebar__tab--active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                <Icon size={16} />
+                {tab.label}
+              </button>
+            );
+          })}
         </div>
 
-        {/* Content Area */}
-        <div style={{
-          backgroundColor: 'var(--color-surface)',
-          border: '1px solid var(--color-border)',
-          borderRadius: '12px',
-          minHeight: '500px'
-        }}>
+        {/* Content */}
+        <div className="settings-content">
           {renderTabContent()}
         </div>
       </div>

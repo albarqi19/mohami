@@ -1,21 +1,21 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  BarChart3, 
-  PieChart, 
-  TrendingUp, 
+import {
+  BarChart3,
+  TrendingUp,
+  TrendingDown,
   Download,
-  Calendar,
-  Filter,
   FileText,
-  Users,
   Clock,
   DollarSign,
   Target,
-  AlertCircle
+  AlertCircle,
+  PieChart,
+  Users
 } from 'lucide-react';
+import '../styles/reports-page.css';
 
-// Mock data for demonstration
+// Mock data
 const mockReportsData = {
   totalCases: 45,
   activeCases: 28,
@@ -28,8 +28,8 @@ const mockReportsData = {
   monthlyRevenue: 125000,
   totalClients: 32,
   activeClients: 24,
-  averageResolutionTime: 45, // days
-  successRate: 92, // percentage
+  averageResolutionTime: 45,
+  successRate: 92,
   casesByType: [
     { type: 'عقارية', count: 15, percentage: 33 },
     { type: 'تجارية', count: 12, percentage: 27 },
@@ -38,9 +38,6 @@ const mockReportsData = {
     { type: 'جنائية', count: 4, percentage: 9 }
   ],
   monthlyStats: [
-    { month: 'يناير', cases: 8, revenue: 95000 },
-    { month: 'فبراير', cases: 6, revenue: 87000 },
-    { month: 'مارس', cases: 10, revenue: 135000 },
     { month: 'أبريل', cases: 7, revenue: 78000 },
     { month: 'مايو', cases: 9, revenue: 115000 },
     { month: 'يونيو', cases: 5, revenue: 65000 },
@@ -50,7 +47,7 @@ const mockReportsData = {
   ],
   lawyerPerformance: [
     { name: 'أحمد محمد', cases: 12, completionRate: 95, revenue: 285000 },
-    { name: 'فاطمة أحمد', cases: 10, completionRate: 88, revenue: 245000 },
+    { name: 'خالد أحمد', cases: 10, completionRate: 88, revenue: 245000 },
     { name: 'محمد علي', cases: 8, completionRate: 92, revenue: 198000 }
   ]
 };
@@ -62,582 +59,325 @@ const Reports: React.FC = () => {
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('ar-SA', {
       style: 'currency',
-      currency: 'SAR'
+      currency: 'SAR',
+      maximumFractionDigits: 0
     }).format(amount);
   };
 
-  const StatCard: React.FC<{
-    title: string;
-    value: string | number;
-    change?: string;
-    changeType?: 'positive' | 'negative' | 'neutral';
-    icon: React.ReactNode;
-    color: string;
-  }> = ({ title, value, change, changeType, icon, color }) => (
-    <motion.div
-      whileHover={{ y: -2 }}
-      style={{
-        backgroundColor: 'var(--color-surface)',
-        border: '1px solid var(--color-border)',
-        borderRadius: '12px',
-        padding: '24px',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
-    >
-      <div style={{
-        position: 'absolute',
-        top: '0',
-        right: '0',
-        left: '0',
-        height: '4px',
-        backgroundColor: color
-      }} />
-      
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'flex-start',
-        marginBottom: '16px'
-      }}>
-        <div>
-          <h3 style={{
-            fontSize: 'var(--font-size-sm)',
-            fontWeight: 'var(--font-weight-medium)',
-            color: 'var(--color-text-secondary)',
-            margin: '0 0 8px 0'
-          }}>
-            {title}
-          </h3>
-          <p style={{
-            fontSize: 'var(--font-size-2xl)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text)',
-            margin: 0
-          }}>
-            {value}
-          </p>
-        </div>
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          width: '48px',
-          height: '48px',
-          backgroundColor: `${color}20`,
-          borderRadius: '12px',
-          color: color
-        }}>
-          {icon}
-        </div>
-      </div>
-      
-      {change && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '4px'
-        }}>
-          <TrendingUp style={{
-            height: '16px',
-            width: '16px',
-            color: changeType === 'positive' ? 'var(--color-success)' :
-                   changeType === 'negative' ? 'var(--color-error)' : 'var(--color-gray-500)'
-          }} />
-          <span style={{
-            fontSize: 'var(--font-size-sm)',
-            color: changeType === 'positive' ? 'var(--color-success)' :
-                   changeType === 'negative' ? 'var(--color-error)' : 'var(--color-gray-500)',
-            fontWeight: 'var(--font-weight-medium)'
-          }}>
-            {change}
-          </span>
-        </div>
-      )}
-    </motion.div>
-  );
-
-  const ChartCard: React.FC<{
-    title: string;
-    children: React.ReactNode;
-  }> = ({ title, children }) => (
-    <div style={{
-      backgroundColor: 'var(--color-surface)',
-      border: '1px solid var(--color-border)',
-      borderRadius: '12px',
-      padding: '24px'
-    }}>
-      <h3 style={{
-        fontSize: 'var(--font-size-lg)',
-        fontWeight: 'var(--font-weight-semibold)',
-        color: 'var(--color-text)',
-        margin: '0 0 20px 0'
-      }}>
-        {title}
-      </h3>
-      {children}
-    </div>
-  );
+  const chartColors = [
+    'hsl(220, 70%, 50%)',
+    'hsl(160, 70%, 45%)',
+    'hsl(35, 90%, 50%)',
+    'hsl(340, 75%, 55%)',
+    'hsl(280, 60%, 55%)'
+  ];
 
   return (
-    <div className="page-layout">
-      {/* Header */}
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: '32px'
-      }}>
-        <div>
-          <h1 style={{
-            fontSize: 'var(--font-size-2xl)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text)',
-            margin: 0,
-            marginBottom: '8px'
-          }}>
+    <div className="reports-page">
+      {/* Header with Filters */}
+      <div className="reports-header">
+        <div className="reports-header__title-area">
+          <h1>
+            <BarChart3 size={18} />
             التقارير والإحصائيات
           </h1>
-          <p style={{
-            fontSize: 'var(--font-size-sm)',
-            color: 'var(--color-text-secondary)',
-            margin: 0
-          }}>
-            متابعة الأداء وتحليل البيانات لاتخاذ قرارات مدروسة
-          </p>
+          <p>متابعة الأداء وتحليل البيانات</p>
         </div>
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '12px 20px',
-            backgroundColor: 'var(--color-primary)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '8px',
-            fontSize: 'var(--font-size-sm)',
-            fontWeight: 'var(--font-weight-medium)',
-            cursor: 'pointer'
-          }}
-        >
-          <Download style={{ height: '18px', width: '18px' }} />
-          تصدير التقرير
-        </motion.button>
-      </div>
-
-      {/* Filters */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-        gap: '16px',
-        marginBottom: '32px',
-        padding: '20px',
-        backgroundColor: 'var(--color-surface)',
-        borderRadius: '12px',
-        border: '1px solid var(--color-border)'
-      }}>
-        <div>
-          <label style={{
-            display: 'block',
-            fontSize: 'var(--font-size-sm)',
-            fontWeight: 'var(--font-weight-medium)',
-            color: 'var(--color-text)',
-            marginBottom: '6px'
-          }}>
-            الفترة الزمنية
-          </label>
-          <select
-            value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              fontSize: 'var(--font-size-sm)',
-              color: 'var(--color-text)',
-              backgroundColor: 'var(--color-background)',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="last_week">الأسبوع الماضي</option>
-            <option value="last_month">الشهر الماضي</option>
-            <option value="last_quarter">الربع الأخير</option>
-            <option value="last_year">السنة الماضية</option>
-            <option value="custom">فترة مخصصة</option>
-          </select>
-        </div>
-
-        <div>
-          <label style={{
-            display: 'block',
-            fontSize: 'var(--font-size-sm)',
-            fontWeight: 'var(--font-weight-medium)',
-            color: 'var(--color-text)',
-            marginBottom: '6px'
-          }}>
-            نوع التقرير
-          </label>
-          <select
-            value={reportType}
-            onChange={(e) => setReportType(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '10px 12px',
-              fontSize: 'var(--font-size-sm)',
-              color: 'var(--color-text)',
-              backgroundColor: 'var(--color-background)',
-              border: '1px solid var(--color-border)',
-              borderRadius: '8px',
-              outline: 'none',
-              cursor: 'pointer'
-            }}
-          >
-            <option value="overview">نظرة عامة</option>
-            <option value="cases">تقرير القضايا</option>
-            <option value="financial">التقرير المالي</option>
-            <option value="performance">تقرير الأداء</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Stats Overview */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '20px',
-        marginBottom: '32px'
-      }}>
-        <StatCard
-          title="إجمالي القضايا"
-          value={mockReportsData.totalCases}
-          change="+12% من الشهر الماضي"
-          changeType="positive"
-          icon={<FileText style={{ height: '24px', width: '24px' }} />}
-          color="var(--color-primary)"
-        />
-        
-        <StatCard
-          title="القضايا النشطة"
-          value={mockReportsData.activeCases}
-          change="+8% من الشهر الماضي"
-          changeType="positive"
-          icon={<Target style={{ height: '24px', width: '24px' }} />}
-          color="var(--color-success)"
-        />
-        
-        <StatCard
-          title="الإيرادات الشهرية"
-          value={formatCurrency(mockReportsData.monthlyRevenue)}
-          change="+15% من الشهر الماضي"
-          changeType="positive"
-          icon={<DollarSign style={{ height: '24px', width: '24px' }} />}
-          color="var(--color-warning)"
-        />
-        
-        <StatCard
-          title="معدل النجاح"
-          value={`${mockReportsData.successRate}%`}
-          change="+3% من الشهر الماضي"
-          changeType="positive"
-          icon={<TrendingUp style={{ height: '24px', width: '24px' }} />}
-          color="var(--color-info)"
-        />
-      </div>
-
-      {/* Charts Section */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(400px, 1fr))',
-        gap: '24px',
-        marginBottom: '32px'
-      }}>
-        {/* Cases by Type */}
-        <ChartCard title="توزيع القضايا حسب النوع">
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '12px'
-          }}>
-            {mockReportsData.casesByType.map((item, index) => (
-              <div key={index} style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '12px',
-                backgroundColor: 'var(--color-background)',
-                borderRadius: '8px'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px'
-                }}>
-                  <div style={{
-                    width: '12px',
-                    height: '12px',
-                    borderRadius: '50%',
-                    backgroundColor: `hsl(${index * 72}, 60%, 50%)`
-                  }} />
-                  <span style={{
-                    fontSize: 'var(--font-size-sm)',
-                    color: 'var(--color-text)',
-                    fontWeight: 'var(--font-weight-medium)'
-                  }}>
-                    {item.type}
-                  </span>
-                </div>
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px'
-                }}>
-                  <span style={{
-                    fontSize: 'var(--font-size-sm)',
-                    color: 'var(--color-text-secondary)'
-                  }}>
-                    {item.count} قضية
-                  </span>
-                  <span style={{
-                    fontSize: 'var(--font-size-xs)',
-                    color: 'var(--color-text-secondary)',
-                    backgroundColor: 'var(--color-surface)',
-                    padding: '2px 8px',
-                    borderRadius: '4px'
-                  }}>
-                    {item.percentage}%
-                  </span>
-                </div>
-              </div>
-            ))}
-          </div>
-        </ChartCard>
-
-        {/* Monthly Performance */}
-        <ChartCard title="الأداء الشهري">
-          <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px'
-          }}>
-            {mockReportsData.monthlyStats.slice(-6).map((month, index) => (
-              <div key={index} style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                padding: '8px 0'
-              }}>
-                <span style={{
-                  fontSize: 'var(--font-size-sm)',
-                  color: 'var(--color-text)',
-                  fontWeight: 'var(--font-weight-medium)',
-                  minWidth: '60px'
-                }}>
-                  {month.month}
-                </span>
-                <div style={{
-                  flex: 1,
-                  height: '8px',
-                  backgroundColor: 'var(--color-background)',
-                  borderRadius: '4px',
-                  margin: '0 12px',
-                  position: 'relative'
-                }}>
-                  <div style={{
-                    height: '100%',
-                    width: `${(month.cases / 15) * 100}%`,
-                    backgroundColor: 'var(--color-primary)',
-                    borderRadius: '4px'
-                  }} />
-                </div>
-                <span style={{
-                  fontSize: 'var(--font-size-sm)',
-                  color: 'var(--color-text-secondary)',
-                  minWidth: '80px',
-                  textAlign: 'left'
-                }}>
-                  {month.cases} قضية
-                </span>
-              </div>
-            ))}
-          </div>
-        </ChartCard>
-      </div>
-
-      {/* Lawyer Performance */}
-      <ChartCard title="أداء المحامين">
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-          gap: '20px'
-        }}>
-          {mockReportsData.lawyerPerformance.map((lawyer, index) => (
-            <motion.div
-              key={index}
-              whileHover={{ y: -2 }}
-              style={{
-                backgroundColor: 'var(--color-background)',
-                border: '1px solid var(--color-border)',
-                borderRadius: '12px',
-                padding: '20px'
-              }}
+        <div className="reports-header__actions">
+          <div className="reports-filter">
+            <span className="reports-filter__label">الفترة:</span>
+            <select
+              className="reports-filter__select"
+              value={dateRange}
+              onChange={(e) => setDateRange(e.target.value)}
             >
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '12px',
-                marginBottom: '16px'
-              }}>
-                <div style={{
-                  width: '48px',
-                  height: '48px',
-                  backgroundColor: 'var(--color-primary)',
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'white',
-                  fontSize: 'var(--font-size-lg)',
-                  fontWeight: 'var(--font-weight-bold)'
-                }}>
-                  {lawyer.name.charAt(0)}
-                </div>
-                <div>
-                  <h4 style={{
-                    fontSize: 'var(--font-size-lg)',
-                    fontWeight: 'var(--font-weight-semibold)',
-                    color: 'var(--color-text)',
-                    margin: 0,
-                    marginBottom: '4px'
-                  }}>
-                    {lawyer.name}
-                  </h4>
-                  <p style={{
-                    fontSize: 'var(--font-size-sm)',
-                    color: 'var(--color-text-secondary)',
-                    margin: 0
-                  }}>
-                    محامي رئيسي
-                  </p>
-                </div>
-              </div>
-              
-              <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '12px'
-              }}>
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{
-                    fontSize: 'var(--font-size-sm)',
-                    color: 'var(--color-text-secondary)'
-                  }}>
-                    عدد القضايا
-                  </span>
-                  <span style={{
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-semibold)',
-                    color: 'var(--color-text)'
-                  }}>
-                    {lawyer.cases}
-                  </span>
-                </div>
-                
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{
-                    fontSize: 'var(--font-size-sm)',
-                    color: 'var(--color-text-secondary)'
-                  }}>
-                    معدل الإنجاز
-                  </span>
-                  <span style={{
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-semibold)',
-                    color: 'var(--color-success)'
-                  }}>
-                    {lawyer.completionRate}%
-                  </span>
-                </div>
-                
-                <div style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center'
-                }}>
-                  <span style={{
-                    fontSize: 'var(--font-size-sm)',
-                    color: 'var(--color-text-secondary)'
-                  }}>
-                    الإيرادات
-                  </span>
-                  <span style={{
-                    fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-semibold)',
-                    color: 'var(--color-primary)'
-                  }}>
-                    {formatCurrency(lawyer.revenue)}
-                  </span>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+              <option value="last_week">الأسبوع الماضي</option>
+              <option value="last_month">الشهر الماضي</option>
+              <option value="last_quarter">الربع الأخير</option>
+              <option value="last_year">السنة الماضية</option>
+            </select>
+          </div>
+          <div className="reports-filter">
+            <span className="reports-filter__label">النوع:</span>
+            <select
+              className="reports-filter__select"
+              value={reportType}
+              onChange={(e) => setReportType(e.target.value)}
+            >
+              <option value="overview">نظرة عامة</option>
+              <option value="cases">القضايا</option>
+              <option value="financial">المالي</option>
+              <option value="performance">الأداء</option>
+            </select>
+          </div>
+          <button className="reports-header__btn reports-header__btn--primary">
+            <Download size={16} />
+            تصدير
+          </button>
         </div>
-      </ChartCard>
+      </div>
 
-      {/* Summary Cards */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '20px',
-        marginTop: '32px'
-      }}>
-        <StatCard
-          title="متوسط وقت الحل"
-          value={`${mockReportsData.averageResolutionTime} يوم`}
-          change="-5 أيام من الشهر الماضي"
-          changeType="positive"
-          icon={<Clock style={{ height: '24px', width: '24px' }} />}
-          color="var(--color-success)"
-        />
-        
-        <StatCard
-          title="المهام المتأخرة"
-          value={mockReportsData.overdueTasks}
-          change="-3 من الشهر الماضي"
-          changeType="positive"
-          icon={<AlertCircle style={{ height: '24px', width: '24px' }} />}
-          color="var(--color-error)"
-        />
-        
-        <StatCard
-          title="العملاء النشطون"
-          value={mockReportsData.activeClients}
-          change="+4 من الشهر الماضي"
-          changeType="positive"
-          icon={<Users style={{ height: '24px', width: '24px' }} />}
-          color="var(--color-info)"
-        />
-        
-        <StatCard
-          title="إجمالي الإيرادات"
-          value={formatCurrency(mockReportsData.totalRevenue)}
-          change="+18% من العام الماضي"
-          changeType="positive"
-          icon={<DollarSign style={{ height: '24px', width: '24px' }} />}
-          color="var(--color-warning)"
-        />
+      {/* Main Content */}
+      <div className="reports-content">
+        {/* Primary Stats Row */}
+        <div className="reports-stats-grid">
+          <motion.div
+            className="reports-stat-card"
+            whileHover={{ y: -2 }}
+          >
+            <div className="reports-stat-card__icon reports-stat-card__icon--navy">
+              <FileText size={18} />
+            </div>
+            <div className="reports-stat-card__content">
+              <div className="reports-stat-card__value">{mockReportsData.totalCases}</div>
+              <div className="reports-stat-card__label">إجمالي القضايا</div>
+              <div className="reports-stat-card__trend reports-stat-card__trend--positive">
+                <TrendingUp size={12} />
+                +12%
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="reports-stat-card"
+            whileHover={{ y: -2 }}
+          >
+            <div className="reports-stat-card__icon reports-stat-card__icon--green">
+              <Target size={18} />
+            </div>
+            <div className="reports-stat-card__content">
+              <div className="reports-stat-card__value">{mockReportsData.activeCases}</div>
+              <div className="reports-stat-card__label">القضايا النشطة</div>
+              <div className="reports-stat-card__trend reports-stat-card__trend--positive">
+                <TrendingUp size={12} />
+                +8%
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="reports-stat-card"
+            whileHover={{ y: -2 }}
+          >
+            <div className="reports-stat-card__icon reports-stat-card__icon--orange">
+              <DollarSign size={18} />
+            </div>
+            <div className="reports-stat-card__content">
+              <div className="reports-stat-card__value">{formatCurrency(mockReportsData.monthlyRevenue)}</div>
+              <div className="reports-stat-card__label">الإيرادات الشهرية</div>
+              <div className="reports-stat-card__trend reports-stat-card__trend--positive">
+                <TrendingUp size={12} />
+                +15%
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="reports-stat-card"
+            whileHover={{ y: -2 }}
+          >
+            <div className="reports-stat-card__icon reports-stat-card__icon--blue">
+              <BarChart3 size={18} />
+            </div>
+            <div className="reports-stat-card__content">
+              <div className="reports-stat-card__value">{mockReportsData.successRate}%</div>
+              <div className="reports-stat-card__label">معدل النجاح</div>
+              <div className="reports-stat-card__trend reports-stat-card__trend--positive">
+                <TrendingUp size={12} />
+                +3%
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Secondary Stats Row */}
+        <div className="reports-stats-grid" style={{ marginBottom: '16px' }}>
+          <motion.div
+            className="reports-stat-card"
+            whileHover={{ y: -2 }}
+          >
+            <div className="reports-stat-card__icon reports-stat-card__icon--green">
+              <Clock size={18} />
+            </div>
+            <div className="reports-stat-card__content">
+              <div className="reports-stat-card__value">{mockReportsData.averageResolutionTime} يوم</div>
+              <div className="reports-stat-card__label">متوسط وقت الحل</div>
+              <div className="reports-stat-card__trend reports-stat-card__trend--positive">
+                <TrendingDown size={12} />
+                -5 أيام
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="reports-stat-card"
+            whileHover={{ y: -2 }}
+          >
+            <div className="reports-stat-card__icon reports-stat-card__icon--red">
+              <AlertCircle size={18} />
+            </div>
+            <div className="reports-stat-card__content">
+              <div className="reports-stat-card__value">{mockReportsData.overdueTasks}</div>
+              <div className="reports-stat-card__label">المهام المتأخرة</div>
+              <div className="reports-stat-card__trend reports-stat-card__trend--positive">
+                <TrendingDown size={12} />
+                -3
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="reports-stat-card"
+            whileHover={{ y: -2 }}
+          >
+            <div className="reports-stat-card__icon reports-stat-card__icon--navy">
+              <Users size={18} />
+            </div>
+            <div className="reports-stat-card__content">
+              <div className="reports-stat-card__value">{mockReportsData.activeClients}</div>
+              <div className="reports-stat-card__label">العملاء النشطون</div>
+              <div className="reports-stat-card__trend reports-stat-card__trend--positive">
+                <TrendingUp size={12} />
+                +4
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="reports-stat-card"
+            whileHover={{ y: -2 }}
+          >
+            <div className="reports-stat-card__icon reports-stat-card__icon--orange">
+              <DollarSign size={18} />
+            </div>
+            <div className="reports-stat-card__content">
+              <div className="reports-stat-card__value">{formatCurrency(mockReportsData.totalRevenue)}</div>
+              <div className="reports-stat-card__label">إجمالي الإيرادات</div>
+              <div className="reports-stat-card__trend reports-stat-card__trend--positive">
+                <TrendingUp size={12} />
+                +18%
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Charts Grid */}
+        <div className="reports-widget-grid">
+          {/* Cases by Type */}
+          <div className="reports-widget">
+            <div className="reports-widget__header">
+              <div className="reports-widget__title">
+                <div className="reports-widget__title-icon">
+                  <PieChart size={14} />
+                </div>
+                توزيع القضايا
+              </div>
+            </div>
+            <div className="reports-widget__content">
+              <div className="reports-chart-list">
+                {mockReportsData.casesByType.map((item, index) => (
+                  <div key={index} className="reports-chart-item">
+                    <div className="reports-chart-item__legend">
+                      <div
+                        className="reports-chart-item__dot"
+                        style={{ backgroundColor: chartColors[index] }}
+                      />
+                      <span className="reports-chart-item__label">{item.type}</span>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="reports-chart-item__value">{item.count} قضية</span>
+                      <span className="reports-chart-item__badge">{item.percentage}%</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Monthly Performance */}
+          <div className="reports-widget">
+            <div className="reports-widget__header">
+              <div className="reports-widget__title">
+                <div className="reports-widget__title-icon">
+                  <BarChart3 size={14} />
+                </div>
+                الأداء الشهري
+              </div>
+            </div>
+            <div className="reports-widget__content">
+              <div className="reports-bar-chart">
+                {mockReportsData.monthlyStats.map((month, index) => (
+                  <div key={index} className="reports-bar-row">
+                    <span className="reports-bar-row__label">{month.month}</span>
+                    <div className="reports-bar-row__track">
+                      <motion.div
+                        className="reports-bar-row__fill"
+                        initial={{ width: 0 }}
+                        whileInView={{ width: `${(month.cases / 12) * 100}%` }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6, delay: index * 0.08 }}
+                      />
+                    </div>
+                    <span className="reports-bar-row__value">{month.cases} قضية</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Team Performance */}
+        <div className="reports-widget" style={{ marginBottom: '16px' }}>
+          <div className="reports-widget__header">
+            <div className="reports-widget__title">
+              <div className="reports-widget__title-icon">
+                <Users size={14} />
+              </div>
+              أداء فريق العمل
+            </div>
+          </div>
+          <div className="reports-widget__content">
+            <div className="reports-team-grid">
+              {mockReportsData.lawyerPerformance.map((lawyer, index) => (
+                <motion.div
+                  key={index}
+                  className="reports-team-card"
+                  whileHover={{ y: -2 }}
+                >
+                  <div className="reports-team-card__header">
+                    <div className="reports-team-card__avatar">
+                      {lawyer.name.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="reports-team-card__name">{lawyer.name}</div>
+                      <div className="reports-team-card__role">محامي رئيسي</div>
+                    </div>
+                  </div>
+                  <div className="reports-team-card__metrics">
+                    <div className="reports-team-card__metric">
+                      <span className="reports-team-card__metric-label">القضايا</span>
+                      <span className="reports-team-card__metric-value reports-team-card__metric-value--navy">
+                        {lawyer.cases}
+                      </span>
+                    </div>
+                    <div className="reports-team-card__metric">
+                      <span className="reports-team-card__metric-label">معدل الإنجاز</span>
+                      <span className="reports-team-card__metric-value reports-team-card__metric-value--green">
+                        {lawyer.completionRate}%
+                      </span>
+                    </div>
+                    <div className="reports-team-card__metric">
+                      <span className="reports-team-card__metric-label">الإيرادات</span>
+                      <span className="reports-team-card__metric-value">
+                        {formatCurrency(lawyer.revenue)}
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

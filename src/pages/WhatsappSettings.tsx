@@ -1,12 +1,12 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Modal from '../components/Modal';
-import { 
-  MessageSquare, 
-  Settings, 
-  Save, 
-  RefreshCw, 
-  Send, 
+import {
+  MessageSquare,
+  Settings,
+  Save,
+  RefreshCw,
+  Send,
   Clock,
   Globe,
   Phone,
@@ -21,6 +21,7 @@ import {
   CheckCircle,
   XCircle
 } from 'lucide-react';
+import '../styles/whatsapp-settings.css';
 
 interface WhatsappSettings {
   id?: number;
@@ -92,7 +93,7 @@ const WhatsappSettings: React.FC = () => {
   const [activeTab, setActiveTab] = useState('general');
   const [testMessage, setTestMessage] = useState({ phone: '', message: '' });
   const [sendingTest, setSendingTest] = useState(false);
-  
+
   // WhatsApp Instances State
   const [instances, setInstances] = useState<WhatsappInstance[]>([]);
   const [showAddInstance, setShowAddInstance] = useState(false);
@@ -236,7 +237,7 @@ const WhatsappSettings: React.FC = () => {
           created_at: new Date().toISOString()
         },
         {
-          id: '2', 
+          id: '2',
           instance_name: 'billing_dept',
           status: 'disconnected',
           token: 'token456',
@@ -255,7 +256,7 @@ const WhatsappSettings: React.FC = () => {
 
     try {
       console.log('🚀 إنشاء instance جديد مع Evolution API...');
-      
+
       // استدعاء Evolution API الحقيقي
       const response = await fetch('http://localhost:8080/instance/create', {
         method: 'POST',
@@ -279,7 +280,7 @@ const WhatsappSettings: React.FC = () => {
 
       const result = await response.json();
       console.log('✅ Evolution API Response:', result);
-      
+
       // إنشاء instance جديد
       const newInstance: WhatsappInstance = {
         id: Date.now().toString(),
@@ -319,20 +320,20 @@ const WhatsappSettings: React.FC = () => {
                   'apikey': '429683C4C977415CAAFCCE10F7D57E11'
                 }
               });
-              
+
               if (statusResponse.ok) {
                 const statusData = await statusResponse.json();
                 console.log(`📱 حالة Instance من ${path}:`, statusData);
-                
+
                 // فحص حالات الاتصال المختلفة
-                const isConnected = 
+                const isConnected =
                   statusData.instance?.state === 'open' ||
                   statusData.connectionStatus === 'open' ||
                   statusData.status === 'open' ||
                   (statusData[0]?.connectionStatus === 'open') ||
                   (statusData.data && statusData.data[0]?.connectionStatus === 'open');
 
-                const phoneNumber = 
+                const phoneNumber =
                   statusData.instance?.key?.remoteJid ||
                   statusData.instance?.wuid ||
                   statusData.phoneNumber ||
@@ -341,21 +342,21 @@ const WhatsappSettings: React.FC = () => {
 
                 if (isConnected) {
                   console.log('🎉 تم الاتصال بنجاح! الرقم:', phoneNumber);
-                  
-                  setInstances(prev => prev.map(instance => 
-                    instance.instance_name === newInstanceName 
-                      ? { 
-                          ...instance, 
-                          status: 'connected', 
-                          phone_number: phoneNumber || '+966xxxxxxxxx'
-                        }
+
+                  setInstances(prev => prev.map(instance =>
+                    instance.instance_name === newInstanceName
+                      ? {
+                        ...instance,
+                        status: 'connected',
+                        phone_number: phoneNumber || '+966xxxxxxxxx'
+                      }
                       : instance
                   ));
-                  
+
                   // إغلاق Modal تلقائياً
                   setSelectedQRCode(null);
                   clearInterval(checkStatus);
-                  
+
                   alert('🎉 تم ربط الواتساب بنجاح!');
                   return;
                 }
@@ -384,7 +385,7 @@ const WhatsappSettings: React.FC = () => {
 
     try {
       console.log('🗑️ حذف instance من Evolution API:', instance.instance_name);
-      
+
       const response = await fetch(`http://localhost:8080/instance/delete/${instance.instance_name}`, {
         method: 'DELETE',
         headers: {
@@ -398,7 +399,7 @@ const WhatsappSettings: React.FC = () => {
 
       const result = await response.json();
       console.log('✅ Delete Response:', result);
-      
+
       // حذف من القائمة
       setInstances(prev => prev.filter(instance => instance.id !== instanceId));
 
@@ -411,7 +412,7 @@ const WhatsappSettings: React.FC = () => {
   const getQRCode = async (instanceName: string) => {
     try {
       console.log('📱 جلب QR Code من Evolution API للـ instance:', instanceName);
-      
+
       // جربة عدة مسارات محتملة لـ QR Code
       const possiblePaths = [
         `instance/qrcode/${instanceName}`,
@@ -454,24 +455,24 @@ const WhatsappSettings: React.FC = () => {
             'apikey': '429683C4C977415CAAFCCE10F7D57E11'
           }
         });
-        
+
         if (infoResponse.ok) {
           const instances = await infoResponse.json();
           console.log('📋 قائمة Instances:', instances);
-          
+
           // البحث عن Instance المحدد
-          const targetInstance = instances.find((inst: any) => 
-            inst.instanceName === instanceName || 
+          const targetInstance = instances.find((inst: any) =>
+            inst.instanceName === instanceName ||
             inst.name === instanceName ||
             inst.instance === instanceName
           );
-          
+
           if (targetInstance && (targetInstance.qrcode || targetInstance.qr)) {
             result = { qrcode: targetInstance.qrcode || targetInstance.qr };
             console.log('✅ تم العثور على QR في قائمة Instances');
           }
         }
-        
+
         throw new Error('لم يتم العثور على QR Code في أي من المسارات المحتملة');
       }
 
@@ -479,10 +480,10 @@ const WhatsappSettings: React.FC = () => {
 
       // معالجة QR Code حسب نوع البيانات المرجعة
       const qrData = result.qrcode || result.base64 || result.code || result.qr;
-      
+
       if (qrData) {
         console.log('🎯 QR Data نوع:', typeof qrData, 'المحتوى:', qrData);
-        
+
         if (typeof qrData === 'string') {
           if (qrData.startsWith('data:image')) {
             // صورة base64 جاهزة
@@ -523,7 +524,7 @@ const WhatsappSettings: React.FC = () => {
           'apikey': '429683C4C977415CAAFCCE10F7D57E11'
         }
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         console.log('✅ Evolution API متاح:', result);
@@ -573,787 +574,600 @@ const WhatsappSettings: React.FC = () => {
   ];
 
   return (
-    <div className="page-layout">
+    <div className="whatsapp-page">
       {/* Header */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
-        alignItems: 'center',
-        marginBottom: '24px'
-      }}>
-        <div>
-          <h1 style={{
-            fontSize: 'var(--font-size-3xl)',
-            fontWeight: 'var(--font-weight-bold)',
-            color: 'var(--color-text)',
-            margin: 0,
-            marginBottom: '8px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px'
-          }}>
-            <MessageSquare style={{ height: '32px', width: '32px', color: 'var(--color-success)' }} />
+      <div className="whatsapp-header">
+        <div className="whatsapp-header__title-area">
+          <h1>
+            <MessageSquare size={18} />
             إعدادات الواتساب
           </h1>
-          <p style={{
-            fontSize: 'var(--font-size-sm)',
-            color: 'var(--color-text-secondary)',
-            margin: 0
-          }}>
-            إدارة إعدادات التنبيهات والرسائل عبر الواتساب
-          </p>
+          <p>إدارة إعدادات التنبيهات والرسائل عبر الواتساب</p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+        <div className="whatsapp-header__actions">
+          <button
+            className="whatsapp-header__btn"
             onClick={resetToDefaults}
             disabled={saving}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 16px',
-              backgroundColor: 'var(--color-gray-100)',
-              color: 'var(--color-text-secondary)',
-              border: 'none',
-              borderRadius: 'var(--border-radius)',
-              fontSize: 'var(--font-size-sm)',
-              cursor: 'pointer',
-              opacity: saving ? 0.5 : 1
-            }}
           >
-            <RefreshCw style={{ height: '16px', width: '16px' }} />
+            <RefreshCw size={16} />
             إعادة التعيين
-          </motion.button>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+          </button>
+          <button
+            className="whatsapp-header__btn whatsapp-header__btn--primary"
             onClick={saveSettings}
             disabled={saving}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '8px 24px',
-              backgroundColor: 'var(--color-primary)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--border-radius)',
-              fontSize: 'var(--font-size-sm)',
-              cursor: 'pointer',
-              opacity: saving ? 0.5 : 1
-            }}
           >
             {saving ? (
-              <div style={{
-                width: '16px',
-                height: '16px',
-                border: '2px solid transparent',
-                borderTop: '2px solid white',
-                borderRadius: '50%',
-                animation: 'spin 1s linear infinite'
-              }}></div>
+              <div className="whatsapp-spinner"></div>
             ) : (
-              <Save style={{ height: '16px', width: '16px' }} />
+              <Save size={16} />
             )}
             حفظ الإعدادات
-          </motion.button>
+          </button>
         </div>
       </div>
 
       {/* Tabs */}
-      <div style={{ borderBottom: '1px solid var(--color-border)', marginBottom: '24px' }}>
-        <div style={{ display: 'flex', gap: '32px' }}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                padding: '8px 4px',
-                borderBottom: activeTab === tab.id ? '2px solid var(--color-primary)' : '2px solid transparent',
-                fontWeight: 'var(--font-weight-medium)',
-                fontSize: 'var(--font-size-sm)',
-                color: activeTab === tab.id ? 'var(--color-primary)' : 'var(--color-text-secondary)',
-                background: 'none',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.2s'
-              }}
-            >
-              <tab.icon style={{ height: '16px', width: '16px' }} />
-              {tab.name}
-            </button>
-          ))}
-        </div>
+      <div className="whatsapp-tabs">
+        {tabs.map((tab) => (
+          <button
+            key={tab.id}
+            className={`whatsapp-tab ${activeTab === tab.id ? 'whatsapp-tab--active' : ''}`}
+            onClick={() => setActiveTab(tab.id)}
+          >
+            <tab.icon size={14} />
+            {tab.name}
+          </button>
+        ))}
       </div>
 
       {/* Content */}
-      <div style={{
-        backgroundColor: 'var(--color-card)',
-        borderRadius: 'var(--border-radius-lg)',
-        boxShadow: 'var(--shadow-sm)',
-        padding: '24px'
-      }}>
-        {activeTab === 'general' && (
-          <div className="space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">الإعدادات العامة</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Globe className="h-4 w-4 inline ml-1" />
-                  رابط الـ Webhook
-                </label>
-                <input
-                  type="url"
-                  value={settings.webhook_url || ''}
-                  onChange={(e) => setSettings({ ...settings, webhook_url: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="https://example.com/webhook"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Phone className="h-4 w-4 inline ml-1" />
-                  معرف رقم الهاتف
-                </label>
-                <input
-                  type="text"
-                  value={settings.phone_number_id || ''}
-                  onChange={(e) => setSettings({ ...settings, phone_number_id: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Phone Number ID"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Key className="h-4 w-4 inline ml-1" />
-                  رمز الوصول
-                </label>
-                <input
-                  type="password"
-                  value={settings.access_token || ''}
-                  onChange={(e) => setSettings({ ...settings, access_token: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Access Token"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  <Key className="h-4 w-4 inline ml-1" />
-                  رمز التحقق
-                </label>
-                <input
-                  type="text"
-                  value={settings.verify_token || ''}
-                  onChange={(e) => setSettings({ ...settings, verify_token: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Verify Token"
-                />
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={settings.notifications_enabled}
-                  onChange={(e) => setSettings({ ...settings, notifications_enabled: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-gray-700">تفعيل التنبيهات</span>
-              </label>
-
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={settings.daily_report_enabled}
-                  onChange={(e) => setSettings({ ...settings, daily_report_enabled: e.target.checked })}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <span className="text-sm font-medium text-gray-700">تفعيل التقرير اليومي</span>
-              </label>
-
-              {settings.daily_report_enabled && (
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-gray-600">في تمام الساعة:</span>
-                  <input
-                    type="time"
-                    value={settings.daily_report_time}
-                    onChange={(e) => setSettings({ ...settings, daily_report_time: e.target.value })}
-                    className="px-2 py-1 border border-gray-300 rounded text-sm"
-                  />
+      <div className="whatsapp-content">
+        <div className="whatsapp-section">
+          <div className="whatsapp-section__content">
+            {activeTab === 'general' && (
+              <>
+                <div className="whatsapp-section__header">
+                  <div className="whatsapp-section__title">
+                    <div className="whatsapp-section__title-icon">
+                      <Settings size={14} />
+                    </div>
+                    الإعدادات العامة
+                  </div>
                 </div>
-              )}
-            </div>
+                <div className="whatsapp-section__content">
+                  <div className="whatsapp-form-grid">
+                    <div className="whatsapp-field">
+                      <label className="whatsapp-field__label">
+                        <Globe size={14} />
+                        رابط الـ Webhook
+                      </label>
+                      <input
+                        type="url"
+                        className="whatsapp-field__input"
+                        value={settings.webhook_url || ''}
+                        onChange={(e) => setSettings({ ...settings, webhook_url: e.target.value })}
+                        placeholder="https://example.com/webhook"
+                      />
+                    </div>
+
+                    <div className="whatsapp-field">
+                      <label className="whatsapp-field__label">
+                        <Phone size={14} />
+                        معرف رقم الهاتف
+                      </label>
+                      <input
+                        type="text"
+                        className="whatsapp-field__input"
+                        value={settings.phone_number_id || ''}
+                        onChange={(e) => setSettings({ ...settings, phone_number_id: e.target.value })}
+                        placeholder="Phone Number ID"
+                      />
+                    </div>
+
+                    <div className="whatsapp-field">
+                      <label className="whatsapp-field__label">
+                        <Key size={14} />
+                        رمز الوصول
+                      </label>
+                      <input
+                        type="password"
+                        className="whatsapp-field__input"
+                        value={settings.access_token || ''}
+                        onChange={(e) => setSettings({ ...settings, access_token: e.target.value })}
+                        placeholder="Access Token"
+                      />
+                    </div>
+
+                    <div className="whatsapp-field">
+                      <label className="whatsapp-field__label">
+                        <Key size={14} />
+                        رمز التحقق
+                      </label>
+                      <input
+                        type="text"
+                        className="whatsapp-field__input"
+                        value={settings.verify_token || ''}
+                        onChange={(e) => setSettings({ ...settings, verify_token: e.target.value })}
+                        placeholder="Verify Token"
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '16px', marginTop: '16px', flexWrap: 'wrap' }}>
+                    <label className="whatsapp-toggle">
+                      <input
+                        type="checkbox"
+                        className="whatsapp-toggle__checkbox"
+                        checked={settings.notifications_enabled}
+                        onChange={(e) => setSettings({ ...settings, notifications_enabled: e.target.checked })}
+                      />
+                      <span className="whatsapp-toggle__text">تفعيل التنبيهات</span>
+                    </label>
+
+                    <label className="whatsapp-toggle">
+                      <input
+                        type="checkbox"
+                        className="whatsapp-toggle__checkbox"
+                        checked={settings.daily_report_enabled}
+                        onChange={(e) => setSettings({ ...settings, daily_report_enabled: e.target.checked })}
+                      />
+                      <span className="whatsapp-toggle__text">تفعيل التقرير اليومي</span>
+                    </label>
+
+                    {settings.daily_report_enabled && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span style={{ fontSize: '13px', color: 'var(--color-text-secondary)' }}>في تمام الساعة:</span>
+                        <input
+                          type="time"
+                          className="whatsapp-field__input"
+                          style={{ width: 'auto' }}
+                          value={settings.daily_report_time}
+                          onChange={(e) => setSettings({ ...settings, daily_report_time: e.target.value })}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === 'instances' && (
+              <>
+                <div className="whatsapp-section__header">
+                  <div className="whatsapp-section__title">
+                    <div className="whatsapp-section__title-icon">
+                      <Smartphone size={14} />
+                    </div>
+                    إدارة أرقام الواتساب
+                  </div>
+                  <div style={{ display: 'flex', gap: '8px' }}>
+                    <button className="whatsapp-header__btn" onClick={testEvolutionAPI}>
+                      🧪 اختبار API
+                    </button>
+                    <button className="whatsapp-header__btn whatsapp-header__btn--success" onClick={() => setShowAddInstance(true)}>
+                      <Plus size={16} />
+                      إضافة رقم جديد
+                    </button>
+                  </div>
+                </div>
+                <div className="whatsapp-section__content">
+                  <div className="whatsapp-instances-grid">
+                    {instances.map((instance) => (
+                      <div key={instance.id} className="whatsapp-instance-card">
+                        <div className="whatsapp-instance-card__header">
+                          <div>
+                            <h4 className="whatsapp-instance-card__name">{instance.instance_name}</h4>
+                            <p className="whatsapp-instance-card__dept">{instance.department}</p>
+                          </div>
+                          <div className="whatsapp-instance-card__status">
+                            {instance.status === 'connected' && <CheckCircle size={18} className="whatsapp-instance-card__status--connected" />}
+                            {instance.status === 'connecting' && <div className="whatsapp-spinner whatsapp-instance-card__status--connecting"></div>}
+                            {instance.status === 'disconnected' && <XCircle size={18} className="whatsapp-instance-card__status--disconnected" />}
+                            <button className="whatsapp-instance-card__delete" onClick={() => deleteInstance(instance.id)}>
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        </div>
+                        <div className="whatsapp-instance-card__info">
+                          <div className="whatsapp-instance-card__row">
+                            <span>الحالة:</span>
+                            <span className="whatsapp-instance-card__value" style={{ color: instance.status === 'connected' ? 'var(--status-green)' : instance.status === 'connecting' ? 'var(--status-orange)' : 'var(--status-red)' }}>
+                              {instance.status === 'connected' ? 'متصل' : instance.status === 'connecting' ? 'جاري الاتصال' : 'غير متصل'}
+                            </span>
+                          </div>
+                          {instance.phone_number && (
+                            <div className="whatsapp-instance-card__row">
+                              <span>الرقم:</span>
+                              <span className="whatsapp-instance-card__value">{instance.phone_number}</span>
+                            </div>
+                          )}
+                        </div>
+                        <div className="whatsapp-instance-card__actions">
+                          {instance.status === 'disconnected' && (
+                            <button className="whatsapp-instance-card__btn whatsapp-instance-card__btn--primary" onClick={() => getQRCode(instance.instance_name)}>
+                              <QrCode size={14} />
+                              عرض رمز QR
+                            </button>
+                          )}
+                          {instance.status === 'connecting' && (
+                            <button className="whatsapp-instance-card__btn whatsapp-instance-card__btn--warning" onClick={async () => {
+                              try {
+                                const response = await fetch(`http://localhost:8080/instance/fetchInstances`, { headers: { 'apikey': '429683C4C977415CAAFCCE10F7D57E11' } });
+                                const instancesData = await response.json();
+                                const current = instancesData.find((inst: any) => inst.instanceName === instance.instance_name);
+                                if (current?.connectionStatus === 'open') {
+                                  setInstances(prev => prev.map(inst => inst.id === instance.id ? { ...inst, status: 'connected', phone_number: current.phoneNumber || '+966xxxxxxxxx' } : inst));
+                                  alert('🎉 تم الاتصال!');
+                                }
+                              } catch (error) { console.error('خطأ في التحديث:', error); }
+                            }}>
+                              🔄 تحديث الحالة
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === 'notifications' && (
+              <>
+                <div className="whatsapp-section__header">
+                  <div className="whatsapp-section__title">
+                    <div className="whatsapp-section__title-icon">
+                      <Bell size={14} />
+                    </div>
+                    إعدادات التنبيهات
+                  </div>
+                </div>
+                <div className="whatsapp-section__content">
+                  {Object.entries(settings.notification_settings).map(([key, setting]: [string, any]) => (
+                    <div key={key} className="whatsapp-notification-item">
+                      <div className="whatsapp-notification-item__info">
+                        <div className="whatsapp-notification-item__title">{getNotificationTitle(key)}</div>
+                        <div className="whatsapp-notification-item__desc">{getNotificationDescription(key)}</div>
+                      </div>
+                      <div className="whatsapp-notification-item__actions">
+                        <label className="whatsapp-toggle">
+                          <input
+                            type="checkbox"
+                            className="whatsapp-toggle__checkbox"
+                            checked={setting.enabled}
+                            onChange={(e) => updateNotificationSetting(key, 'enabled', e.target.checked)}
+                          />
+                          <span className="whatsapp-toggle__text">مفعل</span>
+                        </label>
+                        {setting.enabled && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>تأخير:</span>
+                            <input
+                              type="number"
+                              min="0"
+                              max="60"
+                              className="whatsapp-field__input"
+                              style={{ width: '60px' }}
+                              value={setting.delay_minutes}
+                              onChange={(e) => updateNotificationSetting(key, 'delay_minutes', parseInt(e.target.value))}
+                            />
+                            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>دقيقة</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {activeTab === 'templates' && (
+              <>
+                <div className="whatsapp-section__header">
+                  <div className="whatsapp-section__title">
+                    <div className="whatsapp-section__title-icon">
+                      <FileText size={14} />
+                    </div>
+                    قوالب الرسائل
+                  </div>
+                </div>
+                <div className="whatsapp-section__content">
+                  {Object.entries(settings.message_templates).map(([key, template]: [string, any]) => (
+                    <div key={key} className="whatsapp-template-card">
+                      <div className="whatsapp-template-card__header">
+                        <span className="whatsapp-template-card__title">{template.title}</span>
+                        <span style={{ fontSize: '10px', padding: '2px 6px', background: 'var(--quiet-gray-200)', borderRadius: '4px', color: 'var(--color-text-secondary)' }}>{key}</span>
+                      </div>
+                      <textarea
+                        className="whatsapp-template-card__textarea"
+                        value={template.template}
+                        onChange={(e) => updateMessageTemplate(key, 'template', e.target.value)}
+                        rows={3}
+                        placeholder="اكتب قالب الرسالة هنا..."
+                      />
+                      <div style={{ marginTop: '8px', fontSize: '11px', color: 'var(--color-text-secondary)' }}>
+                        يمكنك استخدام المتغيرات مثل: {'{client_name}'}, {'{case_number}'}, {'{case_title}'}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {activeTab === 'schedule' && (
+              <>
+                <div className="whatsapp-section__header">
+                  <div className="whatsapp-section__title">
+                    <div className="whatsapp-section__title-icon">
+                      <Clock size={14} />
+                    </div>
+                    ساعات العمل
+                  </div>
+                </div>
+                <div className="whatsapp-section__content">
+                  <div className="whatsapp-schedule-grid">
+                    {Object.entries(settings.working_hours).map(([day, hours]: [string, any]) => (
+                      <div key={day} className="whatsapp-schedule-row">
+                        <label className="whatsapp-toggle" style={{ minWidth: '100px' }}>
+                          <input
+                            type="checkbox"
+                            className="whatsapp-toggle__checkbox"
+                            checked={hours.enabled}
+                            onChange={(e) => updateWorkingHour(day, 'enabled', e.target.checked)}
+                          />
+                          <span className="whatsapp-schedule-row__day">{getDayName(day)}</span>
+                        </label>
+                        {hours.enabled && (
+                          <div className="whatsapp-schedule-row__inputs">
+                            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>من:</span>
+                            <input
+                              type="time"
+                              className="whatsapp-schedule-row__time"
+                              value={hours.start}
+                              onChange={(e) => updateWorkingHour(day, 'start', e.target.value)}
+                            />
+                            <span style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>إلى:</span>
+                            <input
+                              type="time"
+                              className="whatsapp-schedule-row__time"
+                              value={hours.end}
+                              onChange={(e) => updateWorkingHour(day, 'end', e.target.value)}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+
+            {activeTab === 'test' && (
+              <>
+                <div className="whatsapp-section__header">
+                  <div className="whatsapp-section__title">
+                    <div className="whatsapp-section__title-icon">
+                      <Send size={14} />
+                    </div>
+                    اختبار إرسال الرسائل
+                  </div>
+                </div>
+                <div className="whatsapp-section__content">
+                  <div className="whatsapp-test">
+                    <div style={{ padding: '12px', borderRadius: '6px', background: 'var(--status-orange-light)', border: '1px solid var(--status-orange)', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                      <AlertCircle size={18} style={{ color: 'var(--status-orange)', flexShrink: 0, marginTop: '2px' }} />
+                      <div>
+                        <div style={{ fontWeight: 500, color: 'var(--status-orange)', marginBottom: '4px' }}>تنبيه</div>
+                        <div style={{ fontSize: '12px', color: 'var(--color-text-secondary)' }}>تأكد من إدخال إعدادات الواتساب الصحيحة قبل إرسال رسائل الاختبار</div>
+                      </div>
+                    </div>
+
+                    <div className="whatsapp-form-grid">
+                      <div className="whatsapp-field">
+                        <label className="whatsapp-field__label">رقم الهاتف (مع رمز البلد)</label>
+                        <input
+                          type="tel"
+                          className="whatsapp-field__input"
+                          value={testMessage.phone}
+                          onChange={(e) => setTestMessage({ ...testMessage, phone: e.target.value })}
+                          placeholder="966501234567"
+                        />
+                      </div>
+                      <div className="whatsapp-field">
+                        <label className="whatsapp-field__label">نص الرسالة</label>
+                        <textarea
+                          className="whatsapp-template-card__textarea"
+                          value={testMessage.message}
+                          onChange={(e) => setTestMessage({ ...testMessage, message: e.target.value })}
+                          rows={3}
+                          placeholder="اكتب رسالة الاختبار هنا..."
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      className="whatsapp-header__btn whatsapp-header__btn--success"
+                      onClick={sendTestMessage}
+                      disabled={sendingTest || !testMessage.phone || !testMessage.message}
+                    >
+                      {sendingTest ? (
+                        <div className="whatsapp-spinner"></div>
+                      ) : (
+                        <Send size={14} />
+                      )}
+                      إرسال رسالة اختبار
+                    </button>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
-        )}
 
-        {activeTab === 'instances' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <h3 style={{
-                fontSize: 'var(--font-size-lg)',
-                fontWeight: 'var(--font-weight-medium)',
-                color: 'var(--color-text)',
-                margin: 0
-              }}>
-                إدارة أرقام الواتساب
-              </h3>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={testEvolutionAPI}
+          {/* Modal إضافة instance جديد */}
+          <Modal
+            isOpen={showAddInstance}
+            onClose={() => setShowAddInstance(false)}
+            title="إضافة رقم واتساب جديد"
+            size="sm"
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--font-size-sm)',
+                  fontWeight: 'var(--font-weight-medium)',
+                  color: 'var(--color-text)',
+                  marginBottom: '4px'
+                }}>
+                  اسم المثيل
+                </label>
+                <input
+                  type="text"
+                  value={newInstanceName}
+                  onChange={(e) => setNewInstanceName(e.target.value)}
+                  placeholder="مثال: reception_whatsapp"
                   style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    backgroundColor: 'var(--color-warning)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 'var(--border-radius)',
-                    fontSize: 'var(--font-size-sm)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  🧪 اختبار API
-                </motion.button>
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setShowAddInstance(true)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '8px 16px',
-                    backgroundColor: 'var(--color-success)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 'var(--border-radius)',
-                    fontSize: 'var(--font-size-sm)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  <Plus style={{ height: '16px', width: '16px' }} />
-                  إضافة رقم جديد
-                </motion.button>
-              </div>
-            </div>
-
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-              gap: '16px'
-            }}>
-              {instances.map((instance) => (
-                <motion.div
-                  key={instance.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  style={{
-                    padding: '24px',
+                    width: '100%',
+                    padding: '8px 12px',
                     border: '1px solid var(--color-border)',
                     borderRadius: 'var(--border-radius)',
-                    backgroundColor: 'var(--color-card)',
-                    boxShadow: 'var(--shadow-sm)'
+                    fontSize: 'var(--font-size-sm)',
+                    outline: 'none'
+                  }}
+                />
+              </div>
+
+              <div>
+                <label style={{
+                  display: 'block',
+                  fontSize: 'var(--font-size-sm)',
+                  fontWeight: 'var(--font-weight-medium)',
+                  color: 'var(--color-text)',
+                  marginBottom: '4px'
+                }}>
+                  القسم
+                </label>
+                <select
+                  value={newInstanceDepartment}
+                  onChange={(e) => setNewInstanceDepartment(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 12px',
+                    border: '1px solid var(--color-border)',
+                    borderRadius: 'var(--border-radius)',
+                    fontSize: 'var(--font-size-sm)',
+                    outline: 'none'
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
-                    <div>
-                      <h4 style={{
-                        fontWeight: 'var(--font-weight-medium)',
-                        color: 'var(--color-text)',
-                        margin: 0,
-                        marginBottom: '4px'
-                      }}>
-                        {instance.instance_name}
-                      </h4>
-                      <p style={{
-                        fontSize: 'var(--font-size-sm)',
-                        color: 'var(--color-text-secondary)',
-                        margin: 0
-                      }}>
-                        {instance.department}
-                      </p>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      {instance.status === 'connected' && (
-                        <CheckCircle style={{ height: '20px', width: '20px', color: 'var(--color-success)' }} />
-                      )}
-                      {instance.status === 'connecting' && (
-                        <div style={{
-                          width: '20px',
-                          height: '20px',
-                          border: '2px solid transparent',
-                          borderTop: '2px solid var(--color-warning)',
-                          borderRadius: '50%',
-                          animation: 'spin 1s linear infinite'
-                        }}></div>
-                      )}
-                      {instance.status === 'disconnected' && (
-                        <XCircle style={{ height: '20px', width: '20px', color: 'var(--color-danger)' }} />
-                      )}
-                      <button
-                        onClick={() => deleteInstance(instance.id)}
-                        style={{
-                          padding: '4px',
-                          color: 'var(--color-danger)',
-                          background: 'none',
-                          border: 'none',
-                          borderRadius: 'var(--border-radius-sm)',
-                          cursor: 'pointer'
-                        }}
-                      >
-                        <Trash2 style={{ height: '16px', width: '16px' }} />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: 'var(--font-size-sm)' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ color: 'var(--color-text-secondary)' }}>الحالة:</span>
-                      <span style={{
-                        fontWeight: 'var(--font-weight-medium)',
-                        color: instance.status === 'connected' ? 'var(--color-success)' :
-                               instance.status === 'connecting' ? 'var(--color-warning)' :
-                               'var(--color-danger)'
-                      }}>
-                        {instance.status === 'connected' ? 'متصل' :
-                         instance.status === 'connecting' ? 'جاري الاتصال' :
-                         'غير متصل'}
-                      </span>
-                    </div>
-                    
-                    {instance.phone_number && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <span style={{ color: 'var(--color-text-secondary)' }}>الرقم:</span>
-                        <span style={{ fontWeight: 'var(--font-weight-medium)' }}>{instance.phone_number}</span>
-                      </div>
-                    )}
-
-                    <div style={{ display: 'flex', gap: '8px', marginTop: '12px' }}>
-                      {instance.status === 'disconnected' && (
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={() => getQRCode(instance.instance_name)}
-                          style={{
-                            flex: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            padding: '8px 12px',
-                            backgroundColor: 'var(--color-primary)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: 'var(--border-radius)',
-                            fontSize: 'var(--font-size-sm)',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          <QrCode style={{ height: '16px', width: '16px' }} />
-                          عرض رمز QR
-                        </motion.button>
-                      )}
-                      
-                      {instance.status === 'connecting' && (
-                        <motion.button
-                          whileHover={{ scale: 1.02 }}
-                          whileTap={{ scale: 0.98 }}
-                          onClick={async () => {
-                            // فحص الحالة يدوياً
-                            try {
-                              const response = await fetch(`http://localhost:8080/instance/fetchInstances`, {
-                                headers: { 'apikey': '429683C4C977415CAAFCCE10F7D57E11' }
-                              });
-                              const instances = await response.json();
-                              console.log('🔄 تحديث الحالة:', instances);
-                              
-                              const current = instances.find((inst: any) => inst.instanceName === instance.instance_name);
-                              if (current?.connectionStatus === 'open') {
-                                setInstances(prev => prev.map(inst => 
-                                  inst.id === instance.id 
-                                    ? { ...inst, status: 'connected', phone_number: current.phoneNumber || '+966xxxxxxxxx' }
-                                    : inst
-                                ));
-                                alert('🎉 تم الاتصال!');
-                              }
-                            } catch (error) {
-                              console.error('خطأ في التحديث:', error);
-                            }
-                          }}
-                          style={{
-                            flex: 1,
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            gap: '8px',
-                            padding: '8px 12px',
-                            backgroundColor: 'var(--color-warning)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: 'var(--border-radius)',
-                            fontSize: 'var(--font-size-sm)',
-                            cursor: 'pointer'
-                          }}
-                        >
-                          🔄 تحديث الحالة
-                        </motion.button>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-
-
-
-
-          </div>
-        )}
-
-        {activeTab === 'notifications' && (
-          <div className="space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">إعدادات التنبيهات</h3>
-            
-            <div className="space-y-4">
-              {Object.entries(settings.notification_settings).map(([key, setting]: [string, any]) => (
-                <div key={key} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                  <div>
-                    <h4 className="font-medium text-gray-900">{getNotificationTitle(key)}</h4>
-                    <p className="text-sm text-gray-600">{getNotificationDescription(key)}</p>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={setting.enabled}
-                        onChange={(e) => updateNotificationSetting(key, 'enabled', e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="text-sm">مفعل</span>
-                    </label>
-                    {setting.enabled && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-sm text-gray-600">تأخير:</span>
-                        <input
-                          type="number"
-                          min="0"
-                          max="60"
-                          value={setting.delay_minutes}
-                          onChange={(e) => updateNotificationSetting(key, 'delay_minutes', parseInt(e.target.value))}
-                          className="w-20 px-2 py-1 border border-gray-300 rounded text-sm"
-                        />
-                        <span className="text-sm text-gray-600">دقيقة</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'templates' && (
-          <div className="space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">قوالب الرسائل</h3>
-            
-            <div className="space-y-6">
-              {Object.entries(settings.message_templates).map(([key, template]: [string, any]) => (
-                <div key={key} className="border border-gray-200 rounded-lg p-4">
-                  <div className="flex items-center justify-between mb-3">
-                    <h4 className="font-medium text-gray-900">{template.title}</h4>
-                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{key}</span>
-                  </div>
-                  <textarea
-                    value={template.template}
-                    onChange={(e) => updateMessageTemplate(key, 'template', e.target.value)}
-                    rows={4}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="اكتب قالب الرسالة هنا..."
-                  />
-                  <div className="mt-2 text-xs text-gray-500">
-                    يمكنك استخدام المتغيرات مثل: {'{client_name}'}, {'{case_number}'}, {'{case_title}'}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'schedule' && (
-          <div className="space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">ساعات العمل</h3>
-            
-            <div className="space-y-4">
-              {Object.entries(settings.working_hours).map(([day, hours]: [string, any]) => (
-                <div key={day} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
-                  <div className="flex items-center gap-4">
-                    <label className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        checked={hours.enabled}
-                        onChange={(e) => updateWorkingHour(day, 'enabled', e.target.checked)}
-                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                      />
-                      <span className="font-medium">{getDayName(day)}</span>
-                    </label>
-                  </div>
-                  {hours.enabled && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-gray-600">من:</span>
-                      <input
-                        type="time"
-                        value={hours.start}
-                        onChange={(e) => updateWorkingHour(day, 'start', e.target.value)}
-                        className="px-2 py-1 border border-gray-300 rounded text-sm"
-                      />
-                      <span className="text-sm text-gray-600">إلى:</span>
-                      <input
-                        type="time"
-                        value={hours.end}
-                        onChange={(e) => updateWorkingHour(day, 'end', e.target.value)}
-                        className="px-2 py-1 border border-gray-300 rounded text-sm"
-                      />
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {activeTab === 'test' && (
-          <div className="space-y-6">
-            <h3 className="text-lg font-medium text-gray-900">اختبار إرسال الرسائل</h3>
-            
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertCircle className="h-5 w-5 text-yellow-600" />
-                <span className="font-medium text-yellow-800">تنبيه</span>
+                  <option value="">اختر القسم</option>
+                  <option value="الاستقبال">الاستقبال</option>
+                  <option value="المحاسبة">المحاسبة</option>
+                  <option value="القانونية">الشؤون القانونية</option>
+                  <option value="الإدارة">الإدارة</option>
+                  <option value="المتابعة">المتابعة</option>
+                </select>
               </div>
-              <p className="text-yellow-700 text-sm">
-                تأكد من إدخال إعدادات الواتساب الصحيحة قبل إرسال رسائل الاختبار
-              </p>
-            </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  رقم الهاتف (مع رمز البلد)
-                </label>
-                <input
-                  type="tel"
-                  value={testMessage.phone}
-                  onChange={(e) => setTestMessage({ ...testMessage, phone: e.target.value })}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="966501234567"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  نص الرسالة
-                </label>
-                <textarea
-                  value={testMessage.message}
-                  onChange={(e) => setTestMessage({ ...testMessage, message: e.target.value })}
-                  rows={3}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="اكتب رسالة الاختبار هنا..."
-                />
+              <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
+                <button
+                  onClick={() => setShowAddInstance(false)}
+                  style={{
+                    flex: 1,
+                    padding: '8px 16px',
+                    backgroundColor: 'var(--color-gray-100)',
+                    color: 'var(--color-text-secondary)',
+                    border: 'none',
+                    borderRadius: 'var(--border-radius)',
+                    fontSize: 'var(--font-size-sm)',
+                    cursor: 'pointer'
+                  }}
+                >
+                  إلغاء
+                </button>
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={createInstance}
+                  disabled={!newInstanceName.trim() || !newInstanceDepartment.trim()}
+                  style={{
+                    flex: 1,
+                    padding: '8px 16px',
+                    backgroundColor: 'var(--color-primary)',
+                    color: 'white',
+                    border: 'none',
+                    borderRadius: 'var(--border-radius)',
+                    fontSize: 'var(--font-size-sm)',
+                    cursor: 'pointer',
+                    opacity: (!newInstanceName.trim() || !newInstanceDepartment.trim()) ? 0.5 : 1
+                  }}
+                >
+                  إنشاء
+                </motion.button>
               </div>
             </div>
+          </Modal>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={sendTestMessage}
-              disabled={sendingTest || !testMessage.phone || !testMessage.message}
-              className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-            >
-              {sendingTest ? (
-                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-              إرسال رسالة اختبار
-            </motion.button>
-          </div>
-        )}
-      </div>
-
-      {/* Modal إضافة instance جديد */}
-      <Modal
-        isOpen={showAddInstance}
-        onClose={() => setShowAddInstance(false)}
-        title="إضافة رقم واتساب جديد"
-        size="sm"
-      >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div>
-            <label style={{
-              display: 'block',
-              fontSize: 'var(--font-size-sm)',
-              fontWeight: 'var(--font-weight-medium)',
-              color: 'var(--color-text)',
-              marginBottom: '4px'
-            }}>
-              اسم المثيل
-            </label>
-            <input
-              type="text"
-              value={newInstanceName}
-              onChange={(e) => setNewInstanceName(e.target.value)}
-              placeholder="مثال: reception_whatsapp"
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--border-radius)',
-                fontSize: 'var(--font-size-sm)',
-                outline: 'none'
-              }}
-            />
-          </div>
-
-          <div>
-            <label style={{
-              display: 'block',
-              fontSize: 'var(--font-size-sm)',
-              fontWeight: 'var(--font-weight-medium)',
-              color: 'var(--color-text)',
-              marginBottom: '4px'
-            }}>
-              القسم
-            </label>
-            <select
-              value={newInstanceDepartment}
-              onChange={(e) => setNewInstanceDepartment(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 12px',
-                border: '1px solid var(--color-border)',
-                borderRadius: 'var(--border-radius)',
-                fontSize: 'var(--font-size-sm)',
-                outline: 'none'
-              }}
-            >
-              <option value="">اختر القسم</option>
-              <option value="الاستقبال">الاستقبال</option>
-              <option value="المحاسبة">المحاسبة</option>
-              <option value="القانونية">الشؤون القانونية</option>
-              <option value="الإدارة">الإدارة</option>
-              <option value="المتابعة">المتابعة</option>
-            </select>
-          </div>
-
-          <div style={{ display: 'flex', gap: '12px', marginTop: '16px' }}>
-            <button
-              onClick={() => setShowAddInstance(false)}
-              style={{
-                flex: 1,
-                padding: '8px 16px',
-                backgroundColor: 'var(--color-gray-100)',
-                color: 'var(--color-text-secondary)',
-                border: 'none',
-                borderRadius: 'var(--border-radius)',
-                fontSize: 'var(--font-size-sm)',
-                cursor: 'pointer'
-              }}
-            >
-              إلغاء
-            </button>
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={createInstance}
-              disabled={!newInstanceName.trim() || !newInstanceDepartment.trim()}
-              style={{
-                flex: 1,
-                padding: '8px 16px',
-                backgroundColor: 'var(--color-primary)',
-                color: 'white',
-                border: 'none',
-                borderRadius: 'var(--border-radius)',
-                fontSize: 'var(--font-size-sm)',
-                cursor: 'pointer',
-                opacity: (!newInstanceName.trim() || !newInstanceDepartment.trim()) ? 0.5 : 1
-              }}
-            >
-              إنشاء
-            </motion.button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Modal عرض QR Code */}
-      <Modal
-        isOpen={!!selectedQRCode}
-        onClose={() => setSelectedQRCode(null)}
-        title="امسح رمز QR للربط"
-        size="sm"
-      >
-        <div style={{ textAlign: 'center' }}>
-          <div style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginBottom: '16px'
-          }}>
-            <div style={{
-              padding: '16px',
-              backgroundColor: 'var(--color-gray-100)',
-              borderRadius: 'var(--border-radius)'
-            }}>
-              <img 
-                src={selectedQRCode || ''} 
-                alt="QR Code" 
-                style={{
-                  width: '192px',
-                  height: '192px',
-                  objectFit: 'contain'
-                }}
-              />
-            </div>
-          </div>
-
-          <div style={{
-            fontSize: 'var(--font-size-sm)',
-            color: 'var(--color-text-secondary)',
-            marginBottom: '16px'
-          }}>
-            <p>1. افتح واتساب على هاتفك</p>
-            <p>2. اذهب إلى الإعدادات {'>'} الأجهزة المرتبطة</p>
-            <p>3. اضغط "ربط جهاز" وامسح الكود</p>
-          </div>
-
-          <button
-            onClick={() => setSelectedQRCode(null)}
-            style={{
-              width: '100%',
-              padding: '8px 16px',
-              backgroundColor: 'var(--color-primary)',
-              color: 'white',
-              border: 'none',
-              borderRadius: 'var(--border-radius)',
-              fontSize: 'var(--font-size-sm)',
-              cursor: 'pointer'
-            }}
+          {/* Modal عرض QR Code */}
+          <Modal
+            isOpen={!!selectedQRCode}
+            onClose={() => setSelectedQRCode(null)}
+            title="امسح رمز QR للربط"
+            size="sm"
           >
-            إغلاق
-          </button>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'center',
+                marginBottom: '16px'
+              }}>
+                <div style={{
+                  padding: '16px',
+                  backgroundColor: 'var(--color-gray-100)',
+                  borderRadius: 'var(--border-radius)'
+                }}>
+                  <img
+                    src={selectedQRCode || ''}
+                    alt="QR Code"
+                    style={{
+                      width: '192px',
+                      height: '192px',
+                      objectFit: 'contain'
+                    }}
+                  />
+                </div>
+              </div>
+
+              <div style={{
+                fontSize: 'var(--font-size-sm)',
+                color: 'var(--color-text-secondary)',
+                marginBottom: '16px'
+              }}>
+                <p>1. افتح واتساب على هاتفك</p>
+                <p>2. اذهب إلى الإعدادات {'>'} الأجهزة المرتبطة</p>
+                <p>3. اضغط "ربط جهاز" وامسح الكود</p>
+              </div>
+
+              <button
+                onClick={() => setSelectedQRCode(null)}
+                style={{
+                  width: '100%',
+                  padding: '8px 16px',
+                  backgroundColor: 'var(--color-primary)',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: 'var(--border-radius)',
+                  fontSize: 'var(--font-size-sm)',
+                  cursor: 'pointer'
+                }}
+              >
+                إغلاق
+              </button>
+            </div>
+          </Modal>
         </div>
-      </Modal>
+      </div>
     </div>
   );
 };

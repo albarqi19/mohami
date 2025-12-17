@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import Modal from './Modal';
 import { Save, X } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -97,7 +97,7 @@ const AddCaseModal: React.FC<AddCaseModalProps> = ({
         { value: '1', label: 'أحمد محامي' },
         { value: '2', label: 'سارة محامية' }, 
         { value: '3', label: 'محمد محامي' },
-        { value: '4', label: 'فاطمة محامية' },
+        { value: '4', label: 'خالد محامية' },
         { value: '5', label: 'عبدالله محامي' }
       ];
 

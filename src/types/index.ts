@@ -1,4 +1,4 @@
-// User roles and permissions
+﻿// User roles and permissions
 export interface User {
   id: string;
   name: string;
@@ -398,7 +398,7 @@ export interface CreateTaskForm {
   description?: string;
   type?: string;
   caseId?: string;
-  assignedTo: string;
+  assignedTo?: string;
   priority: Priority;
   dueDate?: Date;
   estimatedHours?: number;
@@ -439,7 +439,7 @@ export interface Appointment {
   case?: Case;
 }
 
-export type AppointmentType = 
+export type AppointmentType =
   | 'court_hearing'     // جلسة محكمة
   | 'client_meeting'    // موعد عميل
   | 'team_meeting'      // اجتماع فريق
@@ -450,7 +450,7 @@ export type AppointmentType =
   | 'settlement'        // صلح
   | 'other';            // أخرى
 
-export type AppointmentStatus = 
+export type AppointmentStatus =
   | 'scheduled'    // مجدول
   | 'confirmed'    // مؤكد
   | 'in_progress'  // قيد التنفيذ

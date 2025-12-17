@@ -107,6 +107,11 @@ body.dark .sidebar {
 	border-inline-start: 1px solid var(--color-border);
 }
 
+body.classic .sidebar {
+	background-color: #3A2213;
+	border-inline-start: 1px solid rgba(184, 134, 11, 0.2);
+}
+
 .sidebar__container {
 	display: flex;
 	flex-direction: column;
@@ -833,9 +838,11 @@ body.dark .header__profile-role {
 	0% {
 		transform: translateX(-100%);
 	}
+
 	50% {
 		transform: translateX(0);
 	}
+
 	100% {
 		transform: translateX(100%);
 	}
@@ -1461,3 +1468,107 @@ body.dark .header__profile-role {
 	}
 }
 
+/* ====================================================
+   Classic Theme Overrides
+   Warm Brown/Parchment - Professional Law Firm Style
+   ==================================================== */
+
+/* Sidebar - Classic */
+body.classic .sidebar__brand-icon {
+	background-color: rgba(184, 134, 11, 0.15);
+	color: #B8860B;
+}
+
+body.classic .sidebar__brand-title {
+	color: #F5EFE6;
+}
+
+body.classic .sidebar__brand-subtitle {
+	color: rgba(245, 239, 230, 0.6);
+}
+
+body.classic .sidebar__link {
+	color: rgba(245, 239, 230, 0.7);
+}
+
+body.classic .sidebar__link:hover,
+body.classic .sidebar__link:focus-visible {
+	background-color: rgba(184, 134, 11, 0.15);
+	color: #F5EFE6;
+}
+
+body.classic .sidebar__link--active {
+	background-color: rgba(184, 134, 11, 0.2);
+	color: #B8860B;
+}
+
+body.classic .sidebar__logout {
+	color: rgba(245, 239, 230, 0.6);
+}
+
+body.classic .sidebar__logout:hover,
+body.classic .sidebar__logout:focus-visible {
+	background-color: rgba(155, 44, 44, 0.15);
+	color: #ff8a8a;
+}
+
+/* Header - Classic */
+body.classic .header {
+	background-color: var(--color-surface);
+	border-block-end: 1px solid var(--color-border);
+}
+
+body.classic .header__page-indicator {
+	background-color: #B8860B;
+}
+
+body.classic .header__page-title {
+	color: var(--color-heading);
+}
+
+body.classic .header__page-subtitle {
+	color: var(--color-text-secondary);
+}
+
+body.classic .header__search-input {
+	border: 1px solid var(--color-border);
+	background-color: var(--color-surface-subtle);
+	color: var(--color-text);
+}
+
+body.classic .header__search-input:focus {
+	border-color: #B8860B;
+	background-color: var(--color-surface);
+}
+
+body.classic .header__icon-button {
+	color: var(--color-text-secondary);
+}
+
+body.classic .header__icon-button:hover,
+body.classic .header__icon-button:focus-visible {
+	background-color: rgba(184, 134, 11, 0.1);
+	color: #B8860B;
+}
+
+body.classic .header__profile {
+	background-color: transparent;
+}
+
+body.classic .header__profile:hover,
+body.classic .header__profile:focus-visible {
+	background-color: rgba(184, 134, 11, 0.08);
+}
+
+body.classic .header__avatar {
+	background-color: rgba(74, 44, 26, 0.1);
+	color: var(--color-primary);
+}
+
+body.classic .header__profile-name {
+	color: var(--color-text);
+}
+
+body.classic .header__profile-role {
+	color: var(--color-text-secondary);
+}

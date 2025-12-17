@@ -2,39 +2,42 @@
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&display=swap');
 @import './styles/design-system.css';
 @import './styles/auth.css';
+@import './styles/dashboard-theme.css';
+@import './styles/cases-page.css';
+@import './styles/case-detail.css';
 
 :root {
   /* === الخلفيات === */
   --color-background: #FDFBF7;
   --color-surface: #ffffff;
   --color-surface-subtle: #f7f5f0;
-  
+
   /* === الحدود === */
   --color-border: #E0E0E0;
   --color-border-strong: #c9c9c9;
-  
+
   /* === النصوص === */
   --color-text: #212121;
   --color-text-secondary: #5a5a5a;
   --color-heading: #0A192F;
-  
+
   /* === اللون الأساسي (الأزرق الليلي) === */
   --color-primary: #0A192F;
   --color-primary-hover: #142840;
   --color-primary-active: #1a3652;
   --color-primary-soft: rgba(10, 25, 47, 0.08);
-  
+
   /* === لون الإجراء (الذهبي المطفي) === */
   --color-accent: #C5A572;
   --color-accent-hover: #d4b685;
   --color-accent-soft: rgba(197, 165, 114, 0.15);
-  
+
   /* === ألوان الحالات === */
   --color-success: #1b998b;
   --color-warning: #f4a259;
   --color-error: #d1495b;
   --color-info: #3b82f6;
-  
+
   /* === درجات الرمادي الدافئ === */
   --color-cream-50: #FDFBF7;
   --color-gray-100: #f5f3ed;
@@ -45,7 +48,7 @@
   --color-brown-600: #5a5a5a;
   --color-brown-600-rgb: 90, 90, 90;
   --color-slate-500-rgb: 90, 90, 90;
-  
+
   /* === ألوان إضافية === */
   --color-orange-400: #f4a259;
   --color-orange-400-rgb: 244, 162, 89;
@@ -54,7 +57,7 @@
   --color-teal-500: #2ea8a1;
   --color-teal-600: #258a84;
   --color-teal-700: #1d6d69;
-  
+
   /* === ألوان ناعمة للحالات === */
   --color-success-soft: rgba(27, 153, 139, 0.12);
   --color-warning-soft: rgba(244, 162, 89, 0.15);
@@ -135,6 +138,76 @@ body.dark {
   --focus-outline: rgba(90, 165, 247, 0.35);
 
   color-scheme: dark;
+}
+
+/* === Classic Law Firm Theme === */
+body.classic {
+  /* Backgrounds - Warm parchment tones */
+  --color-background: #F5EFE6;
+  --color-surface: #FFFBF5;
+  --color-surface-subtle: #EDE6DA;
+
+  /* Borders - Subtle brown */
+  --color-border: #D4C9B8;
+  --color-border-strong: #B8A994;
+
+  /* Text - Rich browns */
+  --color-text: #2B1B12;
+  --color-text-secondary: #6B5B4D;
+  --color-heading: #1A0F08;
+
+  /* Primary - Deep mahogany */
+  --color-primary: #4A2C1A;
+  --color-primary-hover: #5D3A24;
+  --color-primary-active: #3A2213;
+  --color-primary-soft: rgba(74, 44, 26, 0.1);
+
+  /* Accent - Antique gold */
+  --color-accent: #B8860B;
+  --color-accent-hover: #D4A01A;
+  --color-accent-soft: rgba(184, 134, 11, 0.15);
+
+  /* Status colors - Muted, classic tones */
+  --color-success: #2E7D32;
+  --color-warning: #C17000;
+  --color-error: #9B2C2C;
+  --color-info: #1565C0;
+
+  /* Grays - Warm tones */
+  --color-cream-50: #F5EFE6;
+  --color-gray-100: #EDE6DA;
+  --color-gray-200: #D4C9B8;
+  --color-gray-300: #B8A994;
+  --color-gray-400: #998A78;
+  --color-gray-500: #7A6F63;
+  --color-brown-600: #6B5B4D;
+  --color-brown-600-rgb: 107, 91, 77;
+  --color-slate-500-rgb: 107, 91, 77;
+
+  /* Additional colors */
+  --color-orange-400: #C17000;
+  --color-orange-400-rgb: 193, 112, 0;
+  --color-orange-500: #A35F00;
+  --color-teal-400: #2E7D6D;
+  --color-teal-500: #267363;
+  --color-teal-600: #1E6858;
+  --color-teal-700: #165D4E;
+
+  /* Soft status colors */
+  --color-success-soft: rgba(46, 125, 50, 0.12);
+  --color-warning-soft: rgba(193, 112, 0, 0.15);
+  --color-error-soft: rgba(155, 44, 44, 0.12);
+  --color-info-soft: rgba(21, 101, 192, 0.12);
+  --color-neutral-soft: rgba(107, 91, 77, 0.1);
+  --focus-outline: rgba(74, 44, 26, 0.25);
+
+  /* Shadows - Warmer */
+  --shadow-xs: 0 1px 2px rgba(42, 23, 12, 0.05);
+  --shadow-sm: 0 8px 16px rgba(42, 23, 12, 0.08);
+  --shadow-md: 0 14px 32px rgba(42, 23, 12, 0.1);
+  --shadow-lg: 0 24px 42px rgba(42, 23, 12, 0.12);
+
+  color-scheme: light;
 }
 
 * {

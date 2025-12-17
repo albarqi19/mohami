@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Check, Loader2, FileText, Brain, Upload, AlertCircle } from 'lucide-react';
 

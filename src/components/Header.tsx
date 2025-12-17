@@ -1,6 +1,6 @@
-import React from 'react';
+﻿import React from 'react';
 import { useLocation } from 'react-router-dom';
-import { Menu, Search, Bell, Moon, Sun, User, LogOut } from 'lucide-react';
+import { Menu, Search, Bell, Moon, Sun, User, LogOut, Palette } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import NotificationCenter from './NotificationCenter';
@@ -9,13 +9,22 @@ interface HeaderProps {
   onMenuClick: () => void;
 }
 
+// Theme types
+type ThemeMode = 'light' | 'dark' | 'classic';
+
+const THEMES: { id: ThemeMode; label: string; icon: React.ReactNode }[] = [
+  { id: 'light', label: 'نهاري', icon: <Sun size={22} /> },
+  { id: 'dark', label: 'داكن', icon: <Moon size={22} /> },
+  { id: 'classic', label: 'كلاسيكي', icon: <Palette size={22} /> },
+];
+
 const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const { user, logout } = useAuth();
   const location = useLocation();
-  const [isDark, setIsDark] = React.useState(() => {
-    // Load theme from localStorage or default to dark
-    const savedTheme = localStorage.getItem('theme');
-    return savedTheme ? savedTheme === 'dark' : true;
+  const [theme, setTheme] = React.useState<ThemeMode>(() => {
+    // Load theme from localStorage or default to light
+    const savedTheme = localStorage.getItem('theme') as ThemeMode;
+    return savedTheme && ['light', 'dark', 'classic'].includes(savedTheme) ? savedTheme : 'light';
   });
   const [notifications] = React.useState(3);
   const [showUserMenu, setShowUserMenu] = React.useState(false);
@@ -24,23 +33,40 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
   const profileMenuRef = React.useRef<HTMLDivElement | null>(null);
   const notificationsRef = React.useRef<HTMLDivElement | null>(null);
 
-  // Apply theme on mount
+  // Apply theme on mount and change
   React.useEffect(() => {
-    if (isDark) {
+    // Remove all theme classes first
+    document.documentElement.classList.remove('dark', 'classic');
+    document.body.classList.remove('dark', 'classic');
+
+    // Add the current theme class (light has no class)
+    if (theme === 'dark') {
       document.documentElement.classList.add('dark');
       document.body.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
+    } else if (theme === 'classic') {
+      document.documentElement.classList.add('classic');
+      document.body.classList.add('classic');
     }
-  }, [isDark]);
+  }, [theme]);
 
-  const toggleTheme = () => {
-    setIsDark((prev) => {
-      const newTheme = !prev;
-      localStorage.setItem('theme', newTheme ? 'dark' : 'light');
+  const cycleTheme = () => {
+    setTheme((prev) => {
+      const currentIndex = THEMES.findIndex(t => t.id === prev);
+      const nextIndex = (currentIndex + 1) % THEMES.length;
+      const newTheme = THEMES[nextIndex].id;
+      localStorage.setItem('theme', newTheme);
       return newTheme;
     });
+  };
+
+  const getCurrentThemeIcon = () => {
+    const currentTheme = THEMES.find(t => t.id === theme);
+    return currentTheme?.icon || <Sun size={22} />;
+  };
+
+  const getCurrentThemeLabel = () => {
+    const currentTheme = THEMES.find(t => t.id === theme);
+    return currentTheme?.label || 'نهاري';
   };
 
   const handleLogout = () => {
@@ -211,12 +237,12 @@ const Header: React.FC<HeaderProps> = ({ onMenuClick }) => {
           <motion.button
             type="button"
             className="header__icon-button"
-            aria-label={isDark ? 'تفعيل الوضع الفاتح' : 'تفعيل الوضع الداكن'}
-            aria-pressed={isDark}
+            aria-label={`تغيير المظهر (${getCurrentThemeLabel()})`}
+            title={`المظهر الحالي: ${getCurrentThemeLabel()}`}
             whileTap={{ scale: 0.92 }}
-            onClick={toggleTheme}
+            onClick={cycleTheme}
           >
-            {isDark ? <Sun size={22} /> : <Moon size={22} />}
+            {getCurrentThemeIcon()}
           </motion.button>
 
           <div className="header__profile-wrapper" ref={profileMenuRef}>

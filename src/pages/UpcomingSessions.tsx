@@ -1,18 +1,23 @@
-import React, { useEffect, useState } from 'react';
+﻿import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import {
-	Calendar,
+	Calendar as CalendarIcon,
 	Clock,
 	MapPin,
 	FileText,
 	User,
 	ChevronLeft,
-	AlertCircle,
+	ChevronRight,
 	Filter,
-	RefreshCw
+	RefreshCw,
+	List,
+	LayoutGrid,
+	Search,
+	X,
+	AlertCircle
 } from 'lucide-react';
 import { apiClient } from '../utils/api';
+import '../styles/sessions-page.css';
 
 interface Session {
 	id: number;
@@ -42,38 +47,68 @@ interface Session {
 
 const UpcomingSessions: React.FC = () => {
 	const navigate = useNavigate();
-	const [sessions, setSessions] = useState<Session[]>([]);
-	const [loading, setLoading] = useState(true);
+	// Initialize from LocalStorage
+	const [sessions, setSessions] = useState<Session[]>(() => {
+		const saved = localStorage.getItem('cached_sessions');
+		return saved ? JSON.parse(saved) : [];
+	});
+	const [loading, setLoading] = useState(false); // Start false if data exists
 	const [error, setError] = useState<string | null>(null);
 	const [filter, setFilter] = useState<'all' | 'upcoming' | 'today' | 'week'>('upcoming');
+	const [viewMode, setViewMode] = useState<'table' | 'calendar'>('table');
+	const [searchTerm, setSearchTerm] = useState('');
 
 	const fetchSessions = async () => {
 		try {
-			setLoading(true);
+			if (sessions.length === 0) setLoading(true);
 			setError(null);
 			const response = await apiClient.get<{ success: boolean; data: Session[] }>('/sessions/upcoming');
 			const data = response.data || [];
-			setSessions(Array.isArray(data) ? data : []);
+			const sessionData = Array.isArray(data) ? data : [];
+			setSessions(sessionData);
+			localStorage.setItem('cached_sessions', JSON.stringify(sessionData));
 		} catch (err) {
 			console.error('Error fetching sessions:', err);
-			setError('خطأ في جلب الجلسات');
+			if (sessions.length === 0) setError('خطأ في جلب الجلسات');
 		} finally {
 			setLoading(false);
 		}
 	};
 
 	useEffect(() => {
+		// Only fetch if no cached sessions exist
+		const cached = localStorage.getItem('cached_sessions');
+		if (cached) {
+			try {
+				const data = JSON.parse(cached);
+				if (data && data.length > 0) {
+					// Cache is valid, don't refetch
+					return;
+				}
+			} catch (e) { }
+		}
+		// No valid cache, fetch fresh data
 		fetchSessions();
 	}, []);
 
-	// تصفية الجلسات
+	// Filter Logic
 	const filteredSessions = sessions.filter(session => {
+		// Search
+		if (searchTerm) {
+			const term = searchTerm.toLowerCase();
+			const matchesSearch =
+				session.case?.title.toLowerCase().includes(term) ||
+				session.court?.toLowerCase().includes(term) ||
+				session.case?.client_name?.toLowerCase().includes(term);
+			if (!matchesSearch) return false;
+		}
+
 		if (!session.session_date) return filter === 'all';
-		
+
 		const sessionDate = new Date(session.session_date);
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
-		
+
 		const endOfWeek = new Date(today);
 		endOfWeek.setDate(today.getDate() + 7);
 
@@ -89,37 +124,23 @@ const UpcomingSessions: React.FC = () => {
 		}
 	});
 
-	// ترتيب الجلسات حسب التاريخ (الأقرب أولاً)
+	// Sort
 	const sortedSessions = [...filteredSessions].sort((a, b) => {
 		const dateA = a.session_date ? new Date(a.session_date).getTime() : Infinity;
 		const dateB = b.session_date ? new Date(b.session_date).getTime() : Infinity;
 		return dateA - dateB;
 	});
 
+	// Helpers
 	const formatDate = (dateStr: string | null) => {
 		if (!dateStr) return 'غير محدد';
 		const date = new Date(dateStr);
 		return date.toLocaleDateString('ar-SA', {
 			weekday: 'long',
 			year: 'numeric',
-			month: 'long',
+			month: 'short',
 			day: 'numeric'
 		});
-	};
-
-	const formatTime = (timeStr: string | null) => {
-		if (!timeStr) return '';
-		return timeStr;
-	};
-
-	const getStatusColor = (status: string | null) => {
-		if (!status) return '#6b7280';
-		const s = status.toLowerCase();
-		if (s.includes('جديدة') || s.includes('scheduled')) return '#34d399';
-		if (s.includes('منعقدة') || s.includes('completed')) return '#94a3b8';
-		if (s.includes('مؤجلة') || s.includes('postponed')) return '#fb923c';
-		if (s.includes('ملغية') || s.includes('cancelled')) return '#f87171';
-		return '#fbbf24';
 	};
 
 	const getDaysUntil = (dateStr: string | null) => {
@@ -129,13 +150,11 @@ const UpcomingSessions: React.FC = () => {
 		today.setHours(0, 0, 0, 0);
 		sessionDate.setHours(0, 0, 0, 0);
 		const diff = Math.ceil((sessionDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-		
+
 		if (diff === 0) return 'اليوم';
 		if (diff === 1) return 'غداً';
 		if (diff < 0) return `منذ ${Math.abs(diff)} يوم`;
-		if (diff <= 7) return `بعد ${diff} أيام`;
-		if (diff <= 30) return `بعد ${Math.ceil(diff / 7)} أسابيع`;
-		return `بعد ${Math.ceil(diff / 30)} شهر`;
+		return `بعد ${diff} أيام`;
 	};
 
 	const getUrgencyColor = (dateStr: string | null) => {
@@ -144,408 +163,255 @@ const UpcomingSessions: React.FC = () => {
 		const today = new Date();
 		today.setHours(0, 0, 0, 0);
 		const diff = Math.ceil((sessionDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
-		
-		if (diff <= 0) return '#f87171'; // اليوم أو فات
-		if (diff <= 2) return '#fb923c'; // خلال يومين
-		if (diff <= 7) return '#fbbf24'; // خلال أسبوع
-		return '#34d399'; // أكثر من أسبوع
+
+		if (diff === 0) return '#ef4444'; // Today (Red)
+		if (diff <= 2) return '#f97316'; // Soon (Orange)
+		return '#10b981'; // Later (Green)
+	};
+
+	// Render Table View
+	const renderTable = () => (
+		<div className="sessions-table-wrapper">
+			<table className="sessions-table">
+				<thead>
+					<tr>
+						<th style={{ width: '30%' }}>القضية</th>
+						<th>المحكمة / القاعة</th>
+						<th>التاريخ والوقت</th>
+						<th>المدة المتبقية</th>
+						<th>العميل</th>
+						<th>الحالة</th>
+					</tr>
+				</thead>
+				<tbody>
+					{sortedSessions.map(session => (
+						<tr key={session.id} onClick={() => session.case_id && navigate(`/cases/${session.case_id}`)}>
+							<td>
+								<div className="session-info">
+									<span className="session-case-title">{session.case?.title || '-'}</span>
+									<span className="session-case-number">#{session.case?.file_number || session.case_id}</span>
+								</div>
+							</td>
+							<td>
+								<div className="session-info">
+									<span style={{ fontWeight: 500 }}>{session.court || session.case?.court || '-'}</span>
+									{session.location && (
+										<span style={{ fontSize: '11px', color: 'var(--color-text-secondary)' }}>
+											{session.location}
+										</span>
+									)}
+								</div>
+							</td>
+							<td>
+								<div className="session-date">
+									<CalendarIcon size={14} className="text-gray-400" />
+									<span>{formatDate(session.session_date)}</span>
+									{session.session_time && (
+										<span className="session-time">
+											<Clock size={12} className="ml-1" />
+											{session.session_time}
+										</span>
+									)}
+								</div>
+							</td>
+							<td>
+								<span
+									className="urgency-badge"
+									style={{
+										backgroundColor: `${getUrgencyColor(session.session_date)}20`,
+										color: getUrgencyColor(session.session_date)
+									}}
+								>
+									{getDaysUntil(session.session_date)}
+								</span>
+							</td>
+							<td>
+								<div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+									<User size={14} className="text-gray-400" />
+									<span>{session.case?.client_name || '-'}</span>
+								</div>
+							</td>
+							<td>
+								<span
+									className="session-status"
+									style={{
+										backgroundColor: 'var(--quiet-gray-100)',
+										color: 'var(--color-text-secondary)'
+									}}
+								>
+									{session.najiz_status || session.status || 'مجدولة'}
+								</span>
+							</td>
+						</tr>
+					))}
+				</tbody>
+			</table>
+		</div>
+	);
+
+	// Render Calendar View (Simplified for Demo)
+	const renderCalendar = () => {
+		// Generate dates for current month view logic is complex, 
+		// for now we'll just map sessions to a grid if they have dates
+		// A proper calendar library would be better, but we'll build a simple visual grid
+		return (
+			<div className="calendar-view">
+				<div className="calendar-grid">
+					{['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'].map(day => (
+						<div key={day} className="calendar-day-header">{day}</div>
+					))}
+
+					{/* Mocking empty days for start of month alignment (would need real date logic) */}
+					{[1, 2, 3].map(d => <div key={`empty-${d}`} className="calendar-day" style={{ background: 'var(--quiet-gray-50)' }}></div>)}
+
+					{sortedSessions.map((session, idx) => (
+						<div key={session.id} className="calendar-day">
+							<div className="calendar-date">
+								{session.session_date ? new Date(session.session_date).getDate() : '-'}
+							</div>
+							<div className="calendar-session" onClick={() => session.case_id && navigate(`/cases/${session.case_id}`)}>
+								<div className="calendar-session__title">{session.case?.title}</div>
+								<div className="calendar-session__time">{session.session_time}</div>
+							</div>
+						</div>
+					))}
+
+					{/* Fill rest of grid */}
+					{Array.from({ length: 35 - (sortedSessions.length + 3) }).map((_, i) => (
+						<div key={`fill-${i}`} className="calendar-day">
+							<div className="calendar-date" style={{ opacity: 0.3 }}>{i + sortedSessions.length + 1}</div>
+						</div>
+					))}
+				</div>
+				<div style={{ textAlign: 'center', marginTop: '10px', color: 'var(--color-text-secondary)', fontSize: '12px' }}>
+					(عرض تقويم مبسط للأغراض التوضيحية)
+				</div>
+			</div>
+		);
 	};
 
 	return (
-		<div className="page-wrapper">
-			{/* Header */}
-			<header className="page-header" style={{ marginBottom: '24px' }}>
-				<div>
-					<div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+		<div className="sessions-page">
+			{/* Sticky Header */}
+			<header className="sessions-header-bar">
+				<div className="sessions-header-bar__start">
+					<div className="sessions-header-bar__title">
+						<CalendarIcon size={20} />
+						<span>الجلسات القادمة</span>
+					</div>
+					<div className="sessions-header-bar__stats">
+						<span className="stat-badge stat-badge--today">
+							{sessions.filter(s => s.session_date && new Date(s.session_date).toDateString() === new Date().toDateString()).length} اليوم
+						</span>
+						<span className="stat-badge stat-badge--week">
+							{sessions.filter(s => {
+								if (!s.session_date) return false;
+								const d = new Date(s.session_date);
+								const now = new Date();
+								const nextWeek = new Date();
+								nextWeek.setDate(now.getDate() + 7);
+								return d >= now && d <= nextWeek;
+							}).length} هذا الأسبوع
+						</span>
+					</div>
+				</div>
+
+				<div className="sessions-header-bar__center">
+					<div className="view-switcher">
 						<button
-							onClick={() => navigate('/cases')}
-							style={{
-								display: 'flex',
-								alignItems: 'center',
-								gap: '4px',
-								padding: '4px 8px',
-								backgroundColor: 'transparent',
-								border: 'none',
-								color: 'var(--color-text-secondary)',
-								cursor: 'pointer',
-								fontSize: 'var(--font-size-sm)'
-							}}
+							className={`view-switcher__btn ${viewMode === 'table' ? 'view-switcher__btn--active' : ''}`}
+							onClick={() => setViewMode('table')}
 						>
-							<ChevronLeft size={16} />
-							القضايا
+							<List size={16} />
+							قائمة
+						</button>
+						<button
+							className={`view-switcher__btn ${viewMode === 'calendar' ? 'view-switcher__btn--active' : ''}`}
+							onClick={() => setViewMode('calendar')}
+						>
+							<LayoutGrid size={16} />
+							تقويم
 						</button>
 					</div>
-					<h1 className="page-title" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-						<Calendar size={28} />
-						الجلسات القادمة
-					</h1>
-					<p className="page-subtitle">متابعة جميع الجلسات المجدولة والقادمة</p>
 				</div>
+
 				<div style={{ display: 'flex', gap: '8px' }}>
 					<button
+						className="icon-btn"
 						onClick={fetchSessions}
 						disabled={loading}
-						style={{
-							display: 'flex',
-							alignItems: 'center',
-							gap: '8px',
-							padding: '8px 16px',
-							backgroundColor: 'var(--color-surface)',
-							border: '1px solid var(--color-border)',
-							borderRadius: '8px',
-							color: 'var(--color-text)',
-							cursor: 'pointer'
-						}}
+						title="تحديث"
 					>
 						<RefreshCw size={18} className={loading ? 'animate-spin' : ''} />
-						تحديث
 					</button>
 				</div>
 			</header>
 
-			{/* Filters */}
-			<div style={{
-				display: 'flex',
-				gap: '8px',
-				marginBottom: '24px',
-				flexWrap: 'wrap'
-			}}>
-				{[
-					{ key: 'upcoming', label: 'القادمة', icon: Calendar },
-					{ key: 'today', label: 'اليوم', icon: Clock },
-					{ key: 'week', label: 'هذا الأسبوع', icon: Calendar },
-					{ key: 'all', label: 'الكل', icon: Filter }
-				].map(({ key, label, icon: Icon }) => (
-					<button
-						key={key}
-						onClick={() => setFilter(key as any)}
+			{/* Filters Bar */}
+			<div style={{ padding: '0 20px', marginTop: '16px', display: 'flex', gap: '10px' }}>
+				{/* Simple Search */}
+				<div style={{ position: 'relative' }}>
+					<Search size={14} style={{ position: 'absolute', right: '10px', top: '10px', color: 'var(--color-text-secondary)' }} />
+					<input
+						type="text"
+						placeholder="بحث في الجلسات..."
+						value={searchTerm}
+						onChange={(e) => setSearchTerm(e.target.value)}
 						style={{
-							display: 'flex',
-							alignItems: 'center',
-							gap: '6px',
-							padding: '8px 16px',
-							backgroundColor: filter === key ? 'var(--color-primary)' : 'var(--color-surface)',
-							border: `1px solid ${filter === key ? 'var(--color-primary)' : 'var(--color-border)'}`,
-							borderRadius: '8px',
-							color: filter === key ? 'white' : 'var(--color-text)',
+							padding: '8px 32px 8px 12px',
+							borderRadius: '6px',
+							border: '1px solid var(--color-border)',
+							fontSize: '13px',
+							width: '240px'
+						}}
+					/>
+				</div>
+
+				{[
+					{ key: 'upcoming', label: 'القادمة' },
+					{ key: 'today', label: 'اليوم' },
+					{ key: 'week', label: 'هذا الأسبوع' },
+					{ key: 'all', label: 'الكل' }
+				].map(f => (
+					<button
+						key={f.key}
+						onClick={() => setFilter(f.key as any)}
+						style={{
+							padding: '6px 12px',
+							borderRadius: '6px',
+							border: filter === f.key ? '1px solid var(--law-navy)' : '1px solid transparent',
+							background: filter === f.key ? 'var(--law-navy)' : 'transparent',
+							color: filter === f.key ? 'white' : 'var(--color-text-secondary)',
+							fontSize: '13px',
 							cursor: 'pointer',
-							fontSize: 'var(--font-size-sm)',
-							fontWeight: filter === key ? '600' : '400',
-							transition: 'all 0.2s'
+							transition: 'all 0.15s'
 						}}
 					>
-						<Icon size={16} />
-						{label}
+						{f.label}
 					</button>
 				))}
 			</div>
 
-			{/* Stats */}
-			<div style={{
-				display: 'grid',
-				gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
-				gap: '16px',
-				marginBottom: '24px'
-			}}>
-				<div style={{
-					padding: '16px',
-					backgroundColor: 'var(--color-surface)',
-					borderRadius: '12px',
-					border: '1px solid var(--color-border)',
-					textAlign: 'center'
-				}}>
-					<div style={{ fontSize: '28px', fontWeight: 'bold', color: 'var(--color-primary)' }}>
-						{sortedSessions.length}
-					</div>
-					<div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
-						إجمالي الجلسات
-					</div>
-				</div>
-				<div style={{
-					padding: '16px',
-					backgroundColor: 'var(--color-surface)',
-					borderRadius: '12px',
-					border: '1px solid var(--color-border)',
-					textAlign: 'center'
-				}}>
-					<div style={{ fontSize: '28px', fontWeight: 'bold', color: '#f87171' }}>
-						{sortedSessions.filter(s => {
-							if (!s.session_date) return false;
-							const d = new Date(s.session_date);
-							const today = new Date();
-							return d.toDateString() === today.toDateString();
-						}).length}
-					</div>
-					<div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
-						جلسات اليوم
-					</div>
-				</div>
-				<div style={{
-					padding: '16px',
-					backgroundColor: 'var(--color-surface)',
-					borderRadius: '12px',
-					border: '1px solid var(--color-border)',
-					textAlign: 'center'
-				}}>
-					<div style={{ fontSize: '28px', fontWeight: 'bold', color: '#fb923c' }}>
-						{sortedSessions.filter(s => {
-							if (!s.session_date) return false;
-							const d = new Date(s.session_date);
-							const today = new Date();
-							const weekEnd = new Date(today);
-							weekEnd.setDate(today.getDate() + 7);
-							return d >= today && d <= weekEnd;
-						}).length}
-					</div>
-					<div style={{ fontSize: 'var(--font-size-sm)', color: 'var(--color-text-secondary)' }}>
-						هذا الأسبوع
-					</div>
-				</div>
-			</div>
-
-			{/* Content */}
-			{loading && (
-				<div style={{
-					display: 'flex',
-					justifyContent: 'center',
-					alignItems: 'center',
-					padding: '48px',
-					color: 'var(--color-text-secondary)'
-				}}>
-					<RefreshCw size={24} className="animate-spin" style={{ marginLeft: '8px' }} />
+			{/* Content Area */}
+			{loading ? (
+				<div style={{ padding: '40px', textAlign: 'center', color: 'var(--color-text-secondary)' }}>
 					جاري التحميل...
 				</div>
-			)}
-
-			{!loading && error && (
-				<div style={{
-					padding: '32px',
-					textAlign: 'center',
-					backgroundColor: 'var(--color-error-soft)',
-					borderRadius: '12px',
-					color: 'var(--color-error)'
-				}}>
-					<AlertCircle size={48} style={{ marginBottom: '16px' }} />
-					<h3>{error}</h3>
-					<button
-						onClick={fetchSessions}
-						style={{
-							marginTop: '16px',
-							padding: '8px 24px',
-							backgroundColor: 'var(--color-primary)',
-							color: 'white',
-							border: 'none',
-							borderRadius: '8px',
-							cursor: 'pointer'
-						}}
-					>
-						إعادة المحاولة
-					</button>
+			) : error ? (
+				<div style={{ padding: '40px', textAlign: 'center', color: 'var(--status-red)' }}>
+					<AlertCircle size={32} style={{ display: 'block', margin: '0 auto 10px' }} />
+					{error}
 				</div>
-			)}
-
-			{!loading && !error && sortedSessions.length === 0 && (
-				<div style={{
-					padding: '48px',
-					textAlign: 'center',
-					backgroundColor: 'var(--color-surface)',
-					borderRadius: '12px',
-					border: '1px solid var(--color-border)'
-				}}>
-					<Calendar size={48} style={{ marginBottom: '16px', color: 'var(--color-text-secondary)' }} />
-					<h3 style={{ color: 'var(--color-text)', marginBottom: '8px' }}>لا توجد جلسات</h3>
-					<p style={{ color: 'var(--color-text-secondary)' }}>
-						{filter === 'today' ? 'لا توجد جلسات اليوم' :
-						 filter === 'week' ? 'لا توجد جلسات هذا الأسبوع' :
-						 'لا توجد جلسات قادمة'}
-					</p>
+			) : sortedSessions.length === 0 ? (
+				<div style={{ padding: '60px', textAlign: 'center', color: 'var(--color-text-secondary)' }}>
+					<CalendarIcon size={48} style={{ opacity: 0.2, margin: '0 auto 16px' }} />
+					<h3>لا توجد جلسات</h3>
+					<p>لا توجد جلسات تطابق معايير البحث الحالية</p>
 				</div>
-			)}
-
-			{!loading && !error && sortedSessions.length > 0 && (
-				<div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-					{sortedSessions.map((session) => (
-						<motion.div
-							key={session.id}
-							initial={{ opacity: 0, y: 10 }}
-							animate={{ opacity: 1, y: 0 }}
-							whileHover={{ scale: 1.01 }}
-							onClick={() => session.case_id && navigate(`/cases/${session.case_id}`)}
-							style={{
-								padding: '20px',
-								backgroundColor: 'var(--color-surface)',
-								borderRadius: '12px',
-								border: '1px solid var(--color-border)',
-								borderRight: `4px solid ${getUrgencyColor(session.session_date)}`,
-								cursor: 'pointer',
-								transition: 'all 0.2s'
-							}}
-						>
-							<div style={{
-								display: 'flex',
-								justifyContent: 'space-between',
-								alignItems: 'flex-start',
-								marginBottom: '16px',
-								flexWrap: 'wrap',
-								gap: '12px'
-							}}>
-								<div>
-									<h3 style={{
-										fontSize: 'var(--font-size-lg)',
-										fontWeight: '600',
-										color: 'var(--color-text)',
-										marginBottom: '4px'
-									}}>
-										{session.case?.title || `قضية رقم ${session.case_id}`}
-									</h3>
-									<div style={{
-										display: 'flex',
-										alignItems: 'center',
-										gap: '8px',
-										color: 'var(--color-text-secondary)',
-										fontSize: 'var(--font-size-sm)'
-									}}>
-										<FileText size={14} />
-										{session.case?.file_number || 'غير محدد'}
-										{session.case?.case_type_arabic && (
-											<span style={{
-												padding: '2px 8px',
-												backgroundColor: 'var(--color-primary-soft)',
-												color: 'var(--color-primary)',
-												borderRadius: '4px',
-												fontSize: 'var(--font-size-xs)'
-											}}>
-												{session.case.case_type_arabic}
-											</span>
-										)}
-									</div>
-								</div>
-								<div style={{
-									display: 'flex',
-									flexDirection: 'column',
-									alignItems: 'flex-end',
-									gap: '4px'
-								}}>
-									<span style={{
-										padding: '4px 12px',
-										backgroundColor: `${getStatusColor(session.najiz_status || session.status)}20`,
-										color: getStatusColor(session.najiz_status || session.status),
-										borderRadius: '6px',
-										fontSize: 'var(--font-size-xs)',
-										fontWeight: '500'
-									}}>
-										{session.najiz_status || session.status || 'مجدولة'}
-									</span>
-									<span style={{
-										padding: '4px 12px',
-										backgroundColor: `${getUrgencyColor(session.session_date)}20`,
-										color: getUrgencyColor(session.session_date),
-										borderRadius: '6px',
-										fontSize: 'var(--font-size-xs)',
-										fontWeight: '600'
-									}}>
-										{getDaysUntil(session.session_date)}
-									</span>
-								</div>
-							</div>
-
-							<div style={{
-								display: 'grid',
-								gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
-								gap: '12px'
-							}}>
-								<div style={{
-									display: 'flex',
-									alignItems: 'center',
-									gap: '8px',
-									color: 'var(--color-text-secondary)',
-									fontSize: 'var(--font-size-sm)'
-								}}>
-									<Calendar size={16} style={{ color: 'var(--color-primary)' }} />
-									<span>{formatDate(session.session_date)}</span>
-								</div>
-
-								{session.session_time && (
-									<div style={{
-										display: 'flex',
-										alignItems: 'center',
-										gap: '8px',
-										color: 'var(--color-text-secondary)',
-										fontSize: 'var(--font-size-sm)'
-									}}>
-										<Clock size={16} style={{ color: 'var(--color-warning)' }} />
-										<span>{formatTime(session.session_time)}</span>
-									</div>
-								)}
-
-								{(session.court || session.case?.court) && (
-									<div style={{
-										display: 'flex',
-										alignItems: 'center',
-										gap: '8px',
-										color: 'var(--color-text-secondary)',
-										fontSize: 'var(--font-size-sm)'
-									}}>
-										<MapPin size={16} style={{ color: 'var(--color-accent)' }} />
-										<span>{session.court || session.case?.court}</span>
-									</div>
-								)}
-
-								{session.case?.client_name && (
-									<div style={{
-										display: 'flex',
-										alignItems: 'center',
-										gap: '8px',
-										color: 'var(--color-text-secondary)',
-										fontSize: 'var(--font-size-sm)'
-									}}>
-										<User size={16} style={{ color: 'var(--color-success)' }} />
-										<span>{session.case.client_name}</span>
-									</div>
-								)}
-
-								{session.session_type && (
-									<div style={{
-										display: 'flex',
-										alignItems: 'center',
-										gap: '8px',
-										color: 'var(--color-text-secondary)',
-										fontSize: 'var(--font-size-sm)'
-									}}>
-										<FileText size={16} style={{ color: 'var(--color-info)' }} />
-										<span>نوع الجلسة: {session.session_type}</span>
-									</div>
-								)}
-
-								{session.location && (
-									<div style={{
-										display: 'flex',
-										alignItems: 'center',
-										gap: '8px',
-										color: 'var(--color-text-secondary)',
-										fontSize: 'var(--font-size-sm)'
-									}}>
-										<MapPin size={16} style={{ color: 'var(--color-error)' }} />
-										<span>القاعة: {session.location}</span>
-									</div>
-								)}
-							</div>
-
-							{session.result && (
-								<div style={{
-									marginTop: '12px',
-									padding: '8px 12px',
-									backgroundColor: 'var(--color-background)',
-									borderRadius: '6px',
-									fontSize: 'var(--font-size-sm)',
-									color: 'var(--color-text-secondary)'
-								}}>
-									<strong>النتيجة:</strong> {session.result}
-								</div>
-							)}
-						</motion.div>
-					))}
-				</div>
+			) : (
+				<>
+					{viewMode === 'table' ? renderTable() : renderCalendar()}
+				</>
 			)}
 		</div>
 	);

@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { 
-  Users, 
-  Shield, 
-  Edit2, 
+import {
+  Users,
+  Shield,
+  Edit2,
   Search,
   MoreHorizontal,
   UserPlus,
@@ -42,6 +42,9 @@ interface PermissionManagementProps {
   className?: string;
 }
 
+const USERS_CACHE_KEY = 'users_data';
+const USERS_CACHE_DURATION = 60 * 60 * 1000; // 1 hour
+
 const PermissionManagement: React.FC<PermissionManagementProps> = ({ className = "" }) => {
   const [activeTab, setActiveTab] = useState<'users' | 'roles' | 'permissions'>('users');
   const [searchTerm, setSearchTerm] = useState('');
@@ -51,16 +54,75 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [dropdownOpen, setDropdownOpen] = useState<string | null>(null);
 
-  // States for API data
-  const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(false);
+  // States for API data - initialize from cache
+  const [users, setUsers] = useState<User[]>(() => {
+    try {
+      const cached = localStorage.getItem(USERS_CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < USERS_CACHE_DURATION) {
+          return data.users || [];
+        }
+      }
+    } catch (e) { console.error('Cache error:', e); }
+    return [];
+  });
+  const [loading, setLoading] = useState(() => {
+    try {
+      const cached = localStorage.getItem(USERS_CACHE_KEY);
+      if (cached) {
+        const { timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < USERS_CACHE_DURATION) return false;
+      }
+    } catch (e) { }
+    return true;
+  });
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalPages, setTotalPages] = useState(() => {
+    try {
+      const cached = localStorage.getItem(USERS_CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < USERS_CACHE_DURATION) {
+          return data.totalPages || 1;
+        }
+      }
+    } catch (e) { }
+    return 1;
+  });
+  const [totalUsers, setTotalUsers] = useState(() => {
+    try {
+      const cached = localStorage.getItem(USERS_CACHE_KEY);
+      if (cached) {
+        const { data, timestamp } = JSON.parse(cached);
+        if (Date.now() - timestamp < USERS_CACHE_DURATION) {
+          return data.totalUsers || 0;
+        }
+      }
+    } catch (e) { }
+    return 0;
+  });
 
   // Load users from API
-  const loadUsers = async (filters: UserFilters = {}) => {
+  const loadUsers = async (filters: UserFilters = {}, forceRefresh = false) => {
+    // Check if we have valid cache for default filters
+    if (!forceRefresh && !searchTerm && selectedRole === 'all' && selectedStatus === 'all') {
+      const cached = localStorage.getItem(USERS_CACHE_KEY);
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < USERS_CACHE_DURATION && data.users?.length > 0) {
+            setUsers(data.users);
+            setTotalPages(data.totalPages || 1);
+            setTotalUsers(data.totalUsers || 0);
+            setLoading(false);
+            return;
+          }
+        } catch (e) { }
+      }
+    }
+
     setLoading(true);
     setError(null);
     try {
@@ -72,12 +134,12 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
         page: currentPage,
         limit: 10
       });
-      
+
       // Check if response and response.data exist
       if (!response || !response.data) {
         throw new Error('استجابة غير صحيحة من الخادم');
       }
-      
+
       // Transform API data to match local User interface
       const transformedUsers: User[] = response.data.map((apiUser: any) => ({
         ...apiUser,
@@ -85,10 +147,18 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
         lastLogin: apiUser.last_login_at ? new Date(apiUser.last_login_at) : undefined,
         department: apiUser.department || 'غير محدد'
       }));
-      
+
       setUsers(transformedUsers);
       setTotalPages(response.last_page || 1);
       setTotalUsers(response.total || 0);
+
+      // Save to cache (only if default filters)
+      if (!searchTerm && selectedRole === 'all' && selectedStatus === 'all') {
+        localStorage.setItem(USERS_CACHE_KEY, JSON.stringify({
+          data: { users: transformedUsers, totalPages: response.last_page || 1, totalUsers: response.total || 0 },
+          timestamp: Date.now()
+        }));
+      }
     } catch (err) {
       console.error('Error loading users:', err);
       setError(err instanceof Error ? err.message : 'فشل في تحميل المستخدمين');
@@ -103,6 +173,19 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
 
   // Load users on component mount and when filters change
   useEffect(() => {
+    // Only fetch if no cached data for default filters
+    if (!searchTerm && selectedRole === 'all' && selectedStatus === 'all') {
+      const cached = localStorage.getItem(USERS_CACHE_KEY);
+      if (cached) {
+        try {
+          const { data, timestamp } = JSON.parse(cached);
+          if (Date.now() - timestamp < USERS_CACHE_DURATION && data.users?.length > 0) {
+            // Cache is valid, already loaded in initial state
+            return;
+          }
+        } catch (e) { }
+      }
+    }
     loadUsers();
   }, [searchTerm, selectedRole, selectedStatus, currentPage]);
 
@@ -111,12 +194,12 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
     try {
       setLoading(true);
       const response = await UserService.createUser(userData);
-      
+
       // عرض رسالة نجاح مع الـ PIN المولد
       if (response && (response as any).pin) {
         alert(`تم إنشاء المستخدم بنجاح!\n\nرقم الهوية: ${userData.national_id}\nالرقم السري: ${(response as any).pin}\n\nتم إرسال رسالة ترحيب عبر واتساب للمستخدم الجديد.`);
       }
-      
+
       await loadUsers(); // Reload users
       setShowAddUserModal(false);
     } catch (err) {
@@ -145,7 +228,7 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
   // Handle user deletion
   const handleDeleteUser = async (id: string) => {
     if (!confirm('هل أنت متأكد من حذف هذا المستخدم؟')) return;
-    
+
     try {
       setLoading(true);
       await UserService.deleteUser(id);
@@ -180,32 +263,32 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
     { id: 'cases_edit', name: 'تعديل القضايا', description: 'تعديل تفاصيل القضايا الموجودة', category: 'cases' },
     { id: 'cases_delete', name: 'حذف القضايا', description: 'حذف القضايا', category: 'cases' },
     { id: 'cases_assign', name: 'إسناد القضايا', description: 'إسناد القضايا للمحامين', category: 'cases' },
-    
+
     // Tasks permissions
     { id: 'tasks_view', name: 'عرض المهام', description: 'عرض جميع المهام', category: 'tasks' },
     { id: 'tasks_create', name: 'إنشاء مهمة', description: 'إنشاء مهام جديدة', category: 'tasks' },
     { id: 'tasks_edit', name: 'تعديل المهام', description: 'تعديل تفاصيل المهام', category: 'tasks' },
     { id: 'tasks_delete', name: 'حذف المهام', description: 'حذف المهام', category: 'tasks' },
     { id: 'tasks_assign', name: 'إسناد المهام', description: 'إسناد المهام للمستخدمين', category: 'tasks' },
-    
+
     // Documents permissions
     { id: 'docs_view', name: 'عرض الوثائق', description: 'عرض جميع الوثائق', category: 'documents' },
     { id: 'docs_upload', name: 'رفع الوثائق', description: 'رفع وثائق جديدة', category: 'documents' },
     { id: 'docs_edit', name: 'تعديل الوثائق', description: 'تعديل معلومات الوثائق', category: 'documents' },
     { id: 'docs_delete', name: 'حذف الوثائق', description: 'حذف الوثائق', category: 'documents' },
     { id: 'docs_download', name: 'تحميل الوثائق', description: 'تحميل الوثائق', category: 'documents' },
-    
+
     // Reports permissions
     { id: 'reports_view', name: 'عرض التقارير', description: 'عرض جميع التقارير', category: 'reports' },
     { id: 'reports_create', name: 'إنشاء التقارير', description: 'إنشاء تقارير جديدة', category: 'reports' },
     { id: 'reports_export', name: 'تصدير التقارير', description: 'تصدير التقارير', category: 'reports' },
-    
+
     // Admin permissions
     { id: 'admin_users', name: 'إدارة المستخدمين', description: 'إدارة حسابات المستخدمين', category: 'admin' },
     { id: 'admin_roles', name: 'إدارة الأدوار', description: 'إدارة الأدوار والصلاحيات', category: 'admin' },
     { id: 'admin_settings', name: 'إدارة الإعدادات', description: 'إدارة إعدادات النظام', category: 'admin' },
     { id: 'admin_backup', name: 'النسخ الاحتياطي', description: 'إنشاء واستعادة النسخ الاحتياطية', category: 'admin' },
-    
+
     // Clients permissions
     { id: 'clients_view', name: 'عرض العملاء', description: 'عرض معلومات العملاء', category: 'clients' },
     { id: 'clients_create', name: 'إضافة عملاء', description: 'إضافة عملاء جدد', category: 'clients' },
@@ -317,10 +400,10 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
 
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
+      user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesRole = selectedRole === 'all' || user.role === selectedRole;
     const matchesStatus = selectedStatus === 'all' || user.status === selectedStatus;
-    
+
     return matchesSearch && matchesRole && matchesStatus;
   });
 
@@ -851,116 +934,102 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
 
           {/* Users Table */}
           {!loading && (
-          <div style={{
-            backgroundColor: 'var(--color-surface)',
-            border: '1px solid var(--color-border)',
-            borderRadius: '12px',
-            overflow: 'hidden'
-          }}>
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr auto',
-              padding: '16px',
-              backgroundColor: 'var(--color-secondary)',
-              borderBottom: '1px solid var(--color-border)',
-              fontSize: 'var(--font-size-sm)',
-              fontWeight: 'var(--font-weight-semibold)',
-              color: 'var(--color-text-secondary)',
-              gap: '16px'
+              backgroundColor: 'var(--color-surface)',
+              border: '1px solid var(--color-border)',
+              borderRadius: '12px',
+              overflow: 'hidden'
             }}>
-              <div>الحالة</div>
-              <div>المستخدم</div>
-              <div>الدور</div>
-              <div>القسم</div>
-              <div>آخر دخول</div>
-              <div>الإجراءات</div>
-            </div>
+              <div style={{
+                display: 'grid',
+                gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr auto',
+                padding: '16px',
+                backgroundColor: 'var(--color-secondary)',
+                borderBottom: '1px solid var(--color-border)',
+                fontSize: 'var(--font-size-sm)',
+                fontWeight: 'var(--font-weight-semibold)',
+                color: 'var(--color-text-secondary)',
+                gap: '16px'
+              }}>
+                <div>الحالة</div>
+                <div>المستخدم</div>
+                <div>الدور</div>
+                <div>القسم</div>
+                <div>آخر دخول</div>
+                <div>الإجراءات</div>
+              </div>
 
-            {filteredUsers.map(user => (
-              <div
-                key={user.id}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr auto',
-                  padding: '16px',
-                  borderBottom: '1px solid var(--color-border)',
-                  gap: '16px',
-                  alignItems: 'center'
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  {getStatusIcon(user.status)}
-                  <span style={{
-                    fontSize: 'var(--font-size-xs)',
-                    color: 'var(--color-text-secondary)'
-                  }}>
-                    {getStatusDisplayName(user.status)}
-                  </span>
-                </div>
+              {filteredUsers.map(user => (
+                <div
+                  key={user.id}
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 2fr 1fr 1fr 1fr auto',
+                    padding: '16px',
+                    borderBottom: '1px solid var(--color-border)',
+                    gap: '16px',
+                    alignItems: 'center'
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    {getStatusIcon(user.status)}
+                    <span style={{
+                      fontSize: 'var(--font-size-xs)',
+                      color: 'var(--color-text-secondary)'
+                    }}>
+                      {getStatusDisplayName(user.status)}
+                    </span>
+                  </div>
 
-                <div>
+                  <div>
+                    <div style={{
+                      fontSize: 'var(--font-size-sm)',
+                      fontWeight: 'var(--font-weight-medium)',
+                      color: 'var(--color-text)',
+                      marginBottom: '2px'
+                    }}>
+                      {user.name}
+                    </div>
+                    <div style={{
+                      fontSize: 'var(--font-size-xs)',
+                      color: 'var(--color-text-secondary)'
+                    }}>
+                      {user.email}
+                    </div>
+                  </div>
+
+                  <div>
+                    <span style={{
+                      padding: '4px 8px',
+                      fontSize: 'var(--font-size-xs)',
+                      backgroundColor: `${roles.find(r => r.id === user.role)?.color}15`,
+                      color: roles.find(r => r.id === user.role)?.color,
+                      borderRadius: '4px'
+                    }}>
+                      {getRoleDisplayName(user.role || '')}
+                    </span>
+                  </div>
+
                   <div style={{
                     fontSize: 'var(--font-size-sm)',
-                    fontWeight: 'var(--font-weight-medium)',
-                    color: 'var(--color-text)',
-                    marginBottom: '2px'
-                  }}>
-                    {user.name}
-                  </div>
-                  <div style={{
-                    fontSize: 'var(--font-size-xs)',
                     color: 'var(--color-text-secondary)'
                   }}>
-                    {user.email}
+                    {user.department || 'غير محدد'}
                   </div>
-                </div>
 
-                <div>
-                  <span style={{
-                    padding: '4px 8px',
-                    fontSize: 'var(--font-size-xs)',
-                    backgroundColor: `${roles.find(r => r.id === user.role)?.color}15`,
-                    color: roles.find(r => r.id === user.role)?.color,
-                    borderRadius: '4px'
+                  <div style={{
+                    fontSize: 'var(--font-size-sm)',
+                    color: 'var(--color-text-secondary)'
                   }}>
-                    {getRoleDisplayName(user.role || '')}
-                  </span>
-                </div>
+                    {user.lastLogin ? new Date(user.lastLogin).toLocaleDateString('ar-SA') : 'لم يسجل دخول'}
+                  </div>
 
-                <div style={{
-                  fontSize: 'var(--font-size-sm)',
-                  color: 'var(--color-text-secondary)'
-                }}>
-                  {user.department || 'غير محدد'}
-                </div>
-
-                <div style={{
-                  fontSize: 'var(--font-size-sm)',
-                  color: 'var(--color-text-secondary)'
-                }}>
-                  {user.lastLogin ? user.lastLogin.toLocaleDateString('ar-SA') : 'لم يسجل دخول'}
-                </div>
-
-                <div style={{ display: 'flex', gap: '8px' }}>
-                  <button
-                    onClick={() => {
-                      setSelectedUser(user);
-                      setShowAddUserModal(true);
-                    }}
-                    style={{
-                      padding: '6px',
-                      backgroundColor: 'transparent',
-                      border: '1px solid var(--color-border)',
-                      borderRadius: '6px',
-                      cursor: 'pointer',
-                      color: 'var(--color-text-secondary)'
-                    }}
-                  >
-                    <Edit2 style={{ height: '14px', width: '14px' }} />
-                  </button>
-                  <div style={{ position: 'relative' }}>
+                  <div style={{ display: 'flex', gap: '8px' }}>
                     <button
-                      onClick={() => setDropdownOpen(dropdownOpen === user.id ? null : user.id)}
+                      onClick={() => {
+                        setSelectedUser(user);
+                        setShowAddUserModal(true);
+                      }}
                       style={{
                         padding: '6px',
                         backgroundColor: 'transparent',
@@ -970,67 +1039,81 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
                         color: 'var(--color-text-secondary)'
                       }}
                     >
-                      <MoreHorizontal style={{ height: '14px', width: '14px' }} />
+                      <Edit2 style={{ height: '14px', width: '14px' }} />
                     </button>
-                    
-                    {dropdownOpen === user.id && (
-                      <div style={{
-                        position: 'absolute',
-                        top: '100%',
-                        left: 0,
-                        backgroundColor: 'var(--color-surface)',
-                        border: '1px solid var(--color-border)',
-                        borderRadius: '8px',
-                        padding: '8px',
-                        minWidth: '150px',
-                        zIndex: 1000,
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                      }}>
-                        <button
-                          onClick={() => {
-                            handleToggleUserStatus(user.id, user.status === 'active');
-                            setDropdownOpen(null);
-                          }}
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            backgroundColor: 'transparent',
-                            border: 'none',
-                            textAlign: 'right',
-                            cursor: 'pointer',
-                            borderRadius: '4px',
-                            fontSize: 'var(--font-size-sm)',
-                            color: 'var(--color-text)'
-                          }}
-                        >
-                          {user.status === 'active' ? 'إلغاء التفعيل' : 'تفعيل'}
-                        </button>
-                        <button
-                          onClick={() => {
-                            handleDeleteUser(user.id);
-                            setDropdownOpen(null);
-                          }}
-                          style={{
-                            width: '100%',
-                            padding: '8px 12px',
-                            backgroundColor: 'transparent',
-                            border: 'none',
-                            textAlign: 'right',
-                            cursor: 'pointer',
-                            borderRadius: '4px',
-                            fontSize: 'var(--font-size-sm)',
-                            color: 'var(--color-red-600)'
-                          }}
-                        >
-                          حذف المستخدم
-                        </button>
-                      </div>
-                    )}
+                    <div style={{ position: 'relative' }}>
+                      <button
+                        onClick={() => setDropdownOpen(dropdownOpen === user.id ? null : user.id)}
+                        style={{
+                          padding: '6px',
+                          backgroundColor: 'transparent',
+                          border: '1px solid var(--color-border)',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                          color: 'var(--color-text-secondary)'
+                        }}
+                      >
+                        <MoreHorizontal style={{ height: '14px', width: '14px' }} />
+                      </button>
+
+                      {dropdownOpen === user.id && (
+                        <div style={{
+                          position: 'absolute',
+                          top: '100%',
+                          left: 0,
+                          backgroundColor: 'var(--color-surface)',
+                          border: '1px solid var(--color-border)',
+                          borderRadius: '8px',
+                          padding: '8px',
+                          minWidth: '150px',
+                          zIndex: 1000,
+                          boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                        }}>
+                          <button
+                            onClick={() => {
+                              handleToggleUserStatus(user.id, user.status === 'active');
+                              setDropdownOpen(null);
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '8px 12px',
+                              backgroundColor: 'transparent',
+                              border: 'none',
+                              textAlign: 'right',
+                              cursor: 'pointer',
+                              borderRadius: '4px',
+                              fontSize: 'var(--font-size-sm)',
+                              color: 'var(--color-text)'
+                            }}
+                          >
+                            {user.status === 'active' ? 'إلغاء التفعيل' : 'تفعيل'}
+                          </button>
+                          <button
+                            onClick={() => {
+                              handleDeleteUser(user.id);
+                              setDropdownOpen(null);
+                            }}
+                            style={{
+                              width: '100%',
+                              padding: '8px 12px',
+                              backgroundColor: 'transparent',
+                              border: 'none',
+                              textAlign: 'right',
+                              cursor: 'pointer',
+                              borderRadius: '4px',
+                              fontSize: 'var(--font-size-sm)',
+                              color: 'var(--color-red-600)'
+                            }}
+                          >
+                            حذف المستخدم
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
           )}
         </div>
       )}
@@ -1071,7 +1154,7 @@ const PermissionManagement: React.FC<PermissionManagementProps> = ({ className =
                 }}>
                   <Shield style={{ height: '24px', width: '24px', color: role.color }} />
                 </div>
-                
+
                 <div style={{ display: 'flex', gap: '8px' }}>
                   {role.isSystem && (
                     <span style={{
