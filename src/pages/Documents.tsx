@@ -30,7 +30,8 @@ import {
     Link2,
     Loader2,
     CheckCircle,
-    AlertCircle
+    AlertCircle,
+    ExternalLink
 } from 'lucide-react';
 import type { Document as DocumentType, Case } from '../types';
 import DocumentUploadModal from '../components/DocumentUploadModal';
@@ -100,6 +101,7 @@ const Documents: React.FC = () => {
     const [oneDriveConnecting, setOneDriveConnecting] = useState(false);
     const [showOneDriveFiles, setShowOneDriveFiles] = useState(false);
     const [currentOneDriveFolder, setCurrentOneDriveFolder] = useState<string>('root');
+    const [selectedOneDriveFile, setSelectedOneDriveFile] = useState<CloudStorageFile | null>(null);
     const [searchParams, setSearchParams] = useSearchParams();
 
     useEffect(() => {
@@ -367,6 +369,152 @@ const Documents: React.FC = () => {
                     <button className="preview-action-btn" style={{ color: 'var(--color-error)' }}>
                         <Trash2 size={16} /> حذف
                     </button>
+                </div>
+            </div>
+        );
+    };
+
+    // OneDrive Preview Pane Content
+    const OneDrivePreviewPane = ({ file }: { file: CloudStorageFile }) => {
+        const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+        const [previewLoading, setPreviewLoading] = useState(false);
+        const [previewError, setPreviewError] = useState<string | null>(null);
+
+        const isImage = file.mime_type?.includes('image');
+        const isPdf = file.mime_type?.includes('pdf');
+        const isWord = file.mime_type?.includes('word') || file.name.endsWith('.docx') || file.name.endsWith('.doc');
+        const isExcel = file.mime_type?.includes('excel') || file.mime_type?.includes('spreadsheet') || file.name.endsWith('.xlsx');
+        const canPreview = isImage || isPdf;
+
+        useEffect(() => {
+            if (canPreview && file.id) {
+                fetchPreview();
+            }
+            return () => {
+                if (previewUrl) URL.revokeObjectURL(previewUrl);
+            };
+        }, [file.id]);
+
+        const fetchPreview = async () => {
+            setPreviewLoading(true);
+            setPreviewError(null);
+            if (previewUrl) URL.revokeObjectURL(previewUrl);
+            setPreviewUrl(null);
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1'}/cloud-storage/onedrive/preview/${file.id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Failed to load preview');
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                setPreviewUrl(url);
+            } catch (err) {
+                console.error(err);
+                setPreviewError('فشل تحميل المعاينة');
+            } finally {
+                setPreviewLoading(false);
+            }
+        };
+
+        const [downloadLoading, setDownloadLoading] = useState(false);
+
+        const handleDownload = async () => {
+            setDownloadLoading(true);
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://127.0.0.1:8000/api/v1'}/cloud-storage/onedrive/download/${file.id}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+
+                if (!response.ok) throw new Error('Download failed');
+
+                const blob = await response.blob();
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = file.name;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } catch (err) {
+                console.error('Download failed:', err);
+                alert('فشل التنزيل');
+            } finally {
+                setDownloadLoading(false);
+            }
+        };
+
+        return (
+            <div className="docs-preview-pane">
+                <div className="preview-header">
+                    <div>
+                        <div className="preview-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Cloud size={16} className="text-blue-500" />
+                            {file.name}
+                        </div>
+                        <div className="preview-meta">
+                            {file.modified_at && `تم التعديل ${new Date(file.modified_at).toLocaleDateString('ar-SA')}`}
+                        </div>
+                    </div>
+                    <button className="preview-close-btn" onClick={() => setSelectedOneDriveFile(null)}>
+                        <X size={18} />
+                    </button>
+                </div>
+
+                <div className="preview-body">
+                    <div className="preview-content-area" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', flex: 1, minHeight: '350px' }}>
+                        {previewLoading ? (
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                                <Loader2 size={32} className="animate-spin text-blue-500" />
+                                <span style={{ marginTop: '12px', color: 'var(--color-text-secondary)' }}>جاري التحميل...</span>
+                            </div>
+                        ) : previewError ? (
+                            <div style={{ color: 'var(--color-error)', fontSize: '13px' }}>{previewError}</div>
+                        ) : isImage && previewUrl ? (
+                            <img src={previewUrl} alt={file.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                        ) : isPdf && previewUrl ? (
+                            <iframe src={previewUrl} title={file.name} style={{ width: '100%', height: '100%', border: 'none', flex: 1 }} />
+                        ) : (
+                            <>
+                                {getFileIcon(file.mime_type || '')}
+                                <span style={{ marginTop: '12px', color: 'var(--color-text-secondary)', fontSize: '13px' }}>
+                                    {isPdf ? 'ملف PDF' : isWord ? 'ملف Word' : isExcel ? 'ملف Excel' : 'ملف OneDrive'}
+                                </span>
+                                {!canPreview && (
+                                    <span style={{ marginTop: '8px', color: 'var(--color-text-tertiary)', fontSize: '11px' }}>
+                                        لا يمكن معاينة هذا النوع من الملفات
+                                    </span>
+                                )}
+                            </>
+                        )}
+                    </div>
+
+                    <div className="preview-actions" style={{ marginTop: 'auto', paddingTop: '16px' }}>
+                        <button
+                            className="preview-action-btn primary"
+                            onClick={handleDownload}
+                            disabled={downloadLoading}
+                            style={{ gridColumn: 'span 2', opacity: downloadLoading ? 0.7 : 1 }}
+                        >
+                            {downloadLoading ? (
+                                <><Loader2 size={16} className="animate-spin" /> جاري التنزيل...</>
+                            ) : (
+                                <><Download size={16} /> تنزيل مباشر</>
+                            )}
+                        </button>
+                        <button
+                            className="preview-action-btn"
+                            onClick={() => file.web_url && window.open(file.web_url, '_blank')}
+                            style={{ gridColumn: 'span 2' }}
+                        >
+                            <ExternalLink size={16} /> فتح في OneDrive
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -675,8 +823,10 @@ const Documents: React.FC = () => {
                                                 onClick={() => {
                                                     if (file.is_folder) {
                                                         loadOneDriveFiles(file.id);
-                                                    } else if (file.web_url) {
-                                                        window.open(file.web_url, '_blank');
+                                                        setSelectedOneDriveFile(null);
+                                                    } else {
+                                                        setSelectedOneDriveFile(file);
+                                                        setSelectedDocument(null); // Clear local file selection
                                                     }
                                                 }}
                                             >
@@ -739,6 +889,7 @@ const Documents: React.FC = () => {
 
                     {/* Preview Only Rendered When Selected */}
                     {selectedDocument && <PreviewPane doc={selectedDocument} />}
+                    {selectedOneDriveFile && <OneDrivePreviewPane file={selectedOneDriveFile} />}
                 </div>
             </div>
 
