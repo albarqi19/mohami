@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import {
   User,
   Bell,
@@ -9,9 +9,13 @@ import {
   Monitor,
   Moon,
   Sun,
-  Settings as SettingsIcon
+  Settings as SettingsIcon,
+  Cloud,
+  Link,
+  Loader2
 } from 'lucide-react';
 import NotificationSettings from '../components/NotificationSettings';
+import { apiClient } from '../utils/api';
 import '../styles/settings-page.css';
 
 interface SettingsTab {
@@ -26,6 +30,7 @@ const Settings: React.FC = () => {
 
   const tabs: SettingsTab[] = [
     { id: 'notifications', label: 'الإشعارات', icon: Bell, roles: ['admin', 'lawyer', 'legal_assistant', 'client'] },
+    { id: 'najiz', label: 'إعدادات ناجز', icon: Cloud, roles: ['admin'] },
     { id: 'profile', label: 'الملف الشخصي', icon: User, roles: ['admin', 'lawyer', 'legal_assistant', 'client'] },
     { id: 'appearance', label: 'المظهر', icon: Palette, roles: ['admin', 'lawyer', 'legal_assistant', 'client'] },
     { id: 'privacy', label: 'الخصوصية والأمان', icon: Shield, roles: ['admin', 'lawyer', 'legal_assistant'] },
@@ -37,11 +42,133 @@ const Settings: React.FC = () => {
   const userRole = 'admin';
   const visibleTabs = tabs.filter(tab => tab.roles.includes(userRole));
 
+  // Najiz Settings State
+  const [najizSettings, setNajizSettings] = useState({
+    auto_link_lawyers: true,
+    send_whatsapp_on_import: false,
+    default_case_priority: 'medium'
+  });
+  const [loadingSettings, setLoadingSettings] = useState(false);
+  const [savingSettings, setSavingSettings] = useState(false);
+  const [settingsMessage, setSettingsMessage] = useState('');
+
+  // Load Najiz settings
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        setLoadingSettings(true);
+        const response: any = await apiClient.get('/tenant/settings');
+        if (response.success) {
+          setNajizSettings(prev => ({ ...prev, ...response.data }));
+        }
+      } catch (error) {
+        console.error('Error loading settings:', error);
+      } finally {
+        setLoadingSettings(false);
+      }
+    };
+    loadSettings();
+  }, []);
+
+  // Save Najiz settings
+  const saveNajizSettings = async () => {
+    try {
+      setSavingSettings(true);
+      setSettingsMessage('');
+      const response: any = await apiClient.patch('/tenant/settings', najizSettings);
+      if (response.success) {
+        setSettingsMessage('تم حفظ الإعدادات بنجاح');
+        setTimeout(() => setSettingsMessage(''), 3000);
+      }
+    } catch (error) {
+      setSettingsMessage('حدث خطأ أثناء حفظ الإعدادات');
+      console.error('Error saving settings:', error);
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
   const renderTabContent = () => {
     switch (activeTab) {
       case 'notifications':
         return <NotificationSettings />;
 
+      case 'najiz':
+        return (
+          <div className="settings-section">
+            <div className="settings-section__header">
+              <div className="settings-section__icon">
+                <Cloud size={14} />
+              </div>
+              <span className="settings-section__title">إعدادات ناجز</span>
+            </div>
+            <div className="settings-section__content">
+              {loadingSettings ? (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '20px' }}>
+                  <Loader2 className="animate-spin" size={20} />
+                  <span>جاري تحميل الإعدادات...</span>
+                </div>
+              ) : (
+                <>
+                  <div className="settings-option-card">
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                      <Link size={20} />
+                      <div>
+                        <div className="settings-option-card__title">ربط المحامين تلقائياً بالقضايا</div>
+                        <div className="settings-option-card__desc">
+                          عند استيراد القضايا من ناجز، يتم ربط المحامين تلقائياً بالقضايا بناءً على رقم الهوية.
+                          <br />
+                          <strong>ملاحظة:</strong> يجب أن يكون المحامي مسجلاً في النظام مسبقاً برقم هويته.
+                        </div>
+                      </div>
+                    </div>
+                    <div className="settings-option-card__actions" style={{ marginTop: '12px' }}>
+                      <label className="settings-toggle">
+                        <input
+                          type="checkbox"
+                          checked={najizSettings.auto_link_lawyers}
+                          onChange={(e) => setNajizSettings(prev => ({
+                            ...prev,
+                            auto_link_lawyers: e.target.checked
+                          }))}
+                        />
+                        <span className="settings-toggle__slider"></span>
+                        <span style={{ marginRight: '12px' }}>
+                          {najizSettings.auto_link_lawyers ? 'مفعّل' : 'معطّل'}
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="settings-btn-group" style={{ marginTop: '20px' }}>
+                    <button
+                      className="settings-btn settings-btn--primary"
+                      onClick={saveNajizSettings}
+                      disabled={savingSettings}
+                    >
+                      {savingSettings ? (
+                        <>
+                          <Loader2 className="animate-spin" size={16} />
+                          جاري الحفظ...
+                        </>
+                      ) : (
+                        'حفظ الإعدادات'
+                      )}
+                    </button>
+                    {settingsMessage && (
+                      <span style={{
+                        color: settingsMessage.includes('خطأ') ? '#ef4444' : '#22c55e',
+                        marginRight: '12px'
+                      }}>
+                        {settingsMessage}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        );
       case 'profile':
         return (
           <div className="settings-section">

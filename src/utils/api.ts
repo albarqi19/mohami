@@ -26,7 +26,7 @@ class ApiClient {
     options: RequestInit = {}
   ): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     const headers: Record<string, string> = {
       'Accept': 'application/json',
       'ngrok-skip-browser-warning': '69420', // Skip ngrok browser warning
@@ -51,7 +51,7 @@ class ApiClient {
 
     try {
       const response = await fetch(url, config);
-      
+
       if (!response.ok) {
         if (response.status === 401) {
           // Unauthorized - clear token and redirect to login
@@ -59,9 +59,12 @@ class ApiClient {
           window.location.href = '/login';
           throw new Error('Unauthorized');
         }
-        
+
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.message || `HTTP ${response.status}`);
+        // Create error with full details
+        const error = new Error(errorData.message || `HTTP ${response.status}`) as Error & { errors?: Record<string, string[]> };
+        error.errors = errorData.errors;
+        throw error;
       }
 
       const data = await response.json();
@@ -95,9 +98,16 @@ class ApiClient {
     return this.request<T>(endpoint, { method: 'DELETE' });
   }
 
+  async patch<T>(endpoint: string, data?: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'PATCH',
+      body: data instanceof FormData ? data : (data ? JSON.stringify(data) : undefined),
+    });
+  }
+
   async postFormData<T>(endpoint: string, formData: FormData): Promise<T> {
     const url = `${this.baseURL}${endpoint}`;
-    
+
     const headers: Record<string, string> = {
       'Accept': 'application/json',
       'ngrok-skip-browser-warning': '69420', // Skip ngrok browser warning
@@ -120,7 +130,7 @@ class ApiClient {
           window.location.href = '/login';
           throw new Error('Unauthorized');
         }
-        
+
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || `HTTP ${response.status}`);
       }

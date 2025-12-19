@@ -19,22 +19,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     // Check if user is already logged in (has valid token)
     const savedToken = localStorage.getItem('authToken');
+    console.log('AuthContext: Checking saved token...', { hasToken: !!savedToken });
+
     if (savedToken) {
       apiClient.setToken(savedToken);
       // Verify token by fetching user profile
       AuthService.getProfile()
         .then((userData) => {
+          console.log('AuthContext: Profile fetched successfully', {
+            userId: userData.id,
+            role: userData.role
+          });
           setUser(userData);
         })
         .catch((error) => {
           console.error('Token verification failed:', error);
-          // Only clear token if it's specifically an authentication error (401/403)
-          if (error.response?.status === 401 || error.response?.status === 403) {
+          // Check error message for 401/Unauthorized
+          const errorMessage = error.message?.toLowerCase() || '';
+          if (errorMessage.includes('unauthorized') ||
+            errorMessage.includes('401') ||
+            errorMessage.includes('unauthenticated')) {
             localStorage.removeItem('authToken');
             apiClient.setToken(null);
           }
-          // For network errors, keep the token and set user as null
-          // but don't remove the token in case connection is restored
+          // For other errors (network, server errors), keep the token
+          // The user might still be able to use cached data or retry
         })
         .finally(() => {
           setIsLoading(false);
@@ -46,7 +55,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const login = async (nationalId: string, pin: string): Promise<boolean> => {
     setIsLoading(true);
-    
+
     try {
       const loginResponse = await AuthService.login({ nationalId, pin });
       setUser(loginResponse.user);
@@ -61,7 +70,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const logout = async () => {
     setIsLoading(true);
-    
+
     try {
       await AuthService.logout();
     } catch (error) {

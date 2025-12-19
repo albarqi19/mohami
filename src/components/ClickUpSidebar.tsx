@@ -145,7 +145,6 @@ const ClickUpSidebar: React.FC<SidebarProps> = ({
                     {!isCollapsed && (
                         <div className="sidebar__brand">
                             <div className="sidebar__title">نظام المحاماة</div>
-                            <div className="sidebar__subtitle">إدارة القضايا</div>
                         </div>
                     )}
 

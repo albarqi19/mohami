@@ -1,6 +1,7 @@
 ﻿import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import AuthLayout from './components/AuthLayout';
 import Layout from './components/Layout';
 import Dashboard from './pages/Dashboard';
 import Cases from './pages/Cases';
@@ -18,7 +19,9 @@ import Admin from './pages/Admin';
 import Statistics from './pages/Statistics';
 import Settings from './pages/Settings';
 import WhatsappSettings from './pages/WhatsappSettings';
-import Login from './pages/Login';
+import LoginContent from './pages/LoginContent';
+import RegisterChoiceContent from './pages/RegisterChoiceContent';
+import RegisterTenantContent from './pages/RegisterTenantContent';
 import LandingPage from './pages/LandingPage';
 import Wekalat from './pages/Wekalat';
 
@@ -28,14 +31,19 @@ function App() {
       <Router>
         <Routes>
           <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
+          {/* Auth routes with shared layout */}
+          <Route element={<AuthLayout />}>
+            <Route path="/login" element={<LoginContent />} />
+            <Route path="/register" element={<RegisterChoiceContent />} />
+            <Route path="/register/tenant" element={<RegisterTenantContent />} />
+          </Route>
           <Route element={
             <ProtectedRoute>
               <Layout />
             </ProtectedRoute>
           }>
             <Route path="dashboard" element={<Dashboard />} />
-            
+
             {/* Routes for all users except clients */}
             <Route path="cases" element={
               <ProtectedRoute allowedRoles={['admin', 'lawyer', 'legal_assistant']}>
@@ -57,7 +65,7 @@ function App() {
                 <Wekalat />
               </ProtectedRoute>
             } />
-            
+
             {/* Client-specific routes */}
             <Route path="my-cases" element={
               <ProtectedRoute allowedRoles={['client']}>
@@ -69,7 +77,7 @@ function App() {
                 <ClientCaseDetail />
               </ProtectedRoute>
             } />
-            
+
             <Route path="tasks" element={
               <ProtectedRoute allowedRoles={['admin', 'lawyer', 'legal_assistant']}>
                 <Tasks />

@@ -487,3 +487,59 @@ body.dark .settings-content select {
 body.dark .settings-content input[type="checkbox"] {
     accent-color: var(--law-navy);
 }
+
+/* === Toggle Switch === */
+.settings-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    gap: 8px;
+}
+
+.settings-toggle input {
+    display: none;
+}
+
+.settings-toggle__slider {
+    position: relative;
+    width: 44px;
+    height: 24px;
+    background: var(--quiet-gray-200);
+    border-radius: 12px;
+    transition: all var(--transition-fast);
+}
+
+body.dark .settings-toggle__slider {
+    background: var(--quiet-gray-300);
+}
+
+.settings-toggle__slider::after {
+    content: '';
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    right: 3px;
+    transition: all var(--transition-fast);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.settings-toggle input:checked + .settings-toggle__slider {
+    background: var(--law-navy);
+}
+
+.settings-toggle input:checked + .settings-toggle__slider::after {
+    right: 23px;
+}
+
+/* Animate spin for loader */
+.animate-spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}

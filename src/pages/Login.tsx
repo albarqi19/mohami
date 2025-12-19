@@ -12,7 +12,7 @@ import {
   Briefcase,
   Sparkles,
 } from 'lucide-react';
-import { Navigate, useLocation } from 'react-router-dom';
+import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 
 interface LoginForm {
@@ -82,7 +82,7 @@ const Login: React.FC = () => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
-    
+
     try {
       const success = await login(formData.nationalId.trim(), formData.pin);
       if (!success) {
@@ -288,6 +288,11 @@ const Login: React.FC = () => {
                   <span className="auth-sample__meta">رقم الهوية: {account.nationalId}</span>
                 </button>
               ))}
+            </div>
+
+            <div className="auth-register-prompt">
+              <span>ليس لديك حساب؟</span>
+              <Link to="/register">إنشاء حساب جديد</Link>
             </div>
           </motion.form>
         </motion.div>

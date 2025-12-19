@@ -8,9 +8,9 @@ interface ProtectedRouteProps {
   allowedRoles?: UserRole[];
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
-  children, 
-  allowedRoles 
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  allowedRoles
 }) => {
   const { user, isLoading } = useAuth();
   const location = useLocation();
@@ -46,8 +46,8 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
             <p className="text-gray-600 dark:text-gray-400 mb-4">
               لا يمكن الاتصال بالخادم. يرجى التحقق من اتصال الإنترنت أو تشغيل الخادم.
             </p>
-            <button 
-              onClick={() => window.location.reload()} 
+            <button
+              onClick={() => window.location.reload()}
               className="bg-primary text-white px-4 py-2 rounded hover:bg-primary-dark transition-colors"
             >
               إعادة المحاولة
@@ -56,13 +56,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
         </div>
       );
     }
-    
+
     // No token, redirect to login
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(user.role)) {
+  if (allowedRoles && user.role && !allowedRoles.includes(user.role)) {
     // User doesn't have permission
+    console.warn('ProtectedRoute: User role not allowed', {
+      userRole: user.role,
+      allowedRoles,
+      userId: user.id
+    });
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
         <div className="text-center">

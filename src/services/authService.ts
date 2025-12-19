@@ -57,10 +57,10 @@ export class AuthService {
   }
 
   static async getProfile(): Promise<User> {
-    const response = await apiClient.get<ApiResponse<User>>('/auth/me');
-    
-    if (response.success && response.data) {
-      return response.data;
+    const response = await apiClient.get<ApiResponse<{ user: User }>>('/auth/me');
+
+    if (response.success && response.data && response.data.user) {
+      return response.data.user;
     } else {
       throw new Error(response.message || 'فشل في جلب بيانات المستخدم');
     }
@@ -68,7 +68,7 @@ export class AuthService {
 
   static async updateProfile(userData: Partial<User>): Promise<User> {
     const response = await apiClient.put<ApiResponse<User>>('/auth/profile', userData);
-    
+
     if (response.success && response.data) {
       return response.data;
     } else {
@@ -82,7 +82,7 @@ export class AuthService {
       password: newPassword,
       password_confirmation: newPassword,
     });
-    
+
     if (!response.success) {
       throw new Error(response.message || 'فشل في تغيير كلمة المرور');
     }
